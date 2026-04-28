@@ -1,0 +1,24 @@
+---
+// Navbar Component
+import Button from "./Button.astro";
+---
+
+<nav class="h-[80px] lg:h-[100px] bg-white shadow-sm flex items-center">
+  <div
+    class="max-w-[1200px] w-full mx-auto px-5 flex justify-between items-center"
+  >
+    <a href="/">
+      <img
+        src="/logo-oautos.svg"
+        alt="Oautos Inversionistas"
+        class="h-8 lg:h-10"
+      />
+    </a>
+    <Button
+      variant="principal"
+      text="Iniciar sesión"
+      href="https://inversiones.oautos.mx/login"
+      class="!px-6 !py-2 !text-sm lg:!px-10 lg:!py-3 lg:!text-base"
+    />
+  </div>
+</nav>

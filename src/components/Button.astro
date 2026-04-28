@@ -1,0 +1,23 @@
+---
+// Button Component
+interface Props {
+  variant?: 'principal' | 'secondary';
+  text: string;
+  href?: string;
+  class?: string;
+  blank?: boolean;
+}
+
+const { variant = 'principal', text, href = '#', class: className = '', blank = false } = Astro.props;
+
+const baseClasses = 'inline-block px-10 py-3 rounded-full text-base font-medium transition-all duration-300 border-2 text-center';
+
+const variantClasses = {
+  principal: 'bg-[#117CD9] text-white border-[#117CD9] hover:bg-[#0D5FB3] hover:border-[#0D5FB3]',
+  secondary: 'bg-white text-[#117CD9] border-[#117CD9] hover:bg-gray-50'
+};
+---
+
+<a href={href} class={`${baseClasses} ${variantClasses[variant]} ${className}`} target={blank ? '_blank' : undefined} rel={blank ? 'noopener noreferrer' : undefined}>
+  {text}
+</a>
