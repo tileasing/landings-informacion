@@ -1,0 +1,187 @@
+---
+import type { ComparisonContent } from '../../content/types';
+
+type Props = ComparisonContent;
+
+const { title, subtitle, alternative, ours } = Astro.props;
+---
+
+<section
+  id="comparacion"
+  aria-labelledby="comparacion-title"
+  class="bg-[#EDF3FA] py-16 lg:py-24"
+>
+  <div class="max-w-[1100px] mx-auto px-5">
+
+    <!-- Encabezado -->
+    <header class="text-center mb-12 lg:mb-16">
+      <h2
+        id="comparacion-title"
+        class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight"
+      >
+        {title}
+      </h2>
+      {subtitle && (
+        <p
+          class="mt-4 text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed"
+        >
+          {subtitle}
+        </p>
+      )}
+    </header>
+
+    <!-- Comparación -->
+    <div class="relative grid md:grid-cols-2 gap-6 md:gap-10">
+
+      <!-- Opción alternativa -->
+      <article
+        aria-labelledby="comparacion-alt-name"
+        class="bg-white/70 rounded-2xl p-6 lg:p-8 border border-gray-200 shadow-sm transition-shadow duration-300 hover:shadow-md"
+      >
+        <header
+          class="flex items-center gap-3 mb-6 pb-5 border-b border-gray-100"
+        >
+          <span
+            class="inline-flex w-11 h-11 rounded-xl bg-gray-100 text-gray-400 items-center justify-center flex-shrink-0"
+            aria-hidden="true"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </span>
+          <h3
+            id="comparacion-alt-name"
+            class="text-xl lg:text-2xl font-bold text-gray-500"
+          >
+            {alternative.name}
+          </h3>
+        </header>
+
+        <ul class="space-y-3 list-none p-0 m-0">
+          {alternative.points.map((point) => (
+            <li class="flex items-start gap-3">
+              <span
+                class="mt-0.5 inline-flex w-6 h-6 rounded-full bg-gray-100 flex-shrink-0 items-center justify-center"
+                aria-hidden="true"
+              >
+                <svg
+                  class="w-3.5 h-3.5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </span>
+              <span class="text-gray-600 text-base leading-relaxed">
+                {point}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </article>
+
+      <!-- Insignia "vs" desktop (flotante entre tarjetas) -->
+      <div
+        class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white items-center justify-center shadow-xl shadow-primary/25 border-2 border-primary/30 z-10"
+        aria-hidden="true"
+      >
+        <span
+          class="text-primary font-bold text-sm tracking-wider uppercase"
+        >
+          vs
+        </span>
+      </div>
+
+      <!-- Insignia "vs" mobile (en flujo) -->
+      <div
+        class="md:hidden flex items-center justify-center -my-3"
+        aria-hidden="true"
+      >
+        <span
+          class="bg-white px-4 py-1.5 rounded-full text-primary font-bold text-xs tracking-wider uppercase shadow-md border border-primary/30"
+        >
+          vs
+        </span>
+      </div>
+
+      <!-- Opción "ours" (destacada) -->
+      <article
+        aria-labelledby="comparacion-ours-name"
+        class="relative bg-white rounded-2xl p-6 lg:p-8 border-2 border-primary shadow-xl shadow-primary/15 transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary/25"
+      >
+        <header
+          class="flex items-center gap-3 mb-6 pb-5 border-b border-primary/15"
+        >
+          <span
+            class="inline-flex w-11 h-11 rounded-xl bg-primary text-white items-center justify-center flex-shrink-0 shadow-md shadow-primary/30"
+            aria-hidden="true"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </span>
+          <h3
+            id="comparacion-ours-name"
+            class="text-xl lg:text-2xl font-bold text-gray-900"
+          >
+            {ours.name}
+          </h3>
+        </header>
+
+        <ul class="space-y-3 list-none p-0 m-0">
+          {ours.points.map((point) => (
+            <li class="flex items-start gap-3">
+              <span
+                class="mt-0.5 inline-flex w-6 h-6 rounded-full bg-[#C9E5F8] flex-shrink-0 items-center justify-center"
+                aria-hidden="true"
+              >
+                <svg
+                  class="w-3.5 h-3.5 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </span>
+              <span class="text-gray-800 text-base leading-relaxed font-medium">
+                {point}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>

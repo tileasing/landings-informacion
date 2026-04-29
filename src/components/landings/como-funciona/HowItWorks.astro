@@ -1,0 +1,113 @@
+---
+import type { Step } from '../../../content/como-funciona';
+
+interface Props {
+  title: string;
+  steps: Step[];
+}
+
+const { title, steps } = Astro.props;
+---
+
+<section
+  id="como-funciona"
+  aria-labelledby="como-funciona-title"
+  class="bg-white py-16 lg:py-24"
+>
+  <div class="max-w-[1100px] mx-auto px-5">
+
+    <!-- Encabezado -->
+    <header class="text-center mb-12 lg:mb-16">
+      <h2
+        id="como-funciona-title"
+        class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight"
+      >
+        {title}
+      </h2>
+      <div
+        class="mt-5 h-1 w-16 bg-primary mx-auto rounded-full"
+        aria-hidden="true"
+      ></div>
+    </header>
+
+    <ol class="relative list-none p-0 m-0 space-y-6 lg:space-y-10">
+
+      <!-- Línea conectora vertical (solo desktop) -->
+      <div
+        class="hidden md:block absolute left-10 top-10 bottom-10 w-0.5 bg-gradient-to-b from-primary/40 via-primary/20 to-primary/40 rounded-full"
+        aria-hidden="true"
+      ></div>
+
+      {steps.map((step, index) => (
+        <li class="relative group flex flex-col md:flex-row md:items-start gap-5 md:gap-8">
+
+          <!-- Número -->
+          <div class="md:w-20 flex-shrink-0 flex md:block items-center gap-3">
+            <div
+              class="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-primary to-[#0D5FB3] flex items-center justify-center shadow-lg shadow-primary/30 transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-3"
+              aria-hidden="true"
+            >
+              <span
+                class="text-white text-2xl md:text-3xl font-bold tracking-tight"
+              >
+                {String(index + 1).padStart(2, '0')}
+              </span>
+            </div>
+            <span
+              class="md:hidden text-xs font-semibold text-primary uppercase tracking-widest"
+              aria-hidden="true"
+            >
+              Paso {index + 1}
+            </span>
+          </div>
+
+          <!-- Tarjeta de contenido -->
+          <div
+            class="flex-1 bg-white rounded-2xl border border-gray-100 p-6 lg:p-7 shadow-sm transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:-translate-y-0.5 focus-within:border-primary/40 focus-within:shadow-xl"
+          >
+            <h3 class="text-xl lg:text-2xl font-bold text-gray-900 mb-3">
+              {step.title}
+            </h3>
+
+            {step.description && (
+              <p class="text-base text-gray-600 leading-relaxed mb-4">
+                {step.description}
+              </p>
+            )}
+
+            {step.itemsLabel && (
+              <p class="text-base text-gray-700 font-medium mb-3">
+                {step.itemsLabel}
+              </p>
+            )}
+
+            {step.items && step.items.length > 0 && (
+              <ul class="flex flex-wrap gap-2 mb-4 list-none p-0 m-0">
+                {step.items.map((item) => (
+                  <li
+                    class="inline-flex items-center px-3 py-1.5 bg-[#C9E5F8] text-primary text-sm font-medium rounded-full transition-colors duration-200 hover:bg-primary hover:text-white"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {step.footnote && (
+              <div
+                role="note"
+                class="mt-4 bg-[#EDF3FA] border-l-4 border-primary rounded-r-lg px-4 py-3"
+              >
+                <p
+                  class="text-sm lg:text-base text-gray-800 font-medium leading-relaxed"
+                >
+                  {step.footnote}
+                </p>
+              </div>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

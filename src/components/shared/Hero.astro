@@ -1,0 +1,105 @@
+---
+import Button from "./Button.astro";
+import type { ButtonConfig, HeroImage } from "../../content/types";
+
+interface Props {
+  badge?: string;
+  title: string;
+  titleHighlight?: string;
+  subtitle: string;
+  paragraph?: string;
+  emphasis?: string;
+  buttons: ButtonConfig[];
+  image?: HeroImage;
+}
+
+const {
+  badge,
+  title,
+  titleHighlight,
+  subtitle,
+  paragraph,
+  emphasis,
+  buttons,
+  image,
+} = Astro.props;
+---
+
+<section
+  id="hero"
+  class="bg-[#EDF3FA] min-h-dvh flex items-center py-12 lg:py-20"
+>
+  <div class="max-w-[1200px] w-full mx-auto px-5">
+    <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+
+      <!-- Columna texto -->
+      <div class="text-center lg:text-left">
+        {badge && (
+          <span
+            class="inline-block bg-[#C9E5F8] text-primary font-semibold text-xs lg:text-sm px-5 lg:px-6 py-2 rounded-full mb-6"
+          >
+            {badge}
+          </span>
+        )}
+
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+          {title}
+          {titleHighlight && (
+            <span class="text-primary"> {titleHighlight}</span>
+          )}
+        </h1>
+
+        <p class="text-lg lg:text-xl text-gray-700 mb-4 leading-relaxed">
+          {subtitle}
+        </p>
+
+        {paragraph && (
+          <p class="text-base text-gray-500 mb-4 leading-relaxed">
+            {paragraph}
+          </p>
+        )}
+
+        {emphasis && (
+          <p
+            class="text-base lg:text-lg text-gray-800 font-medium leading-relaxed border-l-4 border-primary pl-4 my-6"
+          >
+            {emphasis}
+          </p>
+        )}
+
+        <div
+          class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mt-8"
+        >
+          {buttons.map((btn) => (
+            <Button
+              variant={btn.variant}
+              text={btn.text}
+              href={btn.href}
+              blank={btn.blank}
+            />
+          ))}
+        </div>
+      </div>
+
+      <!-- Columna imagen -->
+      <div>
+        {image ? (
+          <img
+            src={image.src}
+            alt={image.alt}
+            class="w-full h-auto rounded-2xl"
+          />
+        ) : (
+          <div
+            class="aspect-[4/3] bg-white/60 rounded-2xl border-2 border-dashed border-primary/30 flex items-center justify-center"
+          >
+            <span class="text-primary/40 font-medium text-sm">
+              Imagen pendiente
+            </span>
+          </div>
+        )}
+      </div>
+
+    </div>
+  </div>
+</section>

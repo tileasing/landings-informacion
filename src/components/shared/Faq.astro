@@ -1,0 +1,127 @@
+---
+import type { FaqContent } from '../../content/types';
+
+type Props = FaqContent;
+
+const { title, subtitle, items } = Astro.props;
+---
+
+<section
+  id="faq"
+  aria-labelledby="faq-title"
+  class="bg-white py-16 lg:py-24"
+>
+  <div class="max-w-[800px] mx-auto px-5">
+
+    <!-- Encabezado -->
+    <header class="text-center mb-12 lg:mb-16">
+      <h2
+        id="faq-title"
+        class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight"
+      >
+        {title}
+      </h2>
+      <div
+        class="mt-5 h-1 w-16 bg-primary mx-auto rounded-full"
+        aria-hidden="true"
+      ></div>
+      {subtitle && (
+        <p class="mt-5 text-base lg:text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
+          {subtitle}
+        </p>
+      )}
+    </header>
+
+    <!-- Lista de preguntas -->
+    <div class="space-y-4">
+      {items.map((item) => (
+        <details
+          class="group bg-white rounded-2xl border border-gray-200 transition-all duration-300 hover:border-gray-300 open:border-primary/50 open:shadow-md open:shadow-primary/5"
+        >
+          <summary
+            class="cursor-pointer flex items-center justify-between gap-4 p-5 lg:p-6 list-none [&::-webkit-details-marker]:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 rounded-2xl"
+          >
+            <h3
+              class="text-base lg:text-lg font-semibold text-gray-900 group-open:text-primary transition-colors duration-200 m-0"
+            >
+              {item.question}
+            </h3>
+            <span
+              class="flex-shrink-0 inline-flex w-8 h-8 rounded-full bg-gray-100 group-open:bg-[#C9E5F8] items-center justify-center transition-colors duration-200"
+              aria-hidden="true"
+            >
+              <svg
+                class="w-4 h-4 text-gray-500 group-open:text-primary transition-transform duration-300 group-open:rotate-180"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </span>
+          </summary>
+
+          <div class="faq-body px-5 lg:px-6 pb-5 lg:pb-6 -mt-1 space-y-3">
+            {item.paragraphs.map((paragraph) => (
+              <p class="text-base text-gray-600 leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
+
+            {item.bulletsLabel && (
+              <p class="text-base text-gray-700 font-medium pt-1">
+                {item.bulletsLabel}
+              </p>
+            )}
+
+            {item.bullets && item.bullets.length > 0 && (
+              <ul class="space-y-2 list-none p-0 m-0">
+                {item.bullets.map((bullet) => (
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="mt-2 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"
+                      aria-hidden="true"
+                    ></span>
+                    <span class="text-base text-gray-600 leading-relaxed">
+                      {bullet}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Animación sutil al abrir cada respuesta */
+  details[open] > .faq-body {
+    animation: faq-slide 0.25s ease-out;
+  }
+
+  @keyframes faq-slide {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Respeta usuarios que prefieren reducir animaciones */
+  @media (prefers-reduced-motion: reduce) {
+    details[open] > .faq-body {
+      animation: none;
+    }
+  }
+</style>
