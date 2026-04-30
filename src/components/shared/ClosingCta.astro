@@ -1,6 +1,6 @@
 ---
-import Button from './Button.astro';
-import type { ClosingCtaContent } from '../../content/types';
+import Button from "./Button.astro";
+import type { ClosingCtaContent } from "../../content/types";
 
 type Props = ClosingCtaContent;
 
@@ -9,19 +9,17 @@ const { title, subtitle, buttons, image } = Astro.props;
 
 <section
   aria-labelledby="closing-cta-title"
-  class="bg-gradient-to-b from-[#EDF3FA] to-white py-20 lg:py-28"
+  class="bg-[#EDF3FA] py-20 lg:py-28"
 >
   <div class="max-w-[1100px] mx-auto px-5">
     <div
-      class={image
-        ? 'grid lg:grid-cols-2 gap-10 lg:gap-16 items-center'
-        : ''}
+      class={image ? "grid lg:grid-cols-2 gap-10 lg:gap-16 items-center" : ""}
     >
       <!-- Texto + CTA -->
       <div
         class={image
-          ? 'text-center lg:text-left'
-          : 'text-center max-w-2xl mx-auto'}
+          ? "text-center lg:text-left"
+          : "text-center max-w-2xl mx-auto"}
       >
         <h2
           id="closing-cta-title"
@@ -30,44 +28,50 @@ const { title, subtitle, buttons, image } = Astro.props;
           {title}
         </h2>
 
-        {subtitle && (
-          <p
-            class:list={[
-              'text-base lg:text-lg text-gray-600 leading-relaxed mb-8',
-              image && 'max-w-xl mx-auto lg:mx-0',
-            ]}
-          >
-            {subtitle}
-          </p>
-        )}
+        {
+          subtitle && (
+            <p
+              class:list={[
+                "text-base lg:text-lg text-gray-600 leading-relaxed mb-8",
+                image && "max-w-xl mx-auto lg:mx-0",
+              ]}
+            >
+              {subtitle}
+            </p>
+          )
+        }
 
         <div
           class:list={[
-            'flex flex-col sm:flex-row gap-4',
-            image ? 'justify-center lg:justify-start' : 'justify-center',
+            "flex flex-col sm:flex-row gap-4",
+            image ? "justify-center lg:justify-start" : "justify-center",
           ]}
         >
-          {buttons.map((btn) => (
-            <Button
-              variant={btn.variant}
-              text={btn.text}
-              href={btn.href}
-              blank={btn.blank}
-            />
-          ))}
+          {
+            buttons.map((btn) => (
+              <Button
+                variant={btn.variant}
+                text={btn.text}
+                href={btn.href}
+                blank={btn.blank}
+              />
+            ))
+          }
         </div>
       </div>
 
       <!-- Imagen (opcional) -->
-      {image && (
-        <div>
-          <img
-            src={image.src}
-            alt={image.alt}
-            class="w-full h-auto rounded-2xl shadow-xl shadow-primary/10"
-          />
-        </div>
-      )}
+      {
+        image && (
+          <div>
+            <img
+              src={image.src}
+              alt={image.alt}
+              class="w-full h-auto rounded-2xl shadow-xl shadow-primary/10"
+            />
+          </div>
+        )
+      }
     </div>
   </div>
 </section>

@@ -1,8 +1,8 @@
 import type {
   LandingContent,
   ComparisonContent,
-  ButtonConfig,
   FaqContent,
+  BannerSection,
 } from './types';
 
 export interface Step {
@@ -11,12 +11,6 @@ export interface Step {
   itemsLabel?: string;
   items?: string[];
   footnote?: string;
-}
-
-export interface BannerSection {
-  title: string;
-  subtitle?: string;
-  button: ButtonConfig;
 }
 
 export interface ComoFuncionaContent extends LandingContent {
@@ -66,17 +60,17 @@ export const content: ComoFuncionaContent = {
         title: 'Ingresa a la aplicación',
         description: 'Recibirás por correo una contraseña temporal.',
         itemsLabel: 'Dentro de la app tendrás acceso a:',
-        items: ['tu avance', 'historial', 'plan', 'pagos', 'puntos'],
+        items: ['Tu avance', 'Historial', 'Plan', 'Pagos', 'Puntos'],
       },
       {
         title: 'Crea tu plan',
         itemsLabel:
           'Dentro del menú seleccionas Autofinanciamiento y configuras:',
         items: [
-          'auto objetivo',
-          'meta mínima de enganche (30%)',
-          'frecuencia de aportación',
-          'plazo',
+          'Auto objetivo',
+          'Meta mínima de enganche (30%)',
+          'Frecuencia de aportación',
+          'Plazo',
         ],
         footnote: 'El plazo mínimo es 6 meses.',
       },

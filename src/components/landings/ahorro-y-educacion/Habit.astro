@@ -1,0 +1,191 @@
+---
+import type { HabitSection } from '../../../content/ahorro-y-educacion';
+
+type Props = HabitSection;
+
+const { title, subtitle, myth, reality, keys, tips, emphasis } = Astro.props;
+---
+
+<section
+  id="habit"
+  aria-labelledby="habit-title"
+  class="bg-white py-16 lg:py-24"
+>
+  <div class="max-w-[1100px] mx-auto px-5">
+
+    <!-- Encabezado -->
+    <header class="text-center mb-12 lg:mb-16">
+      <h2
+        id="habit-title"
+        class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight"
+      >
+        {title}
+      </h2>
+      <div
+        class="mt-5 h-1 w-16 bg-primary mx-auto rounded-full"
+        aria-hidden="true"
+      ></div>
+      {subtitle && (
+        <p class="mt-5 text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          {subtitle}
+        </p>
+      )}
+    </header>
+
+    <!-- Mito vs Realidad -->
+    <div
+      class="grid md:grid-cols-[1fr_auto_1fr] items-stretch gap-4 md:gap-6 mb-12 lg:mb-16"
+    >
+      <!-- Mito -->
+      <div
+        class="bg-gray-50 border border-gray-200 rounded-2xl p-6 lg:p-8 flex flex-col"
+      >
+        <span
+          class="self-start inline-block bg-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4"
+        >
+          {myth.label}
+        </span>
+        <p
+          class="text-base lg:text-lg text-gray-500 leading-relaxed italic"
+        >
+          “{myth.text}”
+        </p>
+      </div>
+
+      <!-- Flecha (rota en mobile) -->
+      <div
+        class="flex items-center justify-center"
+        aria-hidden="true"
+      >
+        <span
+          class="inline-flex w-12 h-12 rounded-full bg-primary text-white items-center justify-center shadow-lg shadow-primary/30"
+        >
+          <svg
+            class="w-6 h-6 rotate-90 md:rotate-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            stroke-width="2.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M14 5l7 7m0 0l-7 7m7-7H3"
+            />
+          </svg>
+        </span>
+      </div>
+
+      <!-- Realidad -->
+      <div
+        class="bg-[#EDF3FA] border-2 border-primary/30 rounded-2xl p-6 lg:p-8 flex flex-col"
+      >
+        <span
+          class="self-start inline-block bg-primary text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4"
+        >
+          {reality.label}
+        </span>
+        <p
+          class="text-base lg:text-lg text-gray-800 leading-relaxed font-medium"
+        >
+          {reality.text}
+        </p>
+      </div>
+    </div>
+
+    <!-- Lo importante + Tips -->
+    <div class="grid md:grid-cols-2 gap-6 lg:gap-8 mb-12 lg:mb-16">
+
+      <!-- Lo importante -->
+      <article
+        class="relative bg-white rounded-2xl border border-gray-100 shadow-sm p-6 lg:p-8 overflow-hidden"
+      >
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-[#0D5FB3]"
+          aria-hidden="true"
+        ></div>
+        <h3 class="text-xl lg:text-2xl font-bold text-gray-900 mb-6 mt-1">
+          {keys.title}
+        </h3>
+        <ul class="space-y-4 list-none p-0 m-0">
+          {keys.items.map((item, index) => (
+            <li class="flex items-center gap-4">
+              <span
+                class="flex-shrink-0 w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shadow-md shadow-primary/20"
+                aria-hidden="true"
+              >
+                {index + 1}
+              </span>
+              <span class="text-base lg:text-lg text-gray-700">
+                {item}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </article>
+
+      <!-- Tips -->
+      <article
+        class="relative bg-[#EDF3FA] rounded-2xl border border-primary/20 p-6 lg:p-8 overflow-hidden"
+      >
+        <h3
+          class="text-xl lg:text-2xl font-bold text-gray-900 mb-6 inline-flex items-center gap-2.5"
+        >
+          <span
+            class="inline-flex w-8 h-8 rounded-lg bg-white text-primary items-center justify-center shadow-sm"
+            aria-hidden="true"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.663 17h4.673M12 3a6 6 0 016 6c0 3-3 5-3 5v3H9v-3s-3-2-3-5a6 6 0 016-6z"
+              />
+            </svg>
+          </span>
+          {tips.title}
+        </h3>
+        <ul class="space-y-3 list-none p-0 m-0">
+          {tips.items.map((item) => (
+            <li class="flex items-start gap-3">
+              <svg
+                class="mt-1 w-5 h-5 text-primary flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="2.5"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+              <span class="text-base text-gray-700 leading-relaxed">
+                {item}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </article>
+    </div>
+
+    <!-- Emphasis -->
+    {emphasis && (
+      <div class="text-center">
+        <p
+          class="inline-block text-left text-lg lg:text-xl font-medium text-gray-800 leading-relaxed border-l-4 border-primary pl-5 py-1 max-w-2xl"
+        >
+          “{emphasis}”
+        </p>
+      </div>
+    )}
+  </div>
+</section>

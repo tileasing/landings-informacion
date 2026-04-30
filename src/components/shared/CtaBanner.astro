@@ -1,12 +1,8 @@
 ---
-import Button from '../../shared/Button.astro';
-import type { ButtonConfig } from '../../../content/types';
+import Button from './Button.astro';
+import type { BannerSection } from '../../content/types';
 
-interface Props {
-  title: string;
-  subtitle?: string;
-  button: ButtonConfig;
-}
+type Props = BannerSection;
 
 const { title, subtitle, button } = Astro.props;
 ---

@@ -16,6 +16,7 @@ export interface HeroContent {
   titleHighlight?: string;
   subtitle: string;
   paragraph?: string;
+  paragraphItems?: string[];
   emphasis?: string;
   buttons: ButtonConfig[];
   image?: HeroImage;
@@ -38,6 +39,7 @@ export interface FaqItem {
   paragraphs: string[];
   bulletsLabel?: string;
   bullets?: string[];
+  closingParagraphs?: string[];
 }
 
 export interface FaqContent {
@@ -56,6 +58,12 @@ export interface ClosingCtaContent {
   };
 }
 
+export interface BannerSection {
+  title: string;
+  subtitle?: string;
+  button: ButtonConfig;
+}
+
 export interface FooterLink {
   label: string;
   href: string;
@@ -64,13 +72,11 @@ export interface FooterLink {
 export interface FooterContent {
   logo?: string;
   logoAlt?: string;
-  description?: string;
   legalTitle?: string;
   legalLinks?: FooterLink[];
   contactTitle?: string;
   contactItems?: string[];
   copyright?: string;
-  disclaimer?: string;
 }
 
 export interface LandingMeta {

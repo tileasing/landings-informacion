@@ -94,6 +94,12 @@ const { title, subtitle, items } = Astro.props;
                 ))}
               </ul>
             )}
+
+            {item.closingParagraphs && item.closingParagraphs.map((paragraph) => (
+              <p class="text-base text-gray-600 leading-relaxed pt-1">
+                {paragraph}
+              </p>
+            ))}
           </div>
         </details>
       ))}

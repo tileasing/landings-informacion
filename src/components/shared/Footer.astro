@@ -1,51 +1,42 @@
 ---
 import type { FooterLink } from "../../content/types";
+import logoOautos from "../../assets/logo Oautos.png";
 
 interface Props {
   logo?: string;
   logoAlt?: string;
-  description?: string;
+
   legalTitle?: string;
   legalLinks?: FooterLink[];
   contactTitle?: string;
   contactItems?: string[];
   copyright?: string;
-  disclaimer?: string;
 }
 
 const {
-  logo = "/logo-oautos.svg",
+  logo = logoOautos.src,
   logoAlt = "Oautos Inversionistas",
-  description = "Plataforma de inversión en pagarés digitales respaldados por activos automotrices",
+
   legalTitle = "Legal",
   legalLinks = [
     { label: "Términos y Condiciones", href: "#" },
     { label: "Aviso de Privacidad", href: "#" },
-    { label: "Preguntas Frecuentes", href: "#" },
   ],
   contactTitle = "Contacto",
-  contactItems = [
-    "contacto@oautos.com",
-    "55 1234 5678",
-    "Ciudad de México",
-  ],
-  copyright = "© 2026 Oautos Inversiones. Todos los derechos reservados.",
-  disclaimer = "Aviso: Las inversiones conllevan riesgos. Lee el prospecto antes de invertir.",
+  contactItems = ["contacto@oautos.com", "Ciudad de México"],
+  copyright = "© 2026 Oautos. Todos los derechos reservados.",
 } = Astro.props;
 ---
 
 <footer class="bg-white pt-16 pb-8">
   <div class="max-w-[1200px] mx-auto px-5">
-
     <!-- Contenido superior -->
-    <div class="flex flex-col lg:flex-row justify-between items-start gap-10 lg:gap-0 mb-12">
-
-      <!-- Logo y descripción -->
+    <div
+      class="flex flex-col lg:flex-row justify-between items-start gap-10 lg:gap-0 mb-12"
+    >
+      <!-- Logo -->
       <div class="max-w-md">
-        <img src={logo} alt={logoAlt} class="h-20 lg:h-28 mb-6" />
-        <p class="text-gray-500 leading-relaxed">
-          {description}
-        </p>
+        <img src={logo} alt={logoAlt} class="h-20 lg:h-28" />
       </div>
 
       <!-- Links -->
@@ -54,13 +45,18 @@ const {
         <div>
           <h4 class="font-bold text-gray-900 mb-4">{legalTitle}</h4>
           <ul class="space-y-3">
-            {legalLinks.map((link) => (
-              <li>
-                <a href={link.href} class="text-gray-500 hover:text-primary transition-colors">
-                  {link.label}
-                </a>
-              </li>
-            ))}
+            {
+              legalLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="text-gray-500 hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))
+            }
           </ul>
         </div>
 
@@ -68,20 +64,21 @@ const {
         <div>
           <h4 class="font-bold text-gray-900 mb-4">{contactTitle}</h4>
           <ul class="space-y-3">
-            {contactItems.map((item) => (
-              <li><span class="text-gray-500">{item}</span></li>
-            ))}
+            {
+              contactItems.map((item) => (
+                <li>
+                  <span class="text-gray-500">{item}</span>
+                </li>
+              ))
+            }
           </ul>
         </div>
       </div>
-
     </div>
 
     <!-- Línea divisora -->
     <div class="border-t border-gray-200 pt-8 text-center">
-      <p class="text-gray-500 text-sm mb-2">{copyright}</p>
-      <p class="text-gray-400 text-xs">{disclaimer}</p>
+      <p class="text-gray-500 text-sm">{copyright}</p>
     </div>
-
   </div>
 </footer>

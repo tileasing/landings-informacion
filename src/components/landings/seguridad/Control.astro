@@ -1,0 +1,167 @@
+---
+import type { ControlSection } from '../../../content/seguridad';
+import ControlIcon from './ControlIcon.astro';
+
+type Props = ControlSection;
+
+const { title, subtitle, transparency, cancellation } = Astro.props;
+---
+
+<section
+  id="control"
+  aria-labelledby="control-title"
+  class="bg-white py-16 lg:py-24"
+>
+  <div class="max-w-[1100px] mx-auto px-5">
+
+    <!-- Encabezado -->
+    <header class="text-center mb-12 lg:mb-16">
+      <h2
+        id="control-title"
+        class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight"
+      >
+        {title}
+      </h2>
+      <div
+        class="mt-5 h-1 w-16 bg-primary mx-auto rounded-full"
+        aria-hidden="true"
+      ></div>
+      {subtitle && (
+        <p class="mt-5 text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          {subtitle}
+        </p>
+      )}
+    </header>
+
+    <!-- Tarjetas -->
+    <div class="grid md:grid-cols-2 gap-6 lg:gap-8">
+
+      <!-- Transparencia -->
+      <article
+        aria-labelledby="control-transparency-title"
+        class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 lg:p-8 transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:-translate-y-0.5"
+      >
+        <header
+          class="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100"
+        >
+          <span
+            class="inline-flex w-12 h-12 rounded-xl bg-[#C9E5F8] text-primary items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
+            aria-hidden="true"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+          </span>
+          <h3
+            id="control-transparency-title"
+            class="text-xl lg:text-2xl font-bold text-gray-900"
+          >
+            {transparency.title}
+          </h3>
+        </header>
+
+        {transparency.intro && (
+          <p class="text-base text-gray-700 font-medium mb-4">
+            {transparency.intro}
+          </p>
+        )}
+
+        <ul class="flex flex-wrap gap-2 list-none p-0 m-0">
+          {transparency.items.map((item) => (
+            <li
+              class="inline-flex items-center gap-2.5 bg-[#C9E5F8] text-primary text-sm lg:text-base font-medium rounded-full pl-3 pr-4 py-2 transition-colors duration-200 hover:bg-primary hover:text-white"
+            >
+              <ControlIcon name={item.icon} class="w-4 h-4 flex-shrink-0" />
+              {item.label}
+            </li>
+          ))}
+        </ul>
+      </article>
+
+      <!-- Cancelación -->
+      <article
+        aria-labelledby="control-cancellation-title"
+        class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 lg:p-8 transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:-translate-y-0.5"
+      >
+        <header
+          class="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100"
+        >
+          <span
+            class="inline-flex w-12 h-12 rounded-xl bg-[#C9E5F8] text-primary items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
+            aria-hidden="true"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 010 8h-1"
+              />
+            </svg>
+          </span>
+          <h3
+            id="control-cancellation-title"
+            class="text-xl lg:text-2xl font-bold text-gray-900"
+          >
+            {cancellation.title}
+          </h3>
+        </header>
+
+        {cancellation.intro && (
+          <p class="text-base text-gray-700 font-medium mb-4">
+            {cancellation.intro}
+          </p>
+        )}
+
+        <ul class="space-y-3 list-none p-0 m-0">
+          {cancellation.items.map((item) => (
+            <li class="flex items-start gap-3">
+              <span
+                class="mt-0.5 inline-flex w-5 h-5 rounded-full bg-[#C9E5F8] flex-shrink-0 items-center justify-center"
+                aria-hidden="true"
+              >
+                <svg
+                  class="w-3 h-3 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </span>
+              <span class="text-base text-gray-700 leading-relaxed">
+                {item}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
