@@ -3,6 +3,7 @@ import type {
   BannerSection,
   FaqContent,
 } from './types';
+import heroPic from '../assets/oautos_hero_pic (3).webp';
 
 export interface HabitContrast {
   label: string;
@@ -46,10 +47,14 @@ export const content: AhorroEducacionContent = {
       {
         variant: 'principal',
         text: 'Hablar por WhatsApp',
-        href: 'https://wa.me/52',
+        href: 'https://wa.me/+52 55 2729 4076 ',
         blank: true,
       },
     ],
+    image: {
+      src: heroPic.src,
+      alt: 'Educación financiera y ahorro inteligente',
+    },
   },
   habit: {
     title: 'La constancia gana al monto.',
@@ -88,7 +93,7 @@ export const content: AhorroEducacionContent = {
     button: {
       variant: 'secondary',
       text: 'Hablar por WhatsApp',
-      href: 'https://wa.me/52',
+      href: 'https://wa.me/+52 55 2729 4076',
       blank: true,
     },
   },
@@ -124,8 +129,14 @@ export const content: AhorroEducacionContent = {
     buttons: [
       {
         variant: 'principal',
-        text: 'Crear mi plan',
-        href: 'https://wa.me/52',
+        text: 'Descargar en Google Play',
+        href: 'https://play.google.com/store/apps/details?id=com.olr.olrapp&hl=es_MX',
+        blank: true,
+      },
+      {
+        variant: 'secondary',
+        text: 'Descargar en App Store',
+        href: 'https://apps.apple.com/mx/app/oautos/id6744710634',
         blank: true,
       },
     ],

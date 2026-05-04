@@ -3,6 +3,7 @@ import type {
   ComparisonContent,
   FaqContent,
 } from './types';
+import heroPic from '../assets/oautos_hero_pic (6).webp';
 
 export interface AportacionesContent extends LandingContent {
   comparison: ComparisonContent;
@@ -30,10 +31,15 @@ export const content: AportacionesContent = {
       {
         variant: 'principal',
         text: 'Realizar mi aportación',
-        href: 'https://wa.me/52',
+        href: 'https://play.google.com/store/apps/details?id=com.olr.olrapp&hl=es_MX',
         blank: true,
       },
+     
     ],
+    image: {
+      src: heroPic.src,
+      alt: 'Realizando una aportación en Oautos',
+    },
   },
   comparison: {
     title: 'Qué ganas con cada pago',
@@ -86,9 +92,10 @@ export const content: AportacionesContent = {
       {
         variant: 'principal',
         text: 'Realizar mi aportación',
-        href: 'https://wa.me/52',
+        href: 'https://play.google.com/store/apps/details?id=com.olr.olrapp&hl=es_MX',
         blank: true,
       },
+     
     ],
   },
 };

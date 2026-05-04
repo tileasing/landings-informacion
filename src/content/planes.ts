@@ -1,4 +1,5 @@
 import type { LandingContent, FaqContent } from './types';
+import heroPic from '../assets/oautos_hero_pic7.webp';
 
 export interface ReasonItem {
   icon: 'lightbulb' | 'chart';
@@ -60,16 +61,20 @@ export const content: PlanesContent = {
       {
         variant: 'principal',
         text: 'Crear mi plan ahora',
-        href: 'https://wa.me/52',
+        href: '',
         blank: true,
       },
       {
         variant: 'secondary',
         text: 'Hablar con un asesor',
-        href: 'https://wa.me/52',
+        href: 'https://wa.me/+52 55 2729 4076',
         blank: true,
       },
     ],
+    image: {
+      src: heroPic.src,
+      alt: 'Planes flexibles de Oautos',
+    },
   },
   reasons: {
     title: '¿Por qué necesitas un plan?',
@@ -164,19 +169,20 @@ export const content: PlanesContent = {
       {
         variant: 'principal',
         text: 'Crear mi plan hoy',
-        href: 'https://wa.me/52',
+        href: '',
         blank: true,
       },
       {
         variant: 'secondary',
         text: 'Hablar por WhatsApp',
-        href: 'https://wa.me/52',
+        href: 'https://wa.me/+52 55 2729 4076',
         blank: true,
       },
       {
         variant: 'tertiary',
         text: 'Conocer más sobre Oautos',
-        href: '/diferencia-oautos',
+        href: 'https://oautos.com.mx/',
+        blank: true,
       },
     ],
   },

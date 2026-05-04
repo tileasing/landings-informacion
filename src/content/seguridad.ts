@@ -4,6 +4,7 @@ import type {
   ComparisonContent,
   FaqContent,
 } from './types';
+import heroPic from '../assets/oautos_hero_pic (2).webp';
 
 export interface TransparencyItem {
   label: string;
@@ -62,6 +63,10 @@ export const content: SeguridadContent = {
         blank: true,
       },
     ],
+    image: {
+      src: heroPic.src,
+      alt: 'Plan seguro y respaldado en Oautos',
+    },
   },
   control: {
     title: 'Estás siempre en control',

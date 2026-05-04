@@ -4,6 +4,7 @@ import type {
   ComparisonContent,
   FaqContent,
 } from './types';
+import heroPic from '../assets/oautos_hero_pic (4).webp';
 
 export interface Differentiator {
   icon: 'users' | 'device' | 'eye' | 'chat';
@@ -41,10 +42,14 @@ export const content: DiferenciaOautosContent = {
       {
         variant: 'principal',
         text: 'Hablar por WhatsApp',
-        href: 'https://wa.me/52',
+        href: 'https://wa.me/+52 55 2729 4076',
         blank: true,
       },
     ],
+    image: {
+      src: heroPic.src,
+      alt: 'La diferencia que ofrece Oautos',
+    },
   },
   differentiators: {
     title: 'Diferenciadores clave',
@@ -99,7 +104,7 @@ export const content: DiferenciaOautosContent = {
     button: {
       variant: 'secondary',
       text: 'Hablar por WhatsApp',
-      href: 'https://wa.me/52',
+      href: 'https://wa.me/+52 55 2729 4076',
       blank: true,
     },
   },
@@ -131,7 +136,7 @@ export const content: DiferenciaOautosContent = {
       {
         variant: 'principal',
         text: 'Hablar por WhatsApp',
-        href: 'https://wa.me/52',
+        href: 'https://wa.me/+52 55 2729 4076',
         blank: true,
       },
     ],

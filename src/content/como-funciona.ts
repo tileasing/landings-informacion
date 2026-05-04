@@ -4,6 +4,7 @@ import type {
   FaqContent,
   BannerSection,
 } from './types';
+import heroPic from '../assets/oautos_hero_pic (1).webp';
 
 export interface Step {
   title: string;
@@ -41,10 +42,14 @@ export const content: ComoFuncionaContent = {
       {
         variant: 'principal',
         text: 'Hablar por WhatsApp',
-        href: 'https://wa.me/52',
+        href: 'https://wa.me/+52 55 2729 4076',
         blank: true,
       },
     ],
+    image: {
+      src: heroPic.src,
+      alt: 'Persona creando su plan en Oautos',
+    },
   },
   steps: {
     title: 'Cómo funciona paso a paso',
@@ -119,7 +124,7 @@ export const content: ComoFuncionaContent = {
     button: {
       variant: 'secondary',
       text: 'Hablar por WhatsApp',
-      href: 'https://wa.me/52',
+      href: 'https://wa.me/+52 55 2729 4076',
       blank: true,
     },
   },
@@ -131,7 +136,7 @@ export const content: ComoFuncionaContent = {
       {
         variant: 'principal',
         text: 'Hablar por WhatsApp',
-        href: 'https://wa.me/52',
+        href: 'https://wa.me/+52 55 2729 4076',
         blank: true,
       },
     ],
