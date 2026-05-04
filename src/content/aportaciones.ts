@@ -30,8 +30,14 @@ export const content: AportacionesContent = {
     buttons: [
       {
         variant: 'principal',
-        text: 'Realizar mi aportación',
+        text: 'Ir a Google Play',
         href: 'https://play.google.com/store/apps/details?id=com.olr.olrapp&hl=es_MX',
+        blank: true,
+      },
+      {
+        variant: 'secondary',
+        text: 'Ir al App Store',
+        href: 'https://apps.apple.com/mx/app/oautos/id6744710634',
         blank: true,
       },
      
@@ -91,8 +97,14 @@ export const content: AportacionesContent = {
     buttons: [
       {
         variant: 'principal',
-        text: 'Realizar mi aportación',
+        text: 'Ir a Google Play',
         href: 'https://play.google.com/store/apps/details?id=com.olr.olrapp&hl=es_MX',
+        blank: true,
+      },
+      {
+        variant: 'secondary',
+        text: 'Ir al App Store',
+        href: 'https://apps.apple.com/mx/app/oautos/id6744710634',
         blank: true,
       },
      
