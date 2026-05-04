@@ -1,0 +1,137 @@
+---
+import type { TimelineSection } from '../../../content/testimoniales';
+
+type Props = TimelineSection;
+
+const { title, subtitle, items } = Astro.props;
+
+const iconPaths: Record<string, string> = {
+  download:
+    'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 4v12m0 0l-4-4m4 4l4-4',
+  coin:
+    'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+  clock: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+  check: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+  key: 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z',
+};
+---
+
+<section
+  aria-labelledby="timeline-title"
+  class="bg-white py-16 lg:py-24"
+>
+  <div class="max-w-[1200px] mx-auto px-5">
+
+    <header class="text-center mb-12 lg:mb-16">
+      <h2
+        id="timeline-title"
+        class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight"
+      >
+        {title}
+      </h2>
+      <div
+        class="mt-5 h-1 w-16 bg-primary mx-auto rounded-full"
+        aria-hidden="true"
+      ></div>
+      {subtitle && (
+        <p class="mt-5 text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          {subtitle}
+        </p>
+      )}
+    </header>
+
+    <!-- Desktop: línea de tiempo horizontal -->
+    <ol
+      class="hidden lg:grid relative grid-cols-5 gap-4 list-none p-0 m-0"
+      style="--dot-size: 72px;"
+    >
+      <!-- Línea conectora -->
+      <div
+        class="absolute left-[10%] right-[10%] top-9 h-0.5 bg-gradient-to-r from-primary/30 via-primary to-primary/30 rounded-full"
+        aria-hidden="true"
+      ></div>
+
+      {items.map((item) => (
+        <li class="relative flex flex-col items-center text-center group px-2">
+          <div
+            class="relative z-10 w-[72px] h-[72px] rounded-full bg-gradient-to-br from-primary to-[#0D5FB3] flex items-center justify-center shadow-lg shadow-primary/30 ring-4 ring-white transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
+            aria-hidden="true"
+          >
+            <svg
+              class="w-9 h-9 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d={iconPaths[item.icon]}
+              />
+            </svg>
+          </div>
+          <span
+            class="mt-5 inline-block bg-[#C9E5F8] text-primary text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full"
+          >
+            {item.month}
+          </span>
+          <h3 class="mt-3 text-base font-bold text-gray-900 leading-tight">
+            {item.title}
+          </h3>
+          {item.description && (
+            <p class="mt-2 text-sm text-gray-600 leading-relaxed max-w-[200px]">
+              {item.description}
+            </p>
+          )}
+        </li>
+      ))}
+    </ol>
+
+    <!-- Mobile/Tablet: línea de tiempo vertical -->
+    <ol class="lg:hidden relative list-none p-0 m-0 space-y-7">
+      <div
+        class="absolute left-9 top-12 bottom-12 w-0.5 bg-gradient-to-b from-primary/30 via-primary to-primary/30 rounded-full"
+        aria-hidden="true"
+      ></div>
+
+      {items.map((item) => (
+        <li class="relative flex items-start gap-5">
+          <div
+            class="relative z-10 flex-shrink-0 w-[72px] h-[72px] rounded-full bg-gradient-to-br from-primary to-[#0D5FB3] flex items-center justify-center shadow-lg shadow-primary/30 ring-4 ring-white"
+            aria-hidden="true"
+          >
+            <svg
+              class="w-8 h-8 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d={iconPaths[item.icon]}
+              />
+            </svg>
+          </div>
+          <div class="flex-1 pt-1">
+            <span
+              class="inline-block bg-[#C9E5F8] text-primary text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full"
+            >
+              {item.month}
+            </span>
+            <h3 class="mt-2 text-base font-bold text-gray-900 leading-tight">
+              {item.title}
+            </h3>
+            {item.description && (
+              <p class="mt-1.5 text-sm text-gray-600 leading-relaxed">
+                {item.description}
+              </p>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

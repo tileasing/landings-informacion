@@ -1,0 +1,100 @@
+---
+import type { FeaturedStorySection } from '../../../content/testimoniales';
+
+type Props = FeaturedStorySection;
+
+const { badge, name, location, quote, paragraph, data, image } = Astro.props;
+---
+
+<section
+  aria-labelledby="featured-story-title"
+  class="bg-[#EDF3FA] py-16 lg:py-24"
+>
+  <div class="max-w-[1100px] mx-auto px-5">
+
+    <div class="grid lg:grid-cols-5 gap-10 lg:gap-14 items-center">
+
+      <!-- Imagen -->
+      <div class="lg:col-span-2">
+        {image?.src ? (
+          <img
+            src={image.src}
+            alt={image.alt}
+            class="w-full h-auto rounded-2xl shadow-xl shadow-primary/20"
+          />
+        ) : (
+          <div
+            class="aspect-[4/5] bg-white/70 rounded-2xl border-2 border-dashed border-primary/30 flex items-center justify-center shadow-xl shadow-primary/10"
+          >
+            <span class="text-primary/40 font-medium text-sm">
+              Imagen pendiente
+            </span>
+          </div>
+        )}
+      </div>
+
+      <!-- Contenido -->
+      <div class="lg:col-span-3">
+        <span
+          class="inline-flex items-center gap-2 bg-primary text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full mb-5"
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="M12 2l2.39 7.36H22l-6.18 4.49L18.21 22 12 17.27 5.79 22l2.39-8.15L2 9.36h7.61z" />
+          </svg>
+          {badge}
+        </span>
+
+        <h2
+          id="featured-story-title"
+          class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight"
+        >
+          {name}
+        </h2>
+        <p class="mt-1 text-base text-gray-600">{location}</p>
+
+        <!-- Cita -->
+        <div class="relative mt-6 mb-6">
+          <span
+            class="absolute -top-6 -left-2 text-7xl lg:text-8xl font-bold text-primary/20 leading-none pointer-events-none select-none"
+            aria-hidden="true"
+          >“</span>
+          <blockquote
+            class="relative text-lg lg:text-xl text-gray-800 font-medium leading-relaxed border-l-4 border-primary pl-5 lg:pl-6"
+          >
+            {quote}
+          </blockquote>
+        </div>
+
+        {paragraph && (
+          <p class="text-base text-gray-600 leading-relaxed mb-7">
+            {paragraph}
+          </p>
+        )}
+
+        <!-- Datos del plan -->
+        <div
+          class="grid grid-cols-2 gap-4 lg:gap-5 bg-white border border-primary/15 rounded-2xl p-5 lg:p-6 shadow-sm"
+        >
+          {data.map((d) => (
+            <div>
+              <p
+                class="text-xs uppercase tracking-wider text-gray-500 font-semibold"
+              >
+                {d.label}
+              </p>
+              <p class="mt-1 text-base lg:text-lg font-bold text-primary leading-tight">
+                {d.value}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
