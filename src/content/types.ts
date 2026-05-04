@@ -1,5 +1,5 @@
 export interface ButtonConfig {
-  variant: 'principal' | 'secondary';
+  variant: 'principal' | 'secondary' | 'tertiary';
   text: string;
   href: string;
   blank?: boolean;

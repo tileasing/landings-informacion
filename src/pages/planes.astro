@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/shared/Hero.astro';
+import Reasons from '../components/landings/planes/Reasons.astro';
+import Adaptable from '../components/landings/planes/Adaptable.astro';
+import Benefits from '../components/landings/planes/Benefits.astro';
+import Faq from '../components/shared/Faq.astro';
+import ClosingCta from '../components/shared/ClosingCta.astro';
+import Footer from '../components/shared/Footer.astro';
+import { content } from '../content/planes';
+---
+
+<Layout title={content.meta.title} description={content.meta.description}>
+	<Hero {...content.hero} />
+	<Reasons {...content.reasons} />
+	<Adaptable {...content.adaptable} />
+	<Benefits {...content.benefits} />
+	<Faq {...content.faq} />
+	{content.closingCta && <ClosingCta {...content.closingCta} />}
+	<Footer {...content.footer} />
+</Layout>

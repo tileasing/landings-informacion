@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/shared/Hero.astro';
+import Comparison from '../components/shared/Comparison.astro';
+import Faq from '../components/shared/Faq.astro';
+import ClosingCta from '../components/shared/ClosingCta.astro';
+import Footer from '../components/shared/Footer.astro';
+import { content } from '../content/aportaciones';
+---
+
+<Layout title={content.meta.title} description={content.meta.description}>
+	<Hero {...content.hero} />
+	<Comparison {...content.comparison} />
+	<Faq {...content.faq} />
+	{content.closingCta && <ClosingCta {...content.closingCta} />}
+	<Footer {...content.footer} />
+</Layout>
