@@ -1,18 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import HomeHero from '../components/HomeHero.astro';
-import About from '../components/About.astro';
-import Plans from '../components/Plans.astro';
-import Benefits from '../components/Benefits.astro';
-import Steps from '../components/Steps.astro';
+import Hero from '../components/shared/Hero.astro';
+import HowItWorks from '../components/landings/como-funciona/HowItWorks.astro';
+import Comparison from '../components/shared/Comparison.astro';
+import CtaBanner from '../components/shared/CtaBanner.astro';
+import Faq from '../components/shared/Faq.astro';
+import ClosingCta from '../components/shared/ClosingCta.astro';
 import Footer from '../components/shared/Footer.astro';
+import { content } from '../content/como-funciona';
 ---
 
-<Layout title="Oautos Inversionistas">
-	<HomeHero />
-	<About />
-	<Plans />
-	<Benefits />
-	<Steps />
-	<Footer />
+<Layout title={content.meta.title} description={content.meta.description}>
+	<Hero {...content.hero} />
+	<HowItWorks title={content.steps.title} steps={content.steps.items} />
+	<Comparison {...content.comparison} />
+	<CtaBanner {...content.banner} />
+	<Faq {...content.faq} />
+	{content.closingCta && <ClosingCta {...content.closingCta} />}
+	<Footer {...content.footer} />
 </Layout>
