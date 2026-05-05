@@ -67,7 +67,7 @@ export const content: PlanesContent = {
       {
         variant: 'secondary',
         text: 'Hablar con un asesor',
-        href: 'https://wa.me/+52 55 2729 4076',
+        href: 'https://wa.link/njqcyr',
         blank: true,
       },
     ],
@@ -175,7 +175,7 @@ export const content: PlanesContent = {
       {
         variant: 'secondary',
         text: 'Hablar por WhatsApp',
-        href: 'https://wa.me/+52 55 2729 4076',
+        href: 'https://wa.link/njqcyr',
         blank: true,
       },
       {

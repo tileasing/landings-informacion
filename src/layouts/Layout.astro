@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import Navbar from "../components/shared/Navbar.astro";
 
 interface Props {
   title?: string;
@@ -24,6 +25,7 @@ const {
     <title>{title}</title>
   </head>
   <body>
+    <Navbar />
     <slot />
 
     <!-- Chatbot Builder AI Floating Bubble Setup -->
@@ -36,7 +38,7 @@ const {
         align-items: center !important;
         justify-content: center !important;
         overflow: hidden !important;
-        margin-bottom: 80px !important;
+        margin-bottom: 20px !important;
       }
 
       .ktt10-btn img {
@@ -83,14 +85,14 @@ const {
       }
     </style>
 
-    <div id="custom-popup">
+    <!-- <div id="custom-popup">
       <span
         id="custom-popup-text"
         style="font-family: Arial; font-weight: normal; font-style: normal;"
         >Click Here for a Discount 💸</span
       >
       <button id="custom-popup-close">&times;</button>
-    </div>
+    </div> -->
 
     <script is:inline src="https://app.chatgptbuilder.io/webchat/plugin.js?v=5"
     ></script>

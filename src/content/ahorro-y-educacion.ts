@@ -47,7 +47,7 @@ export const content: AhorroEducacionContent = {
       {
         variant: 'principal',
         text: 'Hablar por WhatsApp',
-        href: 'https://wa.me/+52 55 2729 4076 ',
+        href: 'https://wa.link/njqcyr',
         blank: true,
       },
     ],

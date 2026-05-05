@@ -42,7 +42,7 @@ export const content: DiferenciaOautosContent = {
       {
         variant: 'principal',
         text: 'Hablar por WhatsApp',
-        href: 'https://wa.me/+52 55 2729 4076',
+        href: 'https://wa.link/njqcyr',
         blank: true,
       },
     ],
@@ -104,7 +104,7 @@ export const content: DiferenciaOautosContent = {
     button: {
       variant: 'secondary',
       text: 'Hablar por WhatsApp',
-      href: 'https://wa.me/+52 55 2729 4076',
+      href: 'https://wa.link/njqcyr',
       blank: true,
     },
   },
@@ -136,7 +136,7 @@ export const content: DiferenciaOautosContent = {
       {
         variant: 'principal',
         text: 'Hablar por WhatsApp',
-        href: 'https://wa.me/+52 55 2729 4076',
+        href: 'https://wa.link/njqcyr',
         blank: true,
       },
     ],

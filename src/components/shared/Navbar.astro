@@ -1,0 +1,27 @@
+---
+import logoOautos from "../../assets/logo Oautos.png";
+
+interface Props {
+  logo?: string;
+  logoAlt?: string;
+  href?: string;
+}
+
+const { logo = logoOautos.src, logoAlt = "Oautos", href = "/" } = Astro.props;
+---
+
+<header
+  class="top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-gray-200/70"
+>
+  <div class="max-w-[1200px] mx-auto px-5 py-2">
+    <div class="flex items-left h-14 lg:h-16">
+      <a
+        href={href}
+        class="inline-flex items-center transition-opacity hover:opacity-80"
+        aria-label={logoAlt}
+      >
+        <img src={logo} alt={logoAlt} class="h-10 lg:h-12 w-auto" />
+      </a>
+    </div>
+  </div>
+</header>
