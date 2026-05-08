@@ -1,0 +1,406 @@
+---
+import type { SurveyQuestion } from "../../../content/encuesta";
+
+interface Props {
+  intro: {
+    badge?: string;
+    title: string;
+    subtitle: string;
+  };
+  questions: SurveyQuestion[];
+  submitEndpoint: string;
+  thankYou: {
+    title: string;
+    subtitle: string;
+    paragraph?: string;
+  };
+}
+
+const { intro, questions, submitEndpoint, thankYou } = Astro.props;
+const totalSteps = questions.length;
+---
+
+<section
+  class="bg-[#EDF3FA] min-h-[calc(100dvh-4rem)] flex items-center py-10 lg:py-16"
+>
+  <div class="max-w-[760px] w-full mx-auto px-5">
+    <!-- Intro -->
+    <div id="survey-intro" class="text-center mb-8">
+      {
+        intro.badge && (
+          <span class="inline-block bg-[#C9E5F8] text-primary font-semibold text-xs lg:text-sm px-5 lg:px-6 py-2 rounded-full mb-4">
+            {intro.badge}
+          </span>
+        )
+      }
+      <h1 class="text-3xl md:text-4xl font-bold mb-3 leading-tight">
+        {intro.title}
+      </h1>
+      <p
+        class="text-base lg:text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto"
+      >
+        {intro.subtitle}
+      </p>
+    </div>
+
+    <!-- Wizard card -->
+    <form
+      id="survey-form"
+      data-endpoint={submitEndpoint}
+      class="bg-white rounded-2xl shadow-lg overflow-hidden"
+      novalidate
+    >
+      <!-- Progress -->
+      <div class="px-6 lg:px-10 pt-6">
+        <div class="flex items-center justify-between mb-2">
+          <span
+            id="survey-counter"
+            class="text-xs font-semibold text-primary uppercase tracking-wider"
+          >
+            Pregunta 1 de {totalSteps}
+          </span>
+          <span id="survey-percent" class="text-xs font-semibold text-gray-500">
+            {Math.round((1 / totalSteps) * 100)}%
+          </span>
+        </div>
+        <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+          <div
+            id="survey-progress"
+            class="h-full bg-primary rounded-full transition-all duration-300 ease-out"
+            style={`width: ${(1 / totalSteps) * 100}%`}
+          >
+          </div>
+        </div>
+      </div>
+
+      <!-- Slides -->
+      <div class="px-6 lg:px-10 py-8 lg:py-10">
+        {
+          questions.map((q, index) => (
+            <div
+              class="survey-slide"
+              data-slide-index={index}
+              data-question-id={q.id}
+              hidden={index !== 0}
+            >
+              <div class="mb-6">
+                <span class="inline-block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
+                  {q.step} · {q.category}
+                </span>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-900 leading-snug">
+                  {q.question}
+                </h2>
+              </div>
+
+              <div class="space-y-3">
+                {q.options.map((opt) => (
+                  <label
+                    class="survey-option group flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                    data-has-other={opt.hasOtherInput ? "true" : "false"}
+                  >
+                    <input
+                      type="radio"
+                      name={q.id}
+                      value={opt.value}
+                      class="peer sr-only"
+                      data-other-flag={opt.hasOtherInput ? "true" : "false"}
+                    />
+                    <span
+                      class="w-5 h-5 rounded-full border-2 border-gray-300 group-hover:border-primary peer-checked:border-primary peer-checked:bg-primary flex-shrink-0 flex items-center justify-center transition-colors"
+                      aria-hidden="true"
+                    >
+                      <span class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity" />
+                    </span>
+                    <span class="text-base text-gray-800 peer-checked:text-primary peer-checked:font-semibold transition-colors">
+                      {opt.label}
+                    </span>
+                  </label>
+                ))}
+
+                {q.options.some((o) => o.hasOtherInput) && (
+                  <div
+                    class="survey-other-wrapper hidden mt-2 ml-2 pl-6 border-l-2 border-primary/30"
+                    data-other-for={q.id}
+                  >
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Cuéntanos cuál:
+                    </label>
+                    <input
+                      type="text"
+                      name={`${q.id}_otro`}
+                      placeholder="Escribe tu respuesta..."
+                      class="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary focus:outline-none transition-colors"
+                      maxlength="200"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Footer controls -->
+      <div
+        class="border-t border-gray-100 px-6 lg:px-10 py-4 flex items-center justify-between gap-4 bg-gray-50/50"
+      >
+        <button
+          type="button"
+          id="survey-prev"
+          class="px-5 py-2.5 rounded-full text-base font-medium text-gray-600 hover:text-primary hover:bg-primary/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-600"
+          disabled
+        >
+          ← Anterior
+        </button>
+        <button
+          type="button"
+          id="survey-next"
+          class="inline-block px-8 py-3 rounded-full text-base font-medium transition-all duration-300 border-2 bg-[#117CD9] text-white border-[#117CD9] hover:bg-[#0D5FB3] hover:border-[#0D5FB3] disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed disabled:hover:bg-gray-300"
+          disabled
+        >
+          Continuar →
+        </button>
+        <button
+          type="submit"
+          id="survey-submit"
+          class="hidden px-8 py-3 rounded-full text-base font-medium transition-all duration-300 border-2 bg-[#117CD9] text-white border-[#117CD9] hover:bg-[#0D5FB3] hover:border-[#0D5FB3] disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed"
+          disabled
+        >
+          Enviar respuestas
+        </button>
+      </div>
+    </form>
+
+    <!-- Thank-you screen -->
+    <div
+      id="survey-thanks"
+      class="hidden bg-white rounded-2xl shadow-lg p-8 lg:p-12 text-center"
+    >
+      <div
+        class="w-16 h-16 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center"
+      >
+        <svg
+          class="w-8 h-8 text-primary"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+        {thankYou.title}
+      </h2>
+      <p class="text-lg text-gray-700 mb-3">{thankYou.subtitle}</p>
+      {
+        thankYou.paragraph && (
+          <p class="text-base text-gray-500 max-w-md mx-auto leading-relaxed">
+            {thankYou.paragraph}
+          </p>
+        )
+      }
+    </div>
+
+    <!-- Error message -->
+    <div
+      id="survey-error"
+      class="hidden mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm text-center"
+    >
+      Hubo un problema al enviar tus respuestas. Inténtalo de nuevo en un
+      momento.
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const form = document.getElementById("survey-form");
+    if (!form) return;
+
+    const slides = Array.from(form.querySelectorAll(".survey-slide"));
+    const totalSteps = slides.length;
+    const counter = document.getElementById("survey-counter");
+    const percent = document.getElementById("survey-percent");
+    const progress = document.getElementById("survey-progress");
+    const prevBtn = document.getElementById("survey-prev");
+    const nextBtn = document.getElementById("survey-next");
+    const submitBtn = document.getElementById("survey-submit");
+    const thanksEl = document.getElementById("survey-thanks");
+    const errorEl = document.getElementById("survey-error");
+    const introEl = document.getElementById("survey-intro");
+    const endpoint = form.getAttribute("data-endpoint") || "/api/encuesta";
+
+    let currentIndex = 0;
+
+    function getCurrentSlide() {
+      return slides[currentIndex];
+    }
+
+    function getCurrentValue() {
+      const slide = getCurrentSlide();
+      const checked = slide.querySelector("input[type=radio]:checked");
+      return checked ? checked.value : null;
+    }
+
+    function isOtherSelected(slide) {
+      const checked = slide.querySelector("input[type=radio]:checked");
+      return checked && checked.getAttribute("data-other-flag") === "true";
+    }
+
+    function getOtherValue(slide) {
+      const wrapper = slide.querySelector(".survey-other-wrapper");
+      if (!wrapper) return "";
+      const input = wrapper.querySelector("input[type=text]");
+      return input ? input.value.trim() : "";
+    }
+
+    function refreshControls() {
+      const slide = getCurrentSlide();
+      const value = getCurrentValue();
+      const otherSelected = isOtherSelected(slide);
+      const otherFilled = !otherSelected || getOtherValue(slide).length > 0;
+      const canAdvance = !!value && otherFilled;
+
+      const isLast = currentIndex === totalSteps - 1;
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.classList.toggle("hidden", isLast);
+      submitBtn.classList.toggle("hidden", !isLast);
+      nextBtn.disabled = !canAdvance;
+      submitBtn.disabled = !canAdvance;
+
+      counter.textContent = `Pregunta ${currentIndex + 1} de ${totalSteps}`;
+      const pct = Math.round(((currentIndex + 1) / totalSteps) * 100);
+      percent.textContent = `${pct}%`;
+      progress.style.width = `${pct}%`;
+    }
+
+    function showSlide(index) {
+      slides.forEach((s, i) => {
+        if (i === index) {
+          s.removeAttribute("hidden");
+        } else {
+          s.setAttribute("hidden", "");
+        }
+      });
+      currentIndex = index;
+      refreshControls();
+    }
+
+    // Wire up option change → show "Otro" input + refresh controls
+    slides.forEach((slide) => {
+      const radios = slide.querySelectorAll("input[type=radio]");
+      const otherWrapper = slide.querySelector(".survey-other-wrapper");
+      const otherInput = otherWrapper
+        ? otherWrapper.querySelector("input[type=text]")
+        : null;
+
+      radios.forEach((radio) => {
+        radio.addEventListener("change", () => {
+          // Visual selection: paint the chosen label
+          const labels = slide.querySelectorAll(".survey-option");
+          labels.forEach((l) => {
+            const input = l.querySelector("input[type=radio]");
+            if (input && input.checked) {
+              l.classList.add("border-primary", "bg-primary/5");
+              l.classList.remove("border-gray-200");
+            } else {
+              l.classList.remove("border-primary", "bg-primary/5");
+              l.classList.add("border-gray-200");
+            }
+          });
+
+          if (otherWrapper) {
+            const showOther =
+              radio.checked && radio.getAttribute("data-other-flag") === "true";
+            if (showOther) {
+              otherWrapper.classList.remove("hidden");
+              if (otherInput) {
+                setTimeout(() => otherInput.focus(), 50);
+              }
+            } else {
+              otherWrapper.classList.add("hidden");
+              if (otherInput) otherInput.value = "";
+            }
+          }
+          refreshControls();
+        });
+      });
+
+      if (otherInput) {
+        otherInput.addEventListener("input", refreshControls);
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < totalSteps - 1) {
+        showSlide(currentIndex + 1);
+        if (introEl) {
+          introEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (currentIndex > 0) {
+        showSlide(currentIndex - 1);
+        if (introEl) {
+          introEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Enviando...";
+      errorEl.classList.add("hidden");
+
+      // Collect answers
+      const answers = {};
+      slides.forEach((slide) => {
+        const qid = slide.getAttribute("data-question-id");
+        const checked = slide.querySelector("input[type=radio]:checked");
+        if (!checked) return;
+        const entry = { value: checked.value };
+        if (checked.getAttribute("data-other-flag") === "true") {
+          entry.otherText = getOtherValue(slide);
+        }
+        answers[qid] = entry;
+      });
+
+      const payload = {
+        submittedAt: new Date().toISOString(),
+        answers,
+      };
+
+      try {
+        // TODO(backend): replace with real endpoint integration.
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error("Network error");
+        showThanks();
+      } catch (err) {
+        // For now, still show thanks if endpoint not wired (dev mode).
+        // The backend dev will wire `submitEndpoint`.
+        console.error("Survey submit error:", err, "payload:", payload);
+        showThanks();
+      }
+    });
+
+    function showThanks() {
+      form.classList.add("hidden");
+      if (introEl) introEl.classList.add("hidden");
+      thanksEl.classList.remove("hidden");
+      thanksEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    refreshControls();
+  })();
+</script>

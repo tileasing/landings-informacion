@@ -1,0 +1,14 @@
+---
+import SurveyLayout from "../layouts/SurveyLayout.astro";
+import Survey from "../components/landings/encuesta/Survey.astro";
+import { content } from "../content/encuesta";
+---
+
+<SurveyLayout title={content.meta.title} description={content.meta.description}>
+  <Survey
+    intro={content.intro}
+    questions={content.questions}
+    submitEndpoint={content.submitEndpoint}
+    thankYou={content.thankYou}
+  />
+</SurveyLayout>
