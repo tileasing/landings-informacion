@@ -1,0 +1,119 @@
+---
+import Button from "../../shared/Button.astro";
+import type { ButtonConfig } from "../../../content/types";
+
+interface Props {
+  title: string;
+  bullets: string[];
+  cta: ButtonConfig;
+  image?: {
+    src: string;
+    alt: string;
+  };
+}
+
+const { title, bullets, cta, image } = Astro.props;
+---
+
+<section
+  id="copa-final-cta"
+  aria-labelledby="copa-final-cta-title"
+  class="relative overflow-hidden bg-[#117CD9] py-20 lg:py-28"
+>
+  <!-- Decoración: blobs suaves -->
+  <div
+    class="pointer-events-none absolute -top-32 -right-24 w-[420px] h-[420px] bg-white/10 rounded-full blur-3xl"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute -bottom-32 -left-24 w-[420px] h-[420px] bg-[#E8257E]/30 rounded-full blur-3xl"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="relative max-w-[1200px] mx-auto px-5">
+    <div
+      class={image
+        ? "grid lg:grid-cols-[1.2fr_1fr] gap-10 lg:gap-16 items-center"
+        : ""}
+    >
+      <!-- Texto + CTA -->
+      <div
+        class={image
+          ? "text-center lg:text-left text-white"
+          : "text-center max-w-2xl mx-auto text-white"}
+      >
+        <h2
+          id="copa-final-cta-title"
+          class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-8 drop-shadow-sm"
+        >
+          {title}
+        </h2>
+
+        <ul
+          class:list={[
+            "space-y-3 mb-10 list-none p-0",
+            image
+              ? "inline-block text-left lg:block"
+              : "inline-block text-left",
+          ]}
+        >
+          {
+            bullets.map((bullet) => (
+              <li class="flex items-start gap-3">
+                <span
+                  class="flex-shrink-0 mt-1 w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center"
+                  aria-hidden="true"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-3.5 h-3.5"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                </span>
+                <span class="text-base lg:text-lg text-white leading-relaxed">
+                  {bullet}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div
+          class:list={[
+            "flex flex-col sm:flex-row gap-4",
+            image ? "justify-center lg:justify-start" : "justify-center",
+          ]}
+        >
+          <Button
+            variant={cta.variant}
+            text={cta.text}
+            href={cta.href}
+            blank={cta.blank}
+          />
+        </div>
+      </div>
+
+      <!-- Imagen -->
+      {
+        image && (
+          <div>
+            <img
+              src={image.src}
+              alt={image.alt}
+              class="w-full h-auto rounded-2xl shadow-2xl shadow-black/20 max-w-md mx-auto"
+            />
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>

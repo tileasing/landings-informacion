@@ -1,0 +1,218 @@
+---
+interface PrizeRank {
+  rankNumber?: number;
+  position: string;
+  prize: string;
+}
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  rankings: PrizeRank[];
+  specialPrizesTitle: string;
+  specialPrizes: string[];
+  distributionTitle: string;
+  distributionItems: string[];
+  closing: string;
+  image?: {
+    src: string;
+    alt: string;
+  };
+}
+
+const {
+  eyebrow,
+  title,
+  rankings,
+  specialPrizesTitle,
+  specialPrizes,
+  distributionTitle,
+  distributionItems,
+  closing,
+  image,
+} = Astro.props;
+
+// Estilos para top 3 (badge de posición)
+const topRankBadge = [
+  "bg-gradient-to-br from-[#117CD9] to-[#E8257E] text-white shadow-md",
+  "bg-[#117CD9] text-white shadow-sm",
+  "bg-[#C9E5F8] text-primary",
+];
+---
+
+<section id="copa-prizes" class="relative py-20 lg:py-28 bg-white">
+  <div class="max-w-[1200px] mx-auto px-5">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-12 lg:mb-16">
+      {
+        eyebrow && (
+          <span class="inline-block bg-[#FCE3EE] text-[#E8257E] font-semibold text-xs lg:text-sm px-5 py-2 rounded-full mb-5">
+            {eyebrow}
+          </span>
+        )
+      }
+      <h2
+        class="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight"
+      >
+        {title}
+      </h2>
+    </div>
+
+    <!-- 2 columnas: imagen | contenido -->
+    <div
+      class="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-14 items-start"
+    >
+      <!-- Imagen -->
+      <div class="order-first lg:sticky lg:top-8">
+        {
+          image ? (
+            <img
+              src={image.src}
+              alt={image.alt}
+              class="w-full h-auto rounded-2xl shadow-md max-w-md mx-auto"
+            />
+          ) : (
+            <div class="aspect-[4/5] max-w-sm mx-auto bg-gradient-to-br from-[#F5F8FC] to-white rounded-3xl border-2 border-dashed border-primary/30 flex items-center justify-center shadow-sm">
+              <span class="text-primary/40 font-medium text-sm text-center px-6">
+                Imagen pendiente
+              </span>
+            </div>
+          )
+        }
+      </div>
+
+      <!-- Contenido -->
+      <div>
+        <!-- Tabla de rankings -->
+        <div
+          class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+        >
+          <div
+            class="grid grid-cols-[1fr_auto] gap-4 px-5 lg:px-6 py-3 bg-gray-50 border-b border-gray-100"
+          >
+            <span
+              class="text-xs font-bold tracking-widest uppercase text-gray-500"
+              >Lugar</span
+            >
+            <span
+              class="text-xs font-bold tracking-widest uppercase text-gray-500"
+              >Premio</span
+            >
+          </div>
+
+          <ol class="list-none p-0 m-0 divide-y divide-gray-100">
+            {
+              rankings.map((rank, i) => {
+                const isTop = typeof rank.rankNumber === "number";
+                return (
+                  <li class="grid grid-cols-[1fr_auto] items-center gap-4 px-5 lg:px-6 py-4">
+                    <div class="flex items-center gap-3 min-w-0">
+                      {isTop ? (
+                        <span
+                          class={`flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full text-base font-extrabold ${topRankBadge[i]}`}
+                          aria-hidden="true"
+                        >
+                          {rank.rankNumber}
+                        </span>
+                      ) : (
+                        <span
+                          class="flex-shrink-0 w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center"
+                          aria-hidden="true"
+                        >
+                          <span class="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                        </span>
+                      )}
+                      <span class="font-semibold text-gray-900 text-sm lg:text-base truncate">
+                        {rank.position}
+                      </span>
+                    </div>
+                    <span
+                      class={`text-right text-sm lg:text-base ${
+                        i === 0
+                          ? "font-bold text-gray-900"
+                          : "font-medium text-gray-700"
+                      }`}
+                    >
+                      {rank.prize}
+                    </span>
+                  </li>
+                );
+              })
+            }
+          </ol>
+        </div>
+
+        <!-- Premios especiales -->
+        <div class="mt-10">
+          <h3
+            class="text-sm font-bold tracking-widest uppercase text-[#E8257E] mb-4"
+          >
+            {specialPrizesTitle}
+          </h3>
+          <ul class="flex flex-wrap gap-2.5 list-none p-0 m-0">
+            {
+              specialPrizes.map((item) => (
+                <li class="inline-flex items-center gap-2 px-4 py-2 bg-[#FCE3EE] text-[#E8257E] text-sm font-semibold rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="w-3.5 h-3.5"
+                  >
+                    <path d="M12 2l2.39 4.84L20 8l-4 3.89.94 5.5L12 14.77 7.06 17.4 8 11.89 4 8l5.61-1.16L12 2z" />
+                  </svg>
+                  {item}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <!-- Cómo se entregan -->
+        <div class="mt-10">
+          <h3
+            class="text-sm font-bold tracking-widest uppercase text-primary mb-4"
+          >
+            {distributionTitle}
+          </h3>
+          <ul class="grid sm:grid-cols-2 gap-2 list-none p-0 m-0">
+            {
+              distributionItems.map((item) => (
+                <li class="flex items-center gap-3 px-4 py-3 bg-[#EDF3FA] rounded-xl">
+                  <span
+                    class="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="w-3 h-3"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="m12 5 7 7-7 7" />
+                    </svg>
+                  </span>
+                  <span class="text-sm lg:text-base text-gray-800 font-medium leading-snug">
+                    {item}
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <!-- Cierre -->
+        <p
+          class="mt-8 text-base lg:text-lg text-gray-900 font-semibold leading-relaxed border-l-4 border-[#E8257E] pl-4"
+        >
+          {closing}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

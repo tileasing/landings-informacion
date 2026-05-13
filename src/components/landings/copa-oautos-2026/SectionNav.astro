@@ -1,0 +1,136 @@
+---
+import logoOautos from "../../../assets/logo Oautos.png";
+
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  items: NavItem[];
+  logo?: string;
+  logoAlt?: string;
+  logoHref?: string;
+}
+
+const {
+  items,
+  logo = logoOautos.src,
+  logoAlt = "Oautos",
+  logoHref = "/",
+} = Astro.props;
+---
+
+<nav
+  aria-label="Navegación de la Copa Oautos"
+  class="copa-section-nav sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm content-center"
+>
+  <div class="max-w-[1200px] mx-auto px-3 lg:px-5">
+    <div class="flex items-center justify-between gap-4">
+      <a
+        href={logoHref}
+        aria-label={logoAlt}
+        class="flex-shrink-0 inline-flex items-center py-2 transition-opacity hover:opacity-80"
+      >
+        <img src={logo} alt={logoAlt} class="h-8 lg:h-9 w-auto" />
+      </a>
+
+      <ul
+        class="copa-nav-list flex items-center gap-1 lg:gap-2 overflow-x-auto py-3 list-none m-0 whitespace-nowrap min-w-0"
+      >
+        {
+          items.map((item) => (
+            <li class="flex-shrink-0">
+              <a
+                href={item.href}
+                data-target={item.href.replace("#", "")}
+                class="copa-nav-link relative inline-flex items-center px-3 py-2 text-sm lg:text-[15px] font-medium text-gray-700 hover:text-primary rounded-md transition-colors"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<style is:global>
+  html {
+    scroll-padding-top: 64px;
+    scroll-behavior: smooth;
+  }
+  .copa-nav-list::-webkit-scrollbar {
+    display: none;
+  }
+  .copa-nav-list {
+    scrollbar-width: none;
+  }
+  .copa-nav-link.is-active {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+  .copa-nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: -1px;
+    height: 2px;
+    background-color: var(--color-primary);
+    border-radius: 2px;
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const links = Array.from(document.querySelectorAll(".copa-nav-link"));
+    if (!links.length) return;
+
+    const linkMap = new Map();
+    links.forEach((link) => {
+      const target = link.getAttribute("data-target");
+      if (target) linkMap.set(target, link);
+    });
+
+    const sections = [];
+    linkMap.forEach((_, id) => {
+      const el = document.getElementById(id);
+      if (el) sections.push(el);
+    });
+    if (!sections.length) return;
+
+    let currentActiveId = null;
+    const setActive = (id) => {
+      if (id === currentActiveId) return;
+      currentActiveId = id;
+      links.forEach((l) => l.classList.remove("is-active"));
+      const link = linkMap.get(id);
+      if (link) {
+        link.classList.add("is-active");
+        // Mantener el link activo visible en el scroll horizontal del nav
+        link.scrollIntoView({
+          block: "nearest",
+          inline: "center",
+          behavior: "smooth",
+        });
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Elegir la sección visible más cercana al inicio del viewport
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length) {
+          setActive(visible[0].target.id);
+        }
+      },
+      { rootMargin: "-40% 0px -50% 0px", threshold: 0 },
+    );
+
+    sections.forEach((s) => observer.observe(s));
+  })();
+</script>
