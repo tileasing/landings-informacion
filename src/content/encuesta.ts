@@ -71,7 +71,10 @@ export const content: SurveyContent = {
           value: "indeciso",
           label: "Aún indeciso, pero sí me gustaría tener mi auto",
         },
-        { value: "para_familia", label: "Lo quiero para mis hijos / familiares" },
+        {
+          value: "para_familia",
+          label: "Lo quiero para mis hijos / familiares",
+        },
       ],
     },
     {
@@ -83,7 +86,10 @@ export const content: SurveyContent = {
         { value: "no_necesito", label: "No lo necesito ahora" },
         { value: "falta_dinero", label: "Falta de dinero en este momento" },
         { value: "acceso_complicado", label: "Acceso complicado a obtenerlo" },
-        { value: "confianza_instituciones", label: "Confianza en instituciones" },
+        {
+          value: "confianza_instituciones",
+          label: "Confianza en instituciones",
+        },
         { value: "dudas_opcion", label: "Dudas sobre la mejor opción" },
       ],
     },
@@ -160,7 +166,7 @@ export const content: SurveyContent = {
       ],
     },
   ],
-  submitEndpoint: "/api/encuesta",
+  submitEndpoint: "https://api.oautos.mx/api/encuesta/",
   thankYou: {
     title: "¡Gracias por compartir tu experiencia!",
     subtitle: "Tu respuesta se envió correctamente.",
