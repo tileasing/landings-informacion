@@ -5,11 +5,13 @@ import Navbar from "../components/shared/Navbar.astro";
 interface Props {
   title?: string;
   description?: string;
+  showNavbar?: boolean;
 }
 
 const {
   title = "Oautos Inversionistas",
   description = "Plataforma de inversión en pagarés digitales respaldados por activos automotrices",
+  showNavbar = true,
 } = Astro.props;
 ---
 
@@ -25,7 +27,7 @@ const {
     <title>{title}</title>
   </head>
   <body>
-    <Navbar />
+    {showNavbar && <Navbar />}
     <slot />
 
     <!-- Chatbot Builder AI Floating Bubble Setup -->

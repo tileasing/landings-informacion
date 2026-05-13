@@ -1,0 +1,156 @@
+---
+interface Tier {
+  badge: string;
+  audience: string;
+  benefits: string[];
+}
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  tiers: Tier[];
+  closing: string[];
+  image?: {
+    src: string;
+    alt: string;
+  };
+}
+
+const { eyebrow, title, tiers, closing, image } = Astro.props;
+
+const tierStyles = [
+  {
+    badge: "bg-[#C9E5F8] text-primary",
+    border: "border-gray-100",
+    check: "bg-[#C9E5F8] text-primary",
+    ring: "",
+  },
+  {
+    badge: "bg-[#117CD9] text-white",
+    border: "border-primary/30",
+    check: "bg-[#117CD9] text-white",
+    ring: "",
+  },
+  {
+    badge: "bg-gradient-to-r from-[#117CD9] to-[#E8257E] text-white shadow-sm",
+    border: "border-[#E8257E]/40",
+    check: "bg-gradient-to-br from-[#117CD9] to-[#E8257E] text-white",
+    ring: "ring-2 ring-[#E8257E]/15",
+  },
+];
+---
+
+<section
+  id="copa-tiers"
+  class="relative py-20 lg:py-28 bg-gradient-to-b from-[#F5F8FC] to-white"
+>
+  <div class="max-w-[1200px] mx-auto px-5">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-12 lg:mb-16">
+      {
+        eyebrow && (
+          <span class="inline-block bg-[#C9E5F8] text-primary font-semibold text-xs lg:text-sm px-5 py-2 rounded-full mb-5">
+            {eyebrow}
+          </span>
+        )
+      }
+      <h2
+        class="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight"
+      >
+        {title}
+      </h2>
+    </div>
+
+    <!-- 2 columnas: imagen | tiers -->
+    <div
+      class="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-14 items-center mb-14 lg:mb-20"
+    >
+      <!-- Imagen -->
+      <div>
+        {
+          image ? (
+            <img
+              src={image.src}
+              alt={image.alt}
+              class="w-full h-auto rounded-2xl shadow-md max-w-md mx-auto"
+            />
+          ) : (
+            <div class="aspect-[4/5] max-w-sm mx-auto bg-white rounded-3xl border-2 border-dashed border-primary/30 flex items-center justify-center shadow-sm">
+              <span class="text-primary/40 font-medium text-sm text-center px-6">
+                Imagen pendiente
+              </span>
+            </div>
+          )
+        }
+      </div>
+
+      <!-- Tiers stack -->
+      <div class="space-y-5">
+        {
+          tiers.map((tier, i) => (
+            <article
+              class={`relative bg-white rounded-2xl border ${tierStyles[i].border} ${tierStyles[i].ring} p-6 lg:p-7 shadow-sm hover:shadow-lg transition-shadow`}
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <span
+                  class={`inline-block ${tierStyles[i].badge} text-xs lg:text-sm font-bold tracking-widest uppercase px-3 py-1.5 rounded-full`}
+                >
+                  {tier.badge}
+                </span>
+              </div>
+
+              <p class="text-base lg:text-lg font-semibold text-gray-900 mb-4">
+                {tier.audience}
+              </p>
+
+              <ul class="space-y-2 list-none p-0">
+                {tier.benefits.map((benefit) => (
+                  <li class="flex items-start gap-3">
+                    <span
+                      class={`flex-shrink-0 mt-1 w-5 h-5 rounded-full ${tierStyles[i].check} flex items-center justify-center`}
+                      aria-hidden="true"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-3 h-3"
+                      >
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                    </span>
+                    <span class="text-sm lg:text-base text-gray-700 leading-relaxed">
+                      {benefit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Cierre -->
+    <div class="text-center max-w-2xl mx-auto space-y-2">
+      {
+        closing.map((paragraph, i) => {
+          const isLast = i === closing.length - 1;
+          return isLast ? (
+            <p class="text-base lg:text-lg text-gray-700 leading-relaxed pt-2">
+              {paragraph}
+            </p>
+          ) : (
+            <p class="text-xl lg:text-2xl font-bold text-gray-900 leading-tight">
+              {paragraph}
+            </p>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

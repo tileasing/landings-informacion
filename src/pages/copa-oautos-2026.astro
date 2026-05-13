@@ -1,0 +1,29 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/landings/copa-oautos-2026/Hero.astro';
+import Rewards from '../components/landings/copa-oautos-2026/Rewards.astro';
+import About from '../components/landings/copa-oautos-2026/About.astro';
+import CtaBanner from '../components/shared/CtaBanner.astro';
+import HowItWorks from '../components/landings/como-funciona/HowItWorks.astro';
+import Tiers from '../components/landings/copa-oautos-2026/Tiers.astro';
+import Footer from '../components/shared/Footer.astro';
+import { content } from '../content/copa-oautos-2026';
+---
+
+<Layout
+  title={content.meta.title}
+  description={content.meta.description}
+  showNavbar={false}
+>
+  <main>
+    <Hero {...content.hero} />
+    <Rewards {...content.rewards} />
+    <About {...content.about} />
+    <CtaBanner {...content.bannerCta} />
+    <HowItWorks title={content.howItWorks.title} steps={content.howItWorks.items} />
+    <Tiers {...content.tiers} />
+    {/* Las siguientes secciones se irán agregando aquí */}
+  </main>
+
+  <Footer {...content.footer} />
+</Layout>

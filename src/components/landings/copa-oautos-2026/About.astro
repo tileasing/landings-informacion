@@ -1,0 +1,194 @@
+---
+type BenefitIcon =
+  | "check-badge"
+  | "award"
+  | "calendar"
+  | "target"
+  | "phone"
+  | "share";
+
+interface BenefitItem {
+  icon: BenefitIcon;
+  label: string;
+}
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  intro: string;
+  activities: string[];
+  closing: string[];
+  benefitsEyebrow?: string;
+  benefitsTitle: string;
+  benefits: BenefitItem[];
+}
+
+const {
+  eyebrow,
+  title,
+  intro,
+  activities,
+  closing,
+  benefitsEyebrow,
+  benefitsTitle,
+  benefits,
+} = Astro.props;
+
+const benefitIcons: Record<BenefitIcon, string> = {
+  "check-badge": `
+    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+    <path d="m9 12 2 2 4-4" />
+  `,
+  award: `
+    <path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526" />
+    <circle cx="12" cy="8" r="6" />
+  `,
+  calendar: `
+    <rect width="18" height="18" x="3" y="4" rx="2" />
+    <path d="M16 2v4" />
+    <path d="M3 10h18" />
+    <path d="M8 2v4" />
+  `,
+  target: `
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="6" />
+    <circle cx="12" cy="12" r="2" />
+  `,
+  phone: `
+    <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+    <path d="M12 18h.01" />
+  `,
+  share: `
+    <circle cx="18" cy="5" r="3" />
+    <circle cx="6" cy="12" r="3" />
+    <circle cx="18" cy="19" r="3" />
+    <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
+    <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
+  `,
+};
+
+const benefitAccent = ["bg-[#117CD9]", "bg-[#E8257E]"];
+---
+
+<section id="copa-about" class="relative py-20 lg:py-28 bg-white">
+  <div class="max-w-[1100px] mx-auto px-5">
+    <!-- Cabecera -->
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      {
+        eyebrow && (
+          <span class="inline-block bg-[#FCE3EE] text-[#E8257E] font-semibold text-xs lg:text-sm px-5 py-2 rounded-full mb-5">
+            {eyebrow}
+          </span>
+        )
+      }
+
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-5">
+        {title}
+      </h2>
+
+      <p class="text-base lg:text-lg text-gray-700 leading-relaxed">
+        {intro}
+      </p>
+    </div>
+
+    <!-- Tarjeta con las actividades -->
+    <div
+      class="relative max-w-2xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-xl p-8 lg:p-10"
+    >
+      <ul class="space-y-4 list-none p-0">
+        {
+          activities.map((activity) => (
+            <li class="flex items-start gap-4">
+              <span
+                class="flex-shrink-0 mt-0.5 w-7 h-7 rounded-full bg-[#117CD9] text-white flex items-center justify-center shadow-sm"
+                aria-hidden="true"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              </span>
+              <span class="text-base lg:text-lg text-gray-800 leading-relaxed">
+                {activity}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <!-- Cierre -->
+    <div class="text-center max-w-2xl mx-auto mt-10 space-y-3">
+      {
+        closing.map((paragraph, i) => (
+          <p
+            class={
+              i === closing.length - 1
+                ? "text-base lg:text-lg text-gray-900 font-semibold leading-relaxed"
+                : "text-base lg:text-lg text-gray-700 leading-relaxed"
+            }
+          >
+            {paragraph}
+          </p>
+        ))
+      }
+    </div>
+
+    <!-- Separador -->
+    <div class="my-16 lg:my-20 flex items-center justify-center gap-3">
+      <span class="h-px w-12 bg-gray-200"></span>
+      <span class="h-2 w-2 rounded-full bg-[#E8257E]"></span>
+      <span class="h-px w-12 bg-gray-200"></span>
+    </div>
+
+    <!-- Beneficios -->
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      {
+        benefitsEyebrow && (
+          <span class="inline-block bg-[#C9E5F8] text-primary font-semibold text-xs lg:text-sm px-5 py-2 rounded-full mb-4">
+            {benefitsEyebrow}
+          </span>
+        )
+      }
+      <h3 class="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight">
+        {benefitsTitle}
+      </h3>
+    </div>
+
+    <ul class="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 list-none p-0">
+      {
+        benefits.map((benefit, i) => (
+          <li class="group flex flex-col items-center text-center bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all p-5 lg:p-6">
+            <span
+              class={`mb-3 w-14 h-14 rounded-2xl ${benefitAccent[i % 2]} text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}
+              aria-hidden="true"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="w-6 h-6"
+                set:html={benefitIcons[benefit.icon]}
+              />
+            </span>
+            <span class="font-semibold text-gray-900 text-sm lg:text-base leading-tight">
+              {benefit.label}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
