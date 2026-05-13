@@ -140,24 +140,9 @@ const totalSteps = questions.length;
         }
       </div>
 
-      <!-- Email capture (visible on last step) -->
+      <!-- Hidden fields -->
       <input type="hidden" id="survey-session-id" />
-      <div id="survey-email-wrapper" class="hidden px-6 lg:px-10 pb-6">
-        <label
-          for="survey-email"
-          class="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Ingresa tu correo
-        </label>
-        <input
-          type="email"
-          id="survey-email"
-          name="email"
-          placeholder="tucorreo@ejemplo.com"
-          autocomplete="email"
-          class="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary focus:outline-none transition-colors"
-        />
-      </div>
+      <input type="hidden" id="survey-user-id" />
 
       <!-- Footer controls -->
       <div
@@ -252,12 +237,31 @@ const totalSteps = questions.length;
     const errorEl = document.getElementById("survey-error");
     const introEl = document.getElementById("survey-intro");
     const endpoint = form.getAttribute("data-endpoint") || "/api/encuesta";
-    const emailWrapper = document.getElementById("survey-email-wrapper");
-    const emailInput = document.getElementById("survey-email");
     const sessionIdInput = document.getElementById("survey-session-id");
+    const userIdInput = document.getElementById("survey-user-id");
 
     let currentIndex = 0;
     sessionIdInput.value = crypto.randomUUID();
+
+    // Normalize URL params: handle malformed URLs where second param uses ? instead of &
+    const rawSearch = window.location.search;
+    const normalizedSearch = "?" + rawSearch.slice(1).replace(/\?/g, "&");
+    const params = new URLSearchParams(normalizedSearch);
+    userIdInput.value = params.get("userId") ?? "";
+
+    // Single-question mode: ?form=03 → show only that question
+    const formParam = params.get("form");
+    const singleQuestionIndex = formParam ? parseInt(formParam, 10) - 1 : -1;
+    const isSingleMode = singleQuestionIndex >= 0 && singleQuestionIndex < totalSteps;
+
+    if (isSingleMode) {
+      currentIndex = singleQuestionIndex;
+      // Hide progress bar and nav buttons, only show submit
+      document.getElementById("survey-counter").closest(".px-6").classList.add("hidden");
+      prevBtn.classList.add("hidden");
+      nextBtn.classList.add("hidden");
+      submitBtn.classList.remove("hidden");
+    }
 
     function getCurrentSlide() {
       return slides[currentIndex];
@@ -286,13 +290,14 @@ const totalSteps = questions.length;
       const value = getCurrentValue();
       const otherSelected = isOtherSelected(slide);
       const otherFilled = !otherSelected || getOtherValue(slide).length > 0;
-      const isLast = currentIndex === totalSteps - 1;
+      const canAdvance = !!value && otherFilled;
 
-      emailWrapper.classList.toggle("hidden", !isLast);
-      const emailValid =
-        !isLast ||
-        (emailInput.value.trim().length > 0 && emailInput.validity.valid);
-      const canAdvance = !!value && otherFilled && emailValid;
+      if (isSingleMode) {
+        submitBtn.disabled = !canAdvance;
+        return;
+      }
+
+      const isLast = currentIndex === totalSteps - 1;
 
       prevBtn.disabled = currentIndex === 0;
       nextBtn.classList.toggle("hidden", isLast);
@@ -317,6 +322,9 @@ const totalSteps = questions.length;
       currentIndex = index;
       refreshControls();
     }
+
+    // Init: show correct slide
+    showSlide(isSingleMode ? singleQuestionIndex : 0);
 
     // Wire up option change → show "Otro" input + refresh controls
     slides.forEach((slide) => {
@@ -363,8 +371,6 @@ const totalSteps = questions.length;
       }
     });
 
-    emailInput.addEventListener("input", refreshControls);
-
     nextBtn.addEventListener("click", () => {
       if (currentIndex < totalSteps - 1) {
         showSlide(currentIndex + 1);
@@ -389,7 +395,11 @@ const totalSteps = questions.length;
       submitBtn.textContent = "Enviando...";
       errorEl.classList.add("hidden");
 
-      const answers = slides
+      const slidesToCollect = isSingleMode
+        ? [slides[singleQuestionIndex]]
+        : slides;
+
+      const answers = slidesToCollect
         .map((slide) => {
           const questionId = slide.getAttribute("data-question-id");
           const checked = slide.querySelector("input[type=radio]:checked");
@@ -405,7 +415,7 @@ const totalSteps = questions.length;
 
       const payload = {
         sessionId: sessionIdInput.value,
-        email: emailInput.value.trim(),
+        userId: userIdInput.value || undefined,
         answers,
       };
 
@@ -431,7 +441,5 @@ const totalSteps = questions.length;
       thanksEl.classList.remove("hidden");
       thanksEl.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-
-    refreshControls();
   })();
 </script>

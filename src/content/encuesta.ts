@@ -41,7 +41,7 @@ export const content: SurveyContent = {
     badge: "Encuesta breve",
     title: "Cuéntanos tu experiencia",
     subtitle:
-      "Tu opinión nos ayuda a entenderte mejor y a mejorar. Solo son 8 preguntas y no toma más de 2 minutos.",
+      "Tu opinión nos ayuda a entenderte mejor y a mejorar. No te tomará más de 1 minuto.",
   },
   questions: [
     {
@@ -166,7 +166,7 @@ export const content: SurveyContent = {
       ],
     },
   ],
-  submitEndpoint: "https://api.oautos.mx/api/encuesta/",
+  submitEndpoint: "https://api.oautos.mx/api/encuesta",
   thankYou: {
     title: "¡Gracias por compartir tu experiencia!",
     subtitle: "Tu respuesta se envió correctamente.",
