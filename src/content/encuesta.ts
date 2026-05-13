@@ -1,5 +1,3 @@
-import { PUBLIC_API_BASE_URL } from "astro:env/client";
-
 export interface SurveyOption {
   value: string;
   label: string;
@@ -168,7 +166,7 @@ export const content: SurveyContent = {
       ],
     },
   ],
-  submitEndpoint: `${PUBLIC_API_BASE_URL}/api/encuesta`,
+  submitEndpoint: "https://api.oautos.mx/encuesta/api",
   thankYou: {
     title: "¡Gracias por compartir tu experiencia!",
     subtitle: "Tu respuesta se envió correctamente.",
