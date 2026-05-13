@@ -166,7 +166,7 @@ export const content: SurveyContent = {
       ],
     },
   ],
-  submitEndpoint: "https://api.oautos.mx/encuesta/api",
+  submitEndpoint: "https://api.oautos.mx/api/encuesta/",
   thankYou: {
     title: "¡Gracias por compartir tu experiencia!",
     subtitle: "Tu respuesta se envió correctamente.",
