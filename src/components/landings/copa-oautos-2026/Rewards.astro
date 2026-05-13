@@ -1,0 +1,180 @@
+---
+type RewardIcon = "trophy" | "star" | "shirt" | "ball" | "sparkles" | "gift";
+
+interface RewardItem {
+  icon: RewardIcon;
+  label: string;
+  description: string;
+}
+
+interface ProgressionContent {
+  title: string;
+  points: string[];
+}
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+  items: RewardItem[];
+  progression: ProgressionContent;
+  image?: {
+    src: string;
+    alt: string;
+  };
+}
+
+const { eyebrow, title, intro, items, progression, image } = Astro.props;
+
+const iconPaths: Record<RewardIcon, string> = {
+  trophy: `
+    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+    <path d="M4 22h16" />
+    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+  `,
+  star: `
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  `,
+  shirt: `
+    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+  `,
+  ball: `
+    <circle cx="12" cy="12" r="10" />
+    <path d="M2.05 12h19.9" />
+    <path d="M12 2.05v19.9" />
+    <path d="m4.93 4.93 14.14 14.14" />
+    <path d="m19.07 4.93-14.14 14.14" />
+  `,
+  sparkles: `
+    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+    <path d="M5 3v4" />
+    <path d="M19 17v4" />
+    <path d="M3 5h4" />
+    <path d="M17 19h4" />
+  `,
+  gift: `
+    <rect x="3" y="8" width="18" height="4" rx="1" />
+    <path d="M12 8v13" />
+    <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+    <path d="M7.5 8a2.5 2.5 0 0 1 0-5c1.5 0 3 1 4.5 5-1.5 0-3 0-4.5 0Z" />
+    <path d="M16.5 8a2.5 2.5 0 0 0 0-5c-1.5 0-3 1-4.5 5 1.5 0 3 0 4.5 0Z" />
+  `,
+};
+
+const accentClasses = [
+  "bg-[#117CD9] text-white",
+  "bg-[#E8257E] text-white",
+];
+---
+
+<section
+  id="copa-rewards"
+  class="relative py-20 lg:py-28 bg-gradient-to-b from-white to-[#F5F8FC]"
+>
+  <div class="max-w-[1200px] mx-auto px-5">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <!-- Columna texto -->
+      <div>
+        {
+          eyebrow && (
+            <span class="inline-block bg-[#C9E5F8] text-primary font-semibold text-xs lg:text-sm px-5 py-2 rounded-full mb-5">
+              {eyebrow}
+            </span>
+          )
+        }
+
+        <h2
+          class="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-5"
+        >
+          {title}
+        </h2>
+
+        {
+          intro && (
+            <p class="text-base lg:text-lg text-gray-700 leading-relaxed mb-8">
+              {intro}
+            </p>
+          )
+        }
+
+        <!-- Grid de recompensas -->
+        <ul class="grid sm:grid-cols-2 gap-4 mb-8 list-none p-0">
+          {
+            items.map((item, i) => (
+              <li class="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all">
+                <span
+                  class={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${accentClasses[i % 2]}`}
+                  aria-hidden="true"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-5 h-5"
+                    set:html={iconPaths[item.icon]}
+                  />
+                </span>
+                <div>
+                  <h3 class="font-semibold text-gray-900 leading-tight mb-1">
+                    {item.label}
+                  </h3>
+                  <p class="text-sm text-gray-600 leading-snug">
+                    {item.description}
+                  </p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+
+        <!-- Callout: progresión -->
+        <div
+          class="rounded-2xl bg-gradient-to-br from-[#117CD9] to-[#0D5FB3] text-white p-6 lg:p-8 shadow-md"
+        >
+          <h3 class="text-xl lg:text-2xl font-bold mb-4">
+            {progression.title}
+          </h3>
+          <ul class="space-y-3 list-none p-0">
+            {
+              progression.points.map((p) => (
+                <li class="flex items-start gap-3">
+                  <span
+                    class="mt-2 flex-shrink-0 w-2 h-2 rounded-full bg-[#E8257E]"
+                    aria-hidden="true"
+                  />
+                  <span class="leading-relaxed">{p}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <!-- Columna imagen -->
+      <div class="order-first lg:order-last">
+        {
+          image ? (
+            <img
+              src={image.src}
+              alt={image.alt}
+              class="w-full h-auto max-w-sm mx-auto"
+            />
+          ) : (
+            <div class="aspect-[9/16] max-w-xs mx-auto bg-white rounded-3xl border-2 border-dashed border-primary/30 flex items-center justify-center shadow-sm">
+              <span class="text-primary/40 font-medium text-sm text-center px-6">
+                Imagen de la app pendiente
+              </span>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>
