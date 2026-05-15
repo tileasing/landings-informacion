@@ -23,10 +23,10 @@ const {
 
 <nav
   aria-label="Navegación de la Copa Oautos"
-  class="copa-section-nav sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm content-center"
+  class="copa-section-nav sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm"
 >
-  <div class="max-w-[1200px] mx-auto px-3 lg:px-5">
-    <div class="flex items-center justify-between gap-4">
+  <div class="max-w-[1200px] mx-auto px-4 lg:px-5">
+    <div class="flex items-center justify-between gap-4 py-2">
       <a
         href={logoHref}
         aria-label={logoAlt}
@@ -35,8 +35,9 @@ const {
         <img src={logo} alt={logoAlt} class="h-8 lg:h-9 w-auto" />
       </a>
 
+      <!-- Menú desktop -->
       <ul
-        class="copa-nav-list flex items-center gap-1 lg:gap-2 overflow-x-auto py-3 list-none m-0 whitespace-nowrap min-w-0"
+        class="copa-nav-list hidden lg:flex items-center gap-2 py-3 list-none m-0 min-w-0"
       >
         {
           items.map((item) => (
@@ -44,7 +45,69 @@ const {
               <a
                 href={item.href}
                 data-target={item.href.replace("#", "")}
-                class="copa-nav-link relative inline-flex items-center px-3 py-2 text-sm lg:text-[15px] font-medium text-gray-700 hover:text-primary rounded-md transition-colors"
+                class="copa-nav-link relative inline-flex items-center px-3 py-2 text-[15px] font-medium text-gray-700 hover:text-primary rounded-md transition-colors"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <!-- Botón hamburguesa (mobile) -->
+      <button
+        type="button"
+        id="copa-nav-toggle"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="copa-nav-mobile"
+        class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-gray-700 hover:text-primary hover:bg-gray-100 transition-colors"
+      >
+        <svg
+          class="copa-nav-icon-open w-6 h-6"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16" />
+          <path d="M4 12h16" />
+          <path d="M4 17h16" />
+        </svg>
+        <svg
+          class="copa-nav-icon-close w-6 h-6 hidden"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Panel mobile -->
+    <div
+      id="copa-nav-mobile"
+      class="copa-nav-mobile lg:hidden hidden border-t border-gray-100"
+    >
+      <ul class="flex flex-col py-2 list-none m-0">
+        {
+          items.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                data-target={item.href.replace("#", "")}
+                class="copa-nav-link copa-nav-link-mobile block px-2 py-3 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md transition-colors"
               >
                 {item.label}
               </a>
@@ -61,37 +124,86 @@ const {
     scroll-padding-top: 64px;
     scroll-behavior: smooth;
   }
-  .copa-nav-list::-webkit-scrollbar {
-    display: none;
-  }
-  .copa-nav-list {
-    scrollbar-width: none;
-  }
   .copa-nav-link.is-active {
     color: var(--color-primary);
     font-weight: 600;
   }
-  .copa-nav-link.is-active::after {
-    content: "";
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    bottom: -1px;
-    height: 2px;
-    background-color: var(--color-primary);
-    border-radius: 2px;
+  /* Subrayado activo solo en versión desktop (horizontal) */
+  @media (min-width: 1024px) {
+    .copa-nav-link:not(.copa-nav-link-mobile).is-active::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: -1px;
+      height: 2px;
+      background-color: var(--color-primary);
+      border-radius: 2px;
+    }
+  }
+  /* Acento lateral activo en versión mobile */
+  .copa-nav-link-mobile.is-active {
+    background-color: #EDF3FA;
   }
 </style>
 
 <script is:inline>
   (() => {
+    // Toggle del panel mobile
+    const toggle = document.getElementById("copa-nav-toggle");
+    const panel = document.getElementById("copa-nav-mobile");
+    const iconOpen = toggle?.querySelector(".copa-nav-icon-open");
+    const iconClose = toggle?.querySelector(".copa-nav-icon-close");
+
+    const closePanel = () => {
+      if (!panel || !toggle) return;
+      panel.classList.add("hidden");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Abrir menú");
+      iconOpen?.classList.remove("hidden");
+      iconClose?.classList.add("hidden");
+    };
+
+    const openPanel = () => {
+      if (!panel || !toggle) return;
+      panel.classList.remove("hidden");
+      toggle.setAttribute("aria-expanded", "true");
+      toggle.setAttribute("aria-label", "Cerrar menú");
+      iconOpen?.classList.add("hidden");
+      iconClose?.classList.remove("hidden");
+    };
+
+    toggle?.addEventListener("click", () => {
+      if (panel?.classList.contains("hidden")) openPanel();
+      else closePanel();
+    });
+
+    // Cierra el panel al hacer clic en un link mobile
+    panel?.querySelectorAll("a").forEach((a) => {
+      a.addEventListener("click", () => closePanel());
+    });
+
+    // Cierra al pulsar Escape
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closePanel();
+    });
+
+    // Reset al cambiar a desktop
+    const mql = window.matchMedia("(min-width: 1024px)");
+    mql.addEventListener("change", (e) => {
+      if (e.matches) closePanel();
+    });
+
+    // Resaltado de sección activa
     const links = Array.from(document.querySelectorAll(".copa-nav-link"));
     if (!links.length) return;
 
     const linkMap = new Map();
     links.forEach((link) => {
       const target = link.getAttribute("data-target");
-      if (target) linkMap.set(target, link);
+      if (!target) return;
+      if (!linkMap.has(target)) linkMap.set(target, []);
+      linkMap.get(target).push(link);
     });
 
     const sections = [];
@@ -106,21 +218,12 @@ const {
       if (id === currentActiveId) return;
       currentActiveId = id;
       links.forEach((l) => l.classList.remove("is-active"));
-      const link = linkMap.get(id);
-      if (link) {
-        link.classList.add("is-active");
-        // Mantener el link activo visible en el scroll horizontal del nav
-        link.scrollIntoView({
-          block: "nearest",
-          inline: "center",
-          behavior: "smooth",
-        });
-      }
+      const activeLinks = linkMap.get(id) || [];
+      activeLinks.forEach((l) => l.classList.add("is-active"));
     };
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Elegir la sección visible más cercana al inicio del viewport
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
