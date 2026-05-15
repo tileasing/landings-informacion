@@ -64,10 +64,7 @@ const iconPaths: Record<RewardIcon, string> = {
   `,
 };
 
-const accentClasses = [
-  "bg-[#117CD9] text-white",
-  "bg-[#E8257E] text-white",
-];
+const accentClasses = ["bg-[#117CD9] text-white", "bg-[#5F8750] text-white"];
 ---
 
 <section
@@ -146,7 +143,7 @@ const accentClasses = [
               progression.points.map((p) => (
                 <li class="flex items-start gap-3">
                   <span
-                    class="mt-2 flex-shrink-0 w-2 h-2 rounded-full bg-[#E8257E]"
+                    class="mt-2 flex-shrink-0 w-2 h-2 rounded-full bg-[#5F8750]"
                     aria-hidden="true"
                   />
                   <span class="leading-relaxed">{p}</span>
@@ -164,7 +161,7 @@ const accentClasses = [
             <img
               src={image.src}
               alt={image.alt}
-              class="w-full h-auto max-w-sm mx-auto"
+              class="w-full h-auto mx-auto"
             />
           ) : (
             <div class="aspect-[9/16] max-w-xs mx-auto bg-white rounded-3xl border-2 border-dashed border-primary/30 flex items-center justify-center shadow-sm">

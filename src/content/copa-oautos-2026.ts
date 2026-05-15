@@ -7,6 +7,9 @@ import type {
 } from './types';
 import type { Step } from './como-funciona';
 import heroBg from '../assets/backgroundImageHero.jpg';
+import rewardsImage from '../assets/copa-oautos-image-1.png';
+import prizesImage from '../assets/premios-oautos.png';
+import finalCtaImage from '../assets/ctafinal-img.png';
 
 export interface CopaHeroContent {
   title: string;
@@ -285,7 +288,10 @@ export const content: CopaOautos2026Content = {
         'Más beneficios desbloqueados.',
       ],
     },
-    // image: { src: '...', alt: '...' }, // se agregará la imagen de la app
+    image: {
+      src: rewardsImage.src,
+      alt: 'Recompensas Copa Oautos 2026',
+    },
   },
   bannerCta: {
     title: 'Únete a la Copa y empieza a sumar',
@@ -301,7 +307,7 @@ export const content: CopaOautos2026Content = {
     title: 'Participar es muy fácil',
     items: [
       {
-        title: 'Regístrate',
+        title: 'Descarga la app y regístrate',
         description:
           'Crea tu cuenta en Oautos completamente gratis y comienza a participar en la Copa, acumular puntos y acceder a todas las dinámicas.',
       },
@@ -449,7 +455,10 @@ export const content: CopaOautos2026Content = {
       'Sorteos',
     ],
     closing: 'Esto significa que todos tienen oportunidades de ganar.',
-    // image: { src: '...', alt: '...' }, // pendiente
+    image: {
+      src: prizesImage.src,
+      alt: 'Premios Copa Oautos 2026',
+    },
   },
   dynamics: {
     eyebrow: 'Dinámicas extra',
@@ -582,7 +591,10 @@ export const content: CopaOautos2026Content = {
       text: 'Participar ahora',
       href: '#',
     },
-    // image: { src: '...', alt: '...' }, // pendiente
+    image: {
+      src: finalCtaImage.src,
+      alt: 'Únete a la Copa Oautos 2026',
+    },
   },
   footer: {},
 };

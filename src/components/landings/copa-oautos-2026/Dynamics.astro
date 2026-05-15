@@ -1,6 +1,8 @@
 ---
 import Button from "../../shared/Button.astro";
 import type { ButtonConfig } from "../../../content/types";
+import triviaImage from "../../../assets/trivia.png";
+import ruletaImage from "../../../assets/ruleta.png";
 
 type DynamicIcon = "lightbulb" | "pie";
 type DynamicAccent = "primary" | "secondary";
@@ -32,16 +34,9 @@ interface Props {
 
 const { eyebrow, title, intro, cards, closing, cta, appStores } = Astro.props;
 
-const iconPaths: Record<DynamicIcon, string> = {
-  lightbulb: `
-    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
-    <path d="M9 18h6" />
-    <path d="M10 22h4" />
-  `,
-  pie: `
-    <path d="M21 12A9 9 0 1 1 12 3" />
-    <path d="M12 12V3a9 9 0 0 1 9 9z" />
-  `,
+const iconImages: Record<DynamicIcon, { src: string; alt: string }> = {
+  lightbulb: { src: triviaImage.src, alt: "Trivias" },
+  pie: { src: ruletaImage.src, alt: "Ruletas" },
 };
 
 const accentStyles: Record<
@@ -62,11 +57,11 @@ const accentStyles: Record<
     accentText: "text-primary",
   },
   secondary: {
-    header: "bg-gradient-to-br from-[#E8257E] to-[#B81B62]",
+    header: "bg-gradient-to-br from-[#5F8750] to-[#4A6B3F]",
     eyebrowText: "text-white/80",
-    check: "bg-[#FCE3EE] text-[#E8257E]",
-    accentBg: "bg-[#FCE3EE]",
-    accentText: "text-[#E8257E]",
+    check: "bg-[#E5EFE0] text-[#5F8750]",
+    accentBg: "bg-[#E5EFE0]",
+    accentText: "text-[#5F8750]",
   },
 };
 ---
@@ -80,7 +75,7 @@ const accentStyles: Record<
     <div class="text-center max-w-3xl mx-auto mb-12 lg:mb-16">
       {
         eyebrow && (
-          <span class="inline-block bg-gradient-to-r from-[#117CD9] to-[#E8257E] text-white font-semibold text-xs lg:text-sm px-5 py-2 rounded-full mb-5">
+          <span class="inline-block bg-gradient-to-r from-[#117CD9] to-[#5F8750] text-white font-semibold text-xs lg:text-sm px-5 py-2 rounded-full mb-5">
             {eyebrow}
           </span>
         )
@@ -107,20 +102,11 @@ const accentStyles: Record<
               {/* Top coloreado */}
               <div class={`${style.header} text-white p-6 lg:p-8`}>
                 <div class="flex items-center gap-4">
-                  <span
-                    class="flex-shrink-0 w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center shadow-inner"
-                    aria-hidden="true"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="w-7 h-7"
-                      set:html={iconPaths[card.iconKey]}
+                  <span class="flex-shrink-0 w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center shadow-inner">
+                    <img
+                      src={iconImages[card.iconKey].src}
+                      alt={iconImages[card.iconKey].alt}
+                      class="w-10 h-10 object-contain"
                     />
                   </span>
                   <div>

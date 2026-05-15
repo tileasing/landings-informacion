@@ -1,9 +1,13 @@
 ---
 import type { FaqContent } from '../../content/types';
 
-type Props = FaqContent;
+type Props = FaqContent & { columns?: 1 | 2 };
 
-const { title, subtitle, items } = Astro.props;
+const { title, subtitle, items, columns = 1 } = Astro.props;
+
+const containerMaxWidth = columns === 2 ? 'max-w-[1200px]' : 'max-w-[800px]';
+const listLayout =
+  columns === 2 ? 'grid md:grid-cols-2 gap-4' : 'space-y-4';
 ---
 
 <section
@@ -11,7 +15,7 @@ const { title, subtitle, items } = Astro.props;
   aria-labelledby="faq-title"
   class="bg-white py-16 lg:py-24"
 >
-  <div class="max-w-[800px] mx-auto px-5">
+  <div class={`${containerMaxWidth} mx-auto px-5`}>
 
     <!-- Encabezado -->
     <header class="text-center mb-12 lg:mb-16">
@@ -33,7 +37,7 @@ const { title, subtitle, items } = Astro.props;
     </header>
 
     <!-- Lista de preguntas -->
-    <div class="space-y-4">
+    <div class={listLayout}>
       {items.map((item) => (
         <details
           class="group bg-white rounded-2xl border border-gray-200 transition-all duration-300 hover:border-gray-300 open:border-primary/50 open:shadow-md open:shadow-primary/5"

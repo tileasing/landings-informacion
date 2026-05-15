@@ -48,10 +48,10 @@ const tierStyles = [
     ring: "",
   },
   {
-    badge: "bg-gradient-to-r from-[#117CD9] to-[#E8257E] text-white shadow-sm",
-    border: "border-[#E8257E]/40",
-    check: "bg-gradient-to-br from-[#117CD9] to-[#E8257E] text-white",
-    ring: "ring-2 ring-[#E8257E]/15",
+    badge: "bg-gradient-to-r from-[#117CD9] to-[#5F8750] text-white shadow-sm",
+    border: "border-[#5F8750]/40",
+    check: "bg-gradient-to-br from-[#117CD9] to-[#5F8750] text-white",
+    ring: "ring-2 ring-[#5F8750]/15",
   },
 ];
 ---
@@ -264,7 +264,7 @@ const tierStyles = [
 
             {/* Tabla 2: Bonus equipo favorito */}
             <section>
-              <h4 class="text-xs font-bold tracking-widest uppercase text-[#E8257E] mb-3">
+              <h4 class="text-xs font-bold tracking-widest uppercase text-[#5F8750] mb-3">
                 {pointsInfo.teamBonusTitle}
               </h4>
               <div class="rounded-xl border border-gray-100 overflow-hidden">
@@ -280,7 +280,7 @@ const tierStyles = [
                   {pointsInfo.teamBonus.map((row) => (
                     <li class="grid grid-cols-[1fr_auto] items-center gap-4 px-4 py-2.5">
                       <span class="text-sm text-gray-800">{row.label}</span>
-                      <span class="text-sm font-bold text-[#E8257E]">
+                      <span class="text-sm font-bold text-[#5F8750]">
                         {row.points}
                       </span>
                     </li>
