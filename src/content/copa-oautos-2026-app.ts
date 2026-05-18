@@ -328,7 +328,7 @@ export const content: CopaAppContent = {
   },
   login: {
     eyebrow: 'Copa Oautos 2026',
-    title: 'Bienvenido a la plataforma de la Copa',
+    title: '¡Bienvenido!',
     subtitle:
       'Inicia sesión para participar en las dinámicas, acumular puntos y competir por los premios del mundial.',
     emailLabel: 'Correo electrónico',

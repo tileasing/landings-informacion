@@ -23,17 +23,11 @@ const { content } = Astro.props;
 
   <!-- Card del login -->
   <div
-    class="relative z-10 w-full max-w-md bg-white text-gray-900 rounded-3xl shadow-2xl px-7 sm:px-10 py-10"
+    class="relative z-10 w-full max-w-lg bg-white text-gray-900 rounded-3xl shadow-2xl px-7 sm:px-10 py-10"
   >
     <div class="text-center mb-8">
-      <div
-        class="inline-flex items-center justify-center bg-[#0D2C4D] rounded-2xl px-5 py-3 mb-6"
-      >
-        <img
-          src={logoOautos.src}
-          alt="Oautos"
-          class="h-9 w-auto"
-        />
+      <div class="inline-flex items-center justify-center px-5 py-3 mb-6">
+        <img src={logoOautos.src} alt="Oautos" class="h-9 w-auto" />
       </div>
 
       <span
@@ -51,12 +45,7 @@ const { content } = Astro.props;
       </p>
     </div>
 
-    <form
-      id="copa-login-form"
-      class="space-y-5"
-      novalidate
-      autocomplete="on"
-    >
+    <form id="copa-login-form" class="space-y-5" novalidate autocomplete="on">
       <div>
         <label
           for="copa-login-email"
@@ -119,8 +108,8 @@ const { content } = Astro.props;
               stroke-linejoin="round"
               class="w-5 h-5"
             >
-              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
-              <circle cx="12" cy="12" r="3" />
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
             </svg>
           </button>
         </div>
