@@ -282,12 +282,24 @@ const triviasForScript = orderedTrivias.map((t) => ({
       if (playBtn) {
         if (cfg.playVariant) {
           playBtn.classList.remove("hidden");
+          playBtn.style.display = "";
           stylePlayButton(card, cfg.playVariant);
         } else {
           playBtn.classList.add("hidden");
+          // Refuerzo: inline-flex podría ganarle a .hidden por orden en el CSS,
+          // así que también escondemos con estilo inline para asegurar.
+          playBtn.style.display = "none";
         }
       }
-      if (resultBlock) resultBlock.classList.toggle("hidden", !cfg.showResult);
+      if (resultBlock) {
+        if (cfg.showResult) {
+          resultBlock.classList.remove("hidden");
+          resultBlock.style.display = "";
+        } else {
+          resultBlock.classList.add("hidden");
+          resultBlock.style.display = "none";
+        }
+      }
     };
 
     const refreshCard = (card) => {
