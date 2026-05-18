@@ -1,0 +1,79 @@
+---
+import type { CopaQuinielaPhase } from "../../../content/copa-oautos-2026-app";
+
+interface Props {
+  phases: CopaQuinielaPhase[];
+}
+
+const { phases } = Astro.props;
+
+const firstOpen =
+  phases.find((phase) => phase.status === "open")?.id ?? phases[0]?.id;
+---
+
+<nav
+  aria-label="Fases del torneo"
+  class="bg-white rounded-2xl ring-1 ring-gray-200 shadow-sm"
+>
+  <div class="px-2 sm:px-3">
+    <div
+      class="flex gap-1 sm:gap-2 overflow-x-auto no-scrollbar py-2"
+      role="tablist"
+      id="copa-quiniela-tablist"
+    >
+      {
+        phases.map((phase) => {
+          const isLocked = phase.status === "locked";
+          const isInitiallyActive = phase.id === firstOpen;
+          return (
+            <button
+              type="button"
+              role="tab"
+              data-phase-id={phase.id}
+              data-phase-status={phase.status}
+              aria-selected={isInitiallyActive ? "true" : "false"}
+              aria-controls={`copa-quiniela-panel-${phase.id}`}
+              class:list={[
+                "copa-phase-tab relative flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition border-2",
+                isInitiallyActive
+                  ? "bg-[#117CD9] border-[#117CD9] text-white shadow"
+                  : isLocked
+                    ? "bg-gray-50 border-gray-200 text-gray-400"
+                    : "bg-white border-gray-200 text-gray-600 hover:border-[#117CD9] hover:text-[#117CD9]",
+              ]}
+            >
+              {isLocked && (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-3.5 h-3.5"
+                  aria-hidden="true"
+                >
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              )}
+              <span class="sm:hidden">{phase.shortLabel}</span>
+              <span class="hidden sm:inline">{phase.label}</span>
+            </button>
+          );
+        })
+      }
+    </div>
+  </div>
+</nav>
+
+<style>
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

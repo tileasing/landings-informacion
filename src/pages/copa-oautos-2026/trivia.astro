@@ -1,0 +1,591 @@
+---
+import CopaAppLayout from "../../layouts/CopaAppLayout.astro";
+import AppNavbar from "../../components/copa-oautos-2026-app/AppNavbar.astro";
+import TriviaHeader from "../../components/copa-oautos-2026-app/trivia/TriviaHeader.astro";
+import TriviaCard from "../../components/copa-oautos-2026-app/trivia/TriviaCard.astro";
+import TriviaPointsModal from "../../components/copa-oautos-2026-app/trivia/TriviaPointsModal.astro";
+import TriviaGameModal from "../../components/copa-oautos-2026-app/trivia/TriviaGameModal.astro";
+import { content } from "../../content/copa-oautos-2026-app";
+
+const { trivia, navbar } = content;
+
+// Cada trivia cierra cuando se abre la siguiente.
+// La última trivia (cuestionario final) no tiene cierre automático.
+const orderedTrivias = trivia.trivias
+  .slice()
+  .sort(
+    (a, b) =>
+      new Date(a.availableFrom).getTime() -
+      new Date(b.availableFrom).getTime(),
+  );
+
+const triviasWithClose = orderedTrivias.map((t, i) => ({
+  trivia: t,
+  closesAt: orderedTrivias[i + 1]?.availableFrom ?? null,
+}));
+
+// Datos para el script (solo lo necesario para el wizard).
+const triviasForScript = orderedTrivias.map((t) => ({
+  id: t.id,
+  name: t.name,
+  title: t.title,
+  typeLabel: t.typeLabel,
+  availableFrom: t.availableFrom,
+  questions: t.questions,
+}));
+---
+
+<CopaAppLayout
+  title={trivia.meta.title}
+  description={trivia.meta.description}
+>
+  <AppNavbar content={navbar} />
+  <main class="bg-[#F4F7FB] min-h-[calc(100dvh-4rem)]">
+    <TriviaHeader
+      header={trivia.header}
+      rules={trivia.rules}
+      backLabel={trivia.labels.backToDashboard}
+      backHref={navbar.homeHref}
+    />
+
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-3 sm:space-y-4">
+      {
+        triviasWithClose.map(({ trivia: t, closesAt }, i) => (
+          <TriviaCard
+            trivia={t}
+            closesAt={closesAt}
+            labels={trivia.labels}
+            maxPoints={trivia.pointsConfig.maxPerTrivia}
+            index={i}
+          />
+        ))
+      }
+    </div>
+  </main>
+
+  <TriviaPointsModal content={trivia.pointsTable} />
+  <TriviaGameModal labels={trivia.labels} />
+</CopaAppLayout>
+
+<script
+  is:inline
+  define:vars={{
+    trivias: triviasForScript,
+    pointsConfig: trivia.pointsConfig,
+    resultsKey: "copa-trivia-results-v1",
+    labels: trivia.labels,
+  }}
+>
+  (() => {
+    // === Helpers ===
+    const dateFmt = new Intl.DateTimeFormat("es-MX", {
+      timeZone: "America/Mexico_City",
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    });
+    const dateTimeFmt = new Intl.DateTimeFormat("es-MX", {
+      timeZone: "America/Mexico_City",
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const formatDate = (iso) => {
+      try {
+        return dateFmt.format(new Date(iso));
+      } catch (_) {
+        return iso;
+      }
+    };
+    const formatDateTime = (iso) => {
+      try {
+        return dateTimeFmt.format(new Date(iso));
+      } catch (_) {
+        return iso;
+      }
+    };
+
+    // === Storage ===
+    const loadResults = () => {
+      try {
+        const raw = localStorage.getItem(resultsKey);
+        return raw ? JSON.parse(raw) : {};
+      } catch (_) {
+        return {};
+      }
+    };
+    const saveResults = (data) => {
+      try {
+        localStorage.setItem(resultsKey, JSON.stringify(data));
+        return true;
+      } catch (_) {
+        return false;
+      }
+    };
+    let results = loadResults();
+
+    // === Cálculo de puntos ===
+    const computePoints = (trivia, answers) => {
+      let totalCorrect = 0;
+      let oautosCount = 0;
+      let oautosCorrect = 0;
+
+      trivia.questions.forEach((q) => {
+        const isCorrect = answers[q.id] === q.correct;
+        if (isCorrect) totalCorrect += 1;
+        if (q.category === "oautos") {
+          oautosCount += 1;
+          if (isCorrect) oautosCorrect += 1;
+        }
+      });
+
+      const breakdown = {
+        completion: pointsConfig.completion,
+        perCorrect: totalCorrect * pointsConfig.perCorrect,
+        allCorrect:
+          totalCorrect === trivia.questions.length
+            ? pointsConfig.allCorrectBonus
+            : 0,
+        oautosDoubled: false,
+      };
+
+      let total =
+        breakdown.completion + breakdown.perCorrect + breakdown.allCorrect;
+
+      if (
+        pointsConfig.oautosDoublesTotal &&
+        oautosCount > 0 &&
+        oautosCorrect === oautosCount
+      ) {
+        total *= 2;
+        breakdown.oautosDoubled = true;
+      }
+
+      total = Math.min(total, pointsConfig.maxPerTrivia);
+
+      return {
+        total,
+        totalCorrect,
+        totalQuestions: trivia.questions.length,
+        oautosCount,
+        oautosCorrect,
+        breakdown,
+      };
+    };
+
+    // === Render del estado de cada tarjeta ===
+    const setStatus = (card, status) => {
+      const badge = card.querySelector("[data-trivia-status]");
+      if (!badge) return;
+      badge.classList.remove(
+        "bg-gray-200",
+        "text-gray-700",
+        "bg-emerald-100",
+        "text-emerald-700",
+        "bg-amber-100",
+        "text-amber-800",
+        "bg-red-100",
+        "text-red-700",
+      );
+      const accent = card.querySelector(".copa-trivia-card-accent");
+      if (accent) {
+        accent.classList.remove(
+          "bg-gray-200",
+          "bg-[#5F8750]",
+          "bg-emerald-500",
+          "bg-red-300",
+        );
+      }
+      const playBtn = card.querySelector("[data-trivia-play]");
+      const resultBlock = card.querySelector("[data-trivia-result]");
+      const map = {
+        locked: {
+          label: badge.dataset.labelLocked,
+          badgeClasses: ["bg-gray-200", "text-gray-700"],
+          accentClass: "bg-gray-200",
+          showPlay: false,
+          showResult: false,
+        },
+        available: {
+          label: badge.dataset.labelAvailable,
+          badgeClasses: ["bg-emerald-100", "text-emerald-700"],
+          accentClass: "bg-[#5F8750]",
+          showPlay: true,
+          showResult: false,
+        },
+        closed: {
+          label: badge.dataset.labelClosed,
+          badgeClasses: ["bg-red-100", "text-red-700"],
+          accentClass: "bg-red-300",
+          showPlay: false,
+          showResult: false,
+        },
+        completed: {
+          label: badge.dataset.labelCompleted,
+          badgeClasses: ["bg-emerald-100", "text-emerald-700"],
+          accentClass: "bg-emerald-500",
+          showPlay: false,
+          showResult: true,
+        },
+      };
+      const cfg = map[status];
+      badge.textContent = cfg.label;
+      cfg.badgeClasses.forEach((c) => badge.classList.add(c));
+      if (accent) accent.classList.add(cfg.accentClass);
+      if (playBtn) playBtn.classList.toggle("hidden", !cfg.showPlay);
+      if (resultBlock) resultBlock.classList.toggle("hidden", !cfg.showResult);
+    };
+
+    const refreshCard = (card) => {
+      const triviaId = card.dataset.triviaId;
+      const availableFrom = new Date(card.dataset.availableFrom);
+      const closesAtRaw = card.dataset.closesAt;
+      const closesAt = closesAtRaw ? new Date(closesAtRaw) : null;
+      const hasContent = card.dataset.hasContent === "1";
+      const now = new Date();
+
+      const meta = card.querySelector("[data-trivia-meta]");
+      const metaText = card.querySelector(".copa-trivia-meta-text");
+      const playBtn = card.querySelector("[data-trivia-play]");
+      const resultPointsEl = card.querySelector("[data-trivia-result-points]");
+
+      const stored = results[triviaId];
+      let status;
+      let metaContent = "";
+
+      if (stored) {
+        status = "completed";
+        if (resultPointsEl) resultPointsEl.textContent = `+${stored.total}`;
+        const completedDate = formatDate(stored.completedAt);
+        metaContent = `${meta.dataset.prefixCompleted} ${completedDate}`;
+      } else if (now < availableFrom) {
+        status = "locked";
+        metaContent = `${meta.dataset.prefixFrom} ${formatDate(availableFrom)}`;
+      } else if (closesAt && now >= closesAt) {
+        status = "closed";
+        metaContent = meta.dataset.closedMessage;
+      } else {
+        status = "available";
+        if (closesAt) {
+          metaContent = `${meta.dataset.prefixCloses} ${formatDate(closesAt)}`;
+        } else {
+          metaContent = `${meta.dataset.prefixFrom} ${formatDate(availableFrom)}`;
+        }
+      }
+
+      if (metaText) metaText.textContent = metaContent;
+      setStatus(card, status);
+
+      // Bloquear play si no hay preguntas todavía.
+      if (playBtn && status === "available" && !hasContent) {
+        playBtn.disabled = true;
+        playBtn.classList.add(
+          "opacity-60",
+          "cursor-not-allowed",
+          "hover:bg-[#5F8750]",
+        );
+        playBtn.setAttribute("title", labels.pendingHint);
+      } else if (playBtn) {
+        playBtn.disabled = false;
+        playBtn.classList.remove(
+          "opacity-60",
+          "cursor-not-allowed",
+          "hover:bg-[#5F8750]",
+        );
+        playBtn.removeAttribute("title");
+      }
+    };
+
+    const triviaCards = Array.from(document.querySelectorAll("[data-trivia-card]"));
+    triviaCards.forEach(refreshCard);
+    // Refrescar cada minuto por si el cutoff o disponibilidad cambia.
+    setInterval(() => triviaCards.forEach(refreshCard), 60 * 1000);
+
+    // === Wizard del juego ===
+    const modal = document.getElementById("copa-trivia-game-modal");
+    const slidesContainer = modal?.querySelector("[data-trivia-slides]");
+    const resultsView = modal?.querySelector("[data-trivia-results]");
+    const progressBar = modal?.querySelector("[data-trivia-game-progress]");
+    const progressPercent = modal?.querySelector(
+      "[data-trivia-game-percent]",
+    );
+    const progressCounter = modal?.querySelector(
+      "[data-trivia-game-counter]",
+    );
+    const progressWrap = modal?.querySelector(
+      "[data-trivia-game-progress-bar]",
+    );
+    const footer = modal?.querySelector("[data-trivia-game-footer]");
+    const prevBtn = modal?.querySelector("[data-trivia-game-prev]");
+    const nextBtn = modal?.querySelector("[data-trivia-game-next]");
+    const submitBtn = modal?.querySelector("[data-trivia-game-submit]");
+    const finishBtn = modal?.querySelector("[data-trivia-game-finish]");
+    const closeBtn = modal?.querySelector("[data-trivia-game-close]");
+    const titleEl = modal?.querySelector("[data-trivia-game-title]");
+    const eyebrowEl = modal?.querySelector("[data-trivia-game-eyebrow]");
+    const resultsSummaryEl = modal?.querySelector(
+      "[data-trivia-results-summary]",
+    );
+    const resultsPointsEl = modal?.querySelector(
+      "[data-trivia-results-points]",
+    );
+    const resultsBreakdownEl = modal?.querySelector(
+      "[data-trivia-results-breakdown]",
+    );
+    const resultsReviewEl = modal?.querySelector(
+      "[data-trivia-results-review]",
+    );
+
+    let session = null; // { trivia, answers, currentIndex }
+
+    const renderSlide = () => {
+      if (!session || !slidesContainer) return;
+      const { trivia, answers, currentIndex } = session;
+      const question = trivia.questions[currentIndex];
+      const total = trivia.questions.length;
+
+      slidesContainer.innerHTML = "";
+      const slide = document.createElement("div");
+      slide.className = "trivia-slide";
+      slide.innerHTML = `
+        <h3 class="text-lg sm:text-xl font-bold text-[#0D2C4D] leading-snug mb-5">${question.text}</h3>
+        <div class="space-y-2.5">
+          ${question.options
+            .map((opt) => {
+              const selected = answers[question.id] === opt.letter;
+              return `
+                <label class="trivia-option group flex items-center gap-3 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition ${selected ? "border-[#5F8750] bg-[#5F8750]/5" : "border-gray-200 hover:border-[#5F8750]/50 hover:bg-[#5F8750]/5"}">
+                  <input type="radio" name="${question.id}" value="${opt.letter}" class="peer sr-only" ${selected ? "checked" : ""} />
+                  <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border-2 font-bold text-sm ${selected ? "bg-[#5F8750] border-[#5F8750] text-white" : "border-gray-300 text-gray-500 group-hover:border-[#5F8750] group-hover:text-[#5F8750]"}">${opt.letter}</span>
+                  <span class="text-sm sm:text-base text-gray-800">${opt.text}</span>
+                </label>
+              `;
+            })
+            .join("")}
+        </div>
+      `;
+      slidesContainer.appendChild(slide);
+
+      // Wire up option selection
+      slide.querySelectorAll("input[type=radio]").forEach((input) => {
+        input.addEventListener("change", () => {
+          answers[question.id] = input.value;
+          renderSlide();
+          refreshFooter();
+        });
+      });
+    };
+
+    const refreshFooter = () => {
+      if (!session) return;
+      const { trivia, answers, currentIndex } = session;
+      const total = trivia.questions.length;
+      const isLast = currentIndex === total - 1;
+      const currentAnswered = !!answers[trivia.questions[currentIndex].id];
+      const allAnswered = trivia.questions.every((q) => !!answers[q.id]);
+
+      if (prevBtn) prevBtn.disabled = currentIndex === 0;
+      if (nextBtn) {
+        nextBtn.classList.toggle("hidden", isLast);
+        nextBtn.disabled = !currentAnswered;
+      }
+      if (submitBtn) {
+        submitBtn.classList.toggle("hidden", !isLast);
+        submitBtn.disabled = !allAnswered;
+      }
+
+      if (progressCounter)
+        progressCounter.textContent = `${labels.questionLabel} ${currentIndex + 1} de ${total}`;
+      const pct = Math.round(((currentIndex + 1) / total) * 100);
+      if (progressPercent) progressPercent.textContent = `${pct}%`;
+      if (progressBar) progressBar.style.width = `${pct}%`;
+    };
+
+    // Bloquea el scroll del body manteniendo la posición actual.
+    let savedScrollY = 0;
+    const lockBodyScroll = () => {
+      savedScrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
+    };
+    const unlockBodyScroll = () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+      window.scrollTo(0, savedScrollY);
+    };
+
+    const openGame = (triviaId) => {
+      const trivia = trivias.find((t) => t.id === triviaId);
+      if (!trivia || !modal || !slidesContainer) return;
+      if (trivia.questions.length === 0) return;
+      if (results[triviaId]) return; // Ya completada, no se vuelve a jugar.
+
+      session = { trivia, answers: {}, currentIndex: 0 };
+
+      if (titleEl) titleEl.textContent = trivia.title;
+      if (eyebrowEl) eyebrowEl.textContent = `${trivia.name} · ${trivia.typeLabel}`;
+
+      // Reset UI
+      resultsView?.classList.add("hidden");
+      slidesContainer.classList.remove("hidden");
+      progressWrap?.classList.remove("hidden");
+      prevBtn?.classList.remove("hidden");
+      nextBtn?.classList.remove("hidden");
+      submitBtn?.classList.add("hidden");
+      finishBtn?.classList.add("hidden");
+
+      renderSlide();
+      refreshFooter();
+
+      lockBodyScroll();
+      if (typeof modal.showModal === "function") {
+        modal.showModal();
+      } else {
+        modal.setAttribute("open", "");
+      }
+    };
+
+    const closeGame = () => {
+      if (!modal) return;
+      modal.close();
+      unlockBodyScroll();
+      session = null;
+    };
+
+    // Cuando se cierra con tecla Esc el native dialog tambien dispara "close".
+    modal?.addEventListener("close", () => unlockBodyScroll());
+
+    const showResults = (result) => {
+      if (!session || !modal || !resultsView) return;
+
+      slidesContainer?.classList.add("hidden");
+      progressWrap?.classList.add("hidden");
+      prevBtn?.classList.add("hidden");
+      nextBtn?.classList.add("hidden");
+      submitBtn?.classList.add("hidden");
+      finishBtn?.classList.remove("hidden");
+      resultsView.classList.remove("hidden");
+
+      if (resultsPointsEl) resultsPointsEl.textContent = `+${result.total}`;
+      if (resultsSummaryEl) {
+        resultsSummaryEl.textContent = `Acertaste ${result.totalCorrect} de ${result.totalQuestions} preguntas.`;
+      }
+
+      // Desglose
+      if (resultsBreakdownEl) {
+        const rows = [];
+        rows.push(
+          `<li class="flex items-center justify-between gap-3 text-gray-700"><span>${labels.breakdownCompletion}</span><span class="font-bold text-[#0D2C4D]">+${result.breakdown.completion}</span></li>`,
+        );
+        rows.push(
+          `<li class="flex items-center justify-between gap-3 text-gray-700"><span>${labels.breakdownPerCorrect} (${result.totalCorrect} × ${pointsConfig.perCorrect})</span><span class="font-bold text-[#0D2C4D]">+${result.breakdown.perCorrect}</span></li>`,
+        );
+        if (result.breakdown.allCorrect > 0) {
+          rows.push(
+            `<li class="flex items-center justify-between gap-3 text-gray-700"><span>${labels.breakdownAllCorrect}</span><span class="font-bold text-[#0D2C4D]">+${result.breakdown.allCorrect}</span></li>`,
+          );
+        }
+        if (result.breakdown.oautosDoubled) {
+          rows.push(
+            `<li class="flex items-center justify-between gap-3 text-emerald-700 border-t border-emerald-100 pt-1.5 mt-1"><span class="font-semibold">${labels.breakdownOautos}</span><span class="font-bold">×2</span></li>`,
+          );
+        }
+        resultsBreakdownEl.innerHTML = rows.join("");
+      }
+
+      // Review
+      if (resultsReviewEl) {
+        const { trivia, answers } = session;
+        resultsReviewEl.innerHTML = trivia.questions
+          .map((q, idx) => {
+            const userAnswer = answers[q.id];
+            const isCorrect = userAnswer === q.correct;
+            const userOption = q.options.find((o) => o.letter === userAnswer);
+            const correctOption = q.options.find((o) => o.letter === q.correct);
+            return `
+              <div class="bg-white rounded-xl ring-1 ring-gray-200 p-4">
+                <p class="text-xs text-gray-500 mb-1">Pregunta ${idx + 1}</p>
+                <p class="text-sm font-semibold text-[#0D2C4D] mb-3">${q.text}</p>
+                <div class="space-y-1.5 text-xs sm:text-sm">
+                  <div class="flex items-start gap-2 ${isCorrect ? "text-emerald-700" : "text-red-700"}">
+                    <span class="font-bold flex-shrink-0">${isCorrect ? "✓" : "✗"} ${labels.yourAnswerLabel}:</span>
+                    <span>${userOption ? `${userOption.letter}) ${userOption.text}` : "—"}</span>
+                  </div>
+                  ${
+                    !isCorrect
+                      ? `<div class="flex items-start gap-2 text-emerald-700"><span class="font-bold flex-shrink-0">★ ${labels.correctAnswerLabel}:</span><span>${correctOption.letter}) ${correctOption.text}</span></div>`
+                      : ""
+                  }
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+    };
+
+    const submitAnswers = () => {
+      if (!session) return;
+      const result = computePoints(session.trivia, session.answers);
+      results[session.trivia.id] = {
+        total: result.total,
+        totalCorrect: result.totalCorrect,
+        totalQuestions: result.totalQuestions,
+        answers: { ...session.answers },
+        completedAt: new Date().toISOString(),
+      };
+      saveResults(results);
+      showResults(result);
+
+      // Refrescar la tarjeta correspondiente.
+      const card = document.querySelector(
+        `[data-trivia-card][data-trivia-id="${session.trivia.id}"]`,
+      );
+      if (card) refreshCard(card);
+    };
+
+    // Wire-up wizard buttons
+    nextBtn?.addEventListener("click", () => {
+      if (!session) return;
+      if (session.currentIndex < session.trivia.questions.length - 1) {
+        session.currentIndex += 1;
+        renderSlide();
+        refreshFooter();
+      }
+    });
+    prevBtn?.addEventListener("click", () => {
+      if (!session) return;
+      if (session.currentIndex > 0) {
+        session.currentIndex -= 1;
+        renderSlide();
+        refreshFooter();
+      }
+    });
+    submitBtn?.addEventListener("click", () => submitAnswers());
+    finishBtn?.addEventListener("click", () => closeGame());
+    closeBtn?.addEventListener("click", () => closeGame());
+
+    // Wire-up triggers desde las tarjetas
+    triviaCards.forEach((card) => {
+      const playBtn = card.querySelector("[data-trivia-play]");
+      playBtn?.addEventListener("click", () => {
+        const id = card.dataset.triviaId;
+        if (id) openGame(id);
+      });
+    });
+
+    // Backdrop click cierra
+    modal?.addEventListener("click", (event) => {
+      if (event.target === modal) closeGame();
+    });
+  })();
+</script>

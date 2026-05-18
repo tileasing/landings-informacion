@@ -1,0 +1,59 @@
+---
+import type { CopaQuinielaContent } from "../../../content/copa-oautos-2026-app";
+
+interface Props {
+  content: CopaQuinielaContent["favoriteTeam"];
+}
+
+const { content } = Astro.props;
+---
+
+<section
+  aria-labelledby="copa-favorite-team-title"
+  class="rounded-2xl border-2 border-dashed border-[#5F8750]/40 bg-[#5F8750]/5 p-4 sm:p-5"
+>
+  <div class="flex items-start gap-3">
+    <span
+      class="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-xl bg-[#5F8750]/15 text-[#3F5E33]"
+      aria-hidden="true"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="w-5 h-5"
+      >
+        <path
+          d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16l7-3 7 3Z"
+        />
+      </svg>
+    </span>
+    <div class="min-w-0 flex-1">
+      <div class="flex flex-wrap items-center gap-2 mb-1">
+        <span
+          class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[#3F5E33]"
+        >
+          {content.eyebrow}
+        </span>
+        <span
+          class="text-[10px] font-semibold uppercase tracking-wider rounded-full bg-amber-100 text-amber-700 px-2 py-0.5"
+        >
+          {content.badge}
+        </span>
+      </div>
+      <h2
+        id="copa-favorite-team-title"
+        class="text-base sm:text-lg font-extrabold text-[#0D2C4D]"
+      >
+        {content.title}
+      </h2>
+      <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">
+        {content.description}
+      </p>
+    </div>
+  </div>
+</section>

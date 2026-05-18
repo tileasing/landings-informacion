@@ -1,0 +1,182 @@
+---
+import type { CopaAppDashboardContent } from "../../content/copa-oautos-2026-app";
+
+interface Props {
+  content: CopaAppDashboardContent;
+}
+
+const { content } = Astro.props;
+
+const accentClasses = {
+  blue: {
+    card: "from-[#117CD9] to-[#0D5FB3]",
+    badge: "bg-white/15 text-white",
+    button:
+      "bg-white text-[#0D5FB3] hover:bg-[#E6F1FB] focus-visible:ring-white/60",
+    glow: "bg-white/10",
+  },
+  green: {
+    card: "from-[#5F8750] to-[#3F5E33]",
+    badge: "bg-white/15 text-white",
+    button:
+      "bg-white text-[#3F5E33] hover:bg-[#EAF1E5] focus-visible:ring-white/60",
+    glow: "bg-white/10",
+  },
+};
+---
+
+<section class="bg-[#F4F7FB] text-gray-900">
+  <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-10 sm:py-14">
+    <div class="text-center sm:text-left mb-8 sm:mb-10">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-[#0D2C4D]">
+        {content.cardsTitle}
+      </h2>
+      <p class="mt-2 text-sm sm:text-base text-gray-600 max-w-2xl">
+        {content.cardsSubtitle}
+      </p>
+    </div>
+
+    <div class="grid gap-5 sm:gap-6 md:grid-cols-2">
+      {
+        content.cards.map((card) => {
+          const styles = accentClasses[card.accent];
+          return (
+            <a
+              href={card.href}
+              class:list={[
+                "group relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-xl bg-gradient-to-br transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#117CD9]/40",
+                styles.card,
+              ]}
+            >
+              <span
+                class:list={[
+                  "pointer-events-none absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-70",
+                  styles.glow,
+                ]}
+                aria-hidden="true"
+              />
+              <span
+                class:list={[
+                  "pointer-events-none absolute -bottom-20 -left-10 w-48 h-48 rounded-full blur-3xl opacity-50",
+                  styles.glow,
+                ]}
+                aria-hidden="true"
+              />
+
+              <div class="relative z-10 flex flex-col h-full min-h-[280px]">
+                <div class="flex items-center justify-between mb-5">
+                  <span
+                    class:list={[
+                      "inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider backdrop-blur-sm",
+                      styles.badge,
+                    ]}
+                  >
+                    {card.eyebrow}
+                  </span>
+                  <span
+                    class="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm border border-white/25"
+                    aria-hidden="true"
+                  >
+                    {card.icon === "ball" && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-8 h-8 sm:w-9 sm:h-9 text-white"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2v3.5" />
+                        <path d="M12 18.5V22" />
+                        <path d="M2 12h3.5" />
+                        <path d="M18.5 12H22" />
+                        <path d="M12 8.5 8.5 11l1.3 4h4.4l1.3-4z" />
+                        <path d="M12 8.5 15.5 11" />
+                        <path d="m9.8 15-1.8 2.6" />
+                        <path d="m14.2 15 1.8 2.6" />
+                        <path d="M8.5 11 5.5 9.5" />
+                        <path d="M15.5 11l3-1.5" />
+                      </svg>
+                    )}
+                    {card.icon === "trivia" && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-8 h-8 sm:w-9 sm:h-9 text-white"
+                      >
+                        <path d="M9.1 9a3 3 0 1 1 5.5 1.6c-.4.7-1.1 1.1-1.8 1.5-.6.4-1 1-1 1.7v.7" />
+                        <line x1="12" y1="17.5" x2="12" y2="17.51" />
+                        <circle cx="12" cy="12" r="10" />
+                      </svg>
+                    )}
+                  </span>
+                </div>
+
+                <h3 class="text-3xl sm:text-4xl font-extrabold mb-3 leading-tight">
+                  {card.title}
+                </h3>
+                <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-5">
+                  {card.description}
+                </p>
+
+                <ul class="space-y-2 mb-6">
+                  {card.highlights.map((highlight) => (
+                    <li class="flex items-start gap-2 text-sm text-white/90">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-4 h-4 mt-0.5 flex-shrink-0 text-white"
+                        aria-hidden="true"
+                      >
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                      <span>{highlight}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div class="mt-auto">
+                  <span
+                    class:list={[
+                      "inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm sm:text-base font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-4",
+                      styles.button,
+                    ]}
+                  >
+                    {card.cta}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                      aria-hidden="true"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="m12 5 7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </a>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

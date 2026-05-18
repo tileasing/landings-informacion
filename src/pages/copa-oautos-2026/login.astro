@@ -1,0 +1,14 @@
+---
+import CopaAppLayout from "../../layouts/CopaAppLayout.astro";
+import LoginForm from "../../components/copa-oautos-2026-app/LoginForm.astro";
+import { content } from "../../content/copa-oautos-2026-app";
+---
+
+<CopaAppLayout
+  title={content.meta.title}
+  description={content.meta.description}
+>
+  <main>
+    <LoginForm content={content.login} />
+  </main>
+</CopaAppLayout>

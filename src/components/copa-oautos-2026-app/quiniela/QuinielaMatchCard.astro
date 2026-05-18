@@ -1,0 +1,220 @@
+---
+import type {
+  CopaQuinielaContent,
+  CopaQuinielaMatch,
+} from "../../../content/copa-oautos-2026-app";
+
+interface Props {
+  match: CopaQuinielaMatch;
+  labels: CopaQuinielaContent["labels"];
+  pointsRules: CopaQuinielaContent["pointsTable"]["rules"];
+}
+
+const { match, labels } = Astro.props;
+const isFinished = !!match.result;
+
+const flagUrl = (code: string) =>
+  `https://flagcdn.com/w80/${code.toLowerCase()}.png`;
+const flagUrl2x = (code: string) =>
+  `https://flagcdn.com/w160/${code.toLowerCase()}.png`;
+
+const matchGroupCode = (match.group ?? "").replace(/^Grupo\s+/, "");
+---
+
+<article
+  class="copa-match-card bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden transition hover:shadow-md"
+  data-match-id={match.id}
+  data-match-group={matchGroupCode}
+  data-kickoff={match.kickoff}
+  data-result-a={match.result?.goalsA ?? ""}
+  data-result-b={match.result?.goalsB ?? ""}
+  data-finished={isFinished ? "1" : "0"}
+>
+  <!-- Encabezado -->
+  <header
+    class="flex items-center justify-between gap-2 px-4 sm:px-5 py-3 bg-gray-50 border-b border-gray-100"
+  >
+    <div class="flex items-center gap-2 min-w-0">
+      {
+        match.group && (
+          <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#117CD9] bg-[#117CD9]/10 px-2 py-0.5 rounded-full whitespace-nowrap">
+            {match.group}
+          </span>
+        )
+      }
+      <span
+        class="text-[11px] sm:text-xs text-gray-500 truncate"
+        data-match-kickoff-label
+      >
+        {match.kickoff}
+      </span>
+    </div>
+    <span
+      class:list={[
+        "copa-match-status text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full whitespace-nowrap",
+        isFinished
+          ? "bg-gray-200 text-gray-700"
+          : "bg-emerald-100 text-emerald-700",
+      ]}
+      data-status-open={labels.statusOpen}
+      data-status-locked={labels.statusLocked}
+      data-status-finished={labels.statusFinished}
+    >
+      {isFinished ? labels.statusFinished : labels.statusOpen}
+    </span>
+  </header>
+
+  <!-- Cuerpo: equipos + predicción -->
+  <div class="px-4 sm:px-5 py-5">
+    <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4">
+      <!-- Equipo A -->
+      <div class="flex flex-col items-center text-center gap-2">
+        <img
+          src={flagUrl(match.teamA.code)}
+          srcset={`${flagUrl(match.teamA.code)} 1x, ${flagUrl2x(match.teamA.code)} 2x`}
+          width="56"
+          height="42"
+          alt={`Bandera de ${match.teamA.name}`}
+          loading="lazy"
+          class="w-12 h-9 sm:w-14 sm:h-10 object-cover rounded shadow-sm ring-1 ring-black/5"
+        />
+        <span
+          class="text-xs sm:text-sm font-bold text-[#0D2C4D] leading-tight"
+        >
+          {match.teamA.name}
+        </span>
+      </div>
+
+      <!-- Inputs / resultado -->
+      <div class="flex items-center gap-1 sm:gap-2">
+        <input
+          type="number"
+          min="0"
+          max="20"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          aria-label={`Goles de ${match.teamA.name}`}
+          data-pred-side="a"
+          class="copa-match-input w-12 h-12 sm:w-14 sm:h-14 rounded-xl border-2 border-gray-200 bg-white text-center text-xl sm:text-2xl font-extrabold text-[#0D2C4D] focus:outline-none focus:border-[#117CD9] focus:ring-2 focus:ring-[#117CD9]/30 transition disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+          value={match.result?.goalsA ?? ""}
+        />
+        <span
+          class="text-base sm:text-lg font-bold text-gray-400"
+          aria-hidden="true">–</span
+        >
+        <input
+          type="number"
+          min="0"
+          max="20"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          aria-label={`Goles de ${match.teamB.name}`}
+          data-pred-side="b"
+          class="copa-match-input w-12 h-12 sm:w-14 sm:h-14 rounded-xl border-2 border-gray-200 bg-white text-center text-xl sm:text-2xl font-extrabold text-[#0D2C4D] focus:outline-none focus:border-[#117CD9] focus:ring-2 focus:ring-[#117CD9]/30 transition disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+          value={match.result?.goalsB ?? ""}
+        />
+      </div>
+
+      <!-- Equipo B -->
+      <div class="flex flex-col items-center text-center gap-2">
+        <img
+          src={flagUrl(match.teamB.code)}
+          srcset={`${flagUrl(match.teamB.code)} 1x, ${flagUrl2x(match.teamB.code)} 2x`}
+          width="56"
+          height="42"
+          alt={`Bandera de ${match.teamB.name}`}
+          loading="lazy"
+          class="w-12 h-9 sm:w-14 sm:h-10 object-cover rounded shadow-sm ring-1 ring-black/5"
+        />
+        <span
+          class="text-xs sm:text-sm font-bold text-[#0D2C4D] leading-tight"
+        >
+          {match.teamB.name}
+        </span>
+      </div>
+    </div>
+
+    {
+      match.venue && (
+        <p class="mt-4 text-center text-[11px] sm:text-xs text-gray-500 flex items-center justify-center gap-1.5">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-3.5 h-3.5"
+            aria-hidden="true"
+          >
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          {match.venue}
+        </p>
+      )
+    }
+  </div>
+
+  <!-- Footer: cutoff / estado / resultado -->
+  <footer
+    class="px-4 sm:px-5 py-3 border-t border-gray-100 bg-gray-50 text-sm"
+  >
+    {
+      isFinished ? (
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+          data-finished-block
+        >
+          <div class="flex items-center gap-2 text-gray-600">
+            <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              {labels.actualResult}:
+            </span>
+            <span class="text-base font-extrabold text-[#0D2C4D]">
+              {match.result?.goalsA} – {match.result?.goalsB}
+            </span>
+          </div>
+          <div
+            class="copa-match-points flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider"
+            data-points-label={labels.pointsEarned}
+            data-no-points-label={labels.pointsLost}
+            data-no-prediction-label={labels.noPrediction}
+          >
+            <span class="text-gray-400">{labels.noPrediction}</span>
+          </div>
+        </div>
+      ) : (
+        <div class="copa-match-footer-open flex items-start gap-2 text-gray-600">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-4 h-4 mt-0.5 flex-shrink-0 text-[#117CD9]"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <div class="flex-1 min-w-0">
+            <p
+              class="copa-match-cutoff text-xs sm:text-sm leading-snug"
+              data-cutoff-prefix={labels.cutoffPrefix}
+              data-cutoff-passed={labels.cutoffPassed}
+            >
+              {labels.cutoffPrefix}…
+            </p>
+            <p
+              class="copa-match-save-feedback hidden text-xs mt-1 font-semibold"
+              data-saved-label={labels.saved}
+            />
+          </div>
+        </div>
+      )
+    }
+  </footer>
+</article>

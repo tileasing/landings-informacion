@@ -1,0 +1,202 @@
+---
+import logoOautos from "../../assets/logoOautos-copa.png";
+import type { CopaAppNavbarContent } from "../../content/copa-oautos-2026-app";
+
+interface Props {
+  content: CopaAppNavbarContent;
+}
+
+const { content } = Astro.props;
+
+const initials =
+  content.user.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "?";
+---
+
+<header
+  class="sticky top-0 z-40 w-full bg-white border-b border-white/10 shadow-lg"
+>
+  <div
+    class="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3"
+  >
+    <a
+      href={content.homeHref}
+      class="flex items-center gap-2 sm:gap-3 text-white"
+      aria-label={content.brandLabel}
+    >
+      <img src={logoOautos.src} alt="Oautos" class="h-8 sm:h-9 w-auto" />
+    </a>
+
+    <div class="relative" id="copa-user-menu">
+      <button
+        type="button"
+        id="copa-user-menu-button"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-controls="copa-user-menu-panel"
+        aria-label={content.menuAriaLabel}
+        class="flex items-center gap-2 sm:gap-3 rounded-full bg-blue-100 hover:bg-blue-200 transition px-2 py-1.5 sm:pl-2 sm:pr-3 text-blue-900 border border-white/15"
+      >
+        <span
+          class="flex h-9 w-9 items-center justify-center rounded-full bg-[#117CD9] text-white font-bold text-sm"
+          aria-hidden="true"
+        >
+          {initials}
+        </span>
+        <span class="hidden sm:flex flex-col items-start leading-tight">
+          <span class="text-sm font-semibold">{content.user.name}</span>
+          <span class="text-[11px] text-gray-600">{content.user.email}</span>
+        </span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="w-4 h-4 text-white/70 transition-transform duration-200"
+          id="copa-user-menu-chevron"
+          aria-hidden="true"
+        >
+          <path d="m6 9 6 6 6-6"></path>
+        </svg>
+      </button>
+
+      <div
+        id="copa-user-menu-panel"
+        role="menu"
+        aria-labelledby="copa-user-menu-button"
+        class="hidden absolute right-0 mt-2 w-64 origin-top-right rounded-2xl bg-white text-gray-800 shadow-2xl ring-1 ring-black/5 overflow-hidden"
+      >
+        <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+          <p class="text-xs text-gray-500 uppercase tracking-wider">
+            Sesión iniciada como
+          </p>
+          <p class="text-sm font-semibold text-gray-900 truncate">
+            {content.user.name}
+          </p>
+          <p class="text-xs text-gray-500 truncate">{content.user.email}</p>
+        </div>
+        <nav class="py-1">
+          {
+            content.menuItems.map((item) => (
+              <a
+                href={item.href}
+                role="menuitem"
+                class:list={[
+                  "flex items-center gap-3 px-4 py-2.5 text-sm transition",
+                  item.variant === "danger"
+                    ? "text-red-600 hover:bg-red-50 border-t border-gray-100"
+                    : "text-gray-700 hover:bg-gray-50",
+                ]}
+              >
+                {item.icon === "user" && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-5 h-5 flex-shrink-0"
+                    aria-hidden="true"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                )}
+                {item.icon === "history" && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-5 h-5 flex-shrink-0"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 12a9 9 0 1 0 3-6.7" />
+                    <path d="M3 4v5h5" />
+                    <path d="M12 7v5l3 2" />
+                  </svg>
+                )}
+                {item.icon === "logout" && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-5 h-5 flex-shrink-0"
+                    aria-hidden="true"
+                  >
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <path d="m16 17 5-5-5-5" />
+                    <path d="M21 12H9" />
+                  </svg>
+                )}
+                <span class="font-medium">{item.label}</span>
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  (() => {
+    const root = document.getElementById("copa-user-menu");
+    const button = document.getElementById("copa-user-menu-button");
+    const panel = document.getElementById("copa-user-menu-panel");
+    const chevron = document.getElementById("copa-user-menu-chevron");
+    if (!root || !button || !panel) return;
+
+    const open = () => {
+      panel.classList.remove("hidden");
+      button.setAttribute("aria-expanded", "true");
+      chevron?.classList.add("rotate-180");
+    };
+    const close = () => {
+      panel.classList.add("hidden");
+      button.setAttribute("aria-expanded", "false");
+      chevron?.classList.remove("rotate-180");
+    };
+    const toggle = () => {
+      if (panel.classList.contains("hidden")) {
+        open();
+      } else {
+        close();
+      }
+    };
+
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toggle();
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!root.contains(event.target)) close();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") close();
+    });
+
+    // Cierre del menú al hacer logout para que se vea consistente.
+    panel.querySelectorAll("a[role=menuitem]").forEach((link) => {
+      link.addEventListener("click", () => close());
+    });
+  })();
+</script>

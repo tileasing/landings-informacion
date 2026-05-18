@@ -1,0 +1,221 @@
+---
+import type { CopaTriviaContent } from "../../../content/copa-oautos-2026-app";
+
+interface Props {
+  labels: CopaTriviaContent["labels"];
+}
+
+const { labels } = Astro.props;
+---
+
+<dialog
+  id="copa-trivia-game-modal"
+  aria-labelledby="copa-trivia-game-title"
+  class="bg-transparent backdrop:bg-black/70 backdrop:backdrop-blur-sm sm:rounded-3xl"
+>
+  <div
+    class="bg-white sm:rounded-3xl shadow-2xl ring-1 ring-black/5 w-full h-full sm:h-auto sm:max-h-[90dvh] flex flex-col overflow-hidden"
+  >
+    <!-- Header -->
+    <header
+      class="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-[#3F5E33] bg-[#5F8750] text-white flex-shrink-0"
+    >
+      <div class="min-w-0 flex-1">
+        <p
+          class="text-[10px] sm:text-xs uppercase tracking-wider text-white/70"
+          data-trivia-game-eyebrow
+        >
+          Trivia
+        </p>
+        <h2
+          id="copa-trivia-game-title"
+          data-trivia-game-title
+          class="text-base sm:text-lg font-extrabold leading-tight truncate"
+        >
+          —
+        </h2>
+      </div>
+      <button
+        type="button"
+        data-trivia-game-close
+        aria-label={labels.closeButton}
+        class="flex-shrink-0 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="w-4 h-4"
+          aria-hidden="true"
+        >
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Progress -->
+    <div
+      data-trivia-game-progress-bar
+      class="px-4 sm:px-6 pt-4 sm:pt-5 flex-shrink-0"
+    >
+      <div class="flex items-center justify-between mb-2">
+        <span
+          class="text-[11px] sm:text-xs font-semibold text-[#5F8750] uppercase tracking-wider"
+          data-trivia-game-counter
+        >
+          {labels.questionLabel} 1
+        </span>
+        <span
+          class="text-[11px] sm:text-xs font-semibold text-gray-500"
+          data-trivia-game-percent
+        >
+          0%
+        </span>
+      </div>
+      <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+        <div
+          data-trivia-game-progress
+          class="h-full bg-[#5F8750] rounded-full transition-all duration-300 ease-out"
+          style="width: 0%"
+        >
+        </div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div
+      class="flex-1 overflow-y-auto px-4 sm:px-6 py-5 sm:py-6"
+      data-trivia-game-body
+    >
+      <!-- Slides de preguntas se inyectan por JS -->
+      <div data-trivia-slides class="space-y-4"></div>
+
+      <!-- Pantalla de resultados -->
+      <div data-trivia-results class="hidden">
+        <div class="text-center mb-6">
+          <div
+            class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 mb-3"
+            aria-hidden="true"
+            data-trivia-results-icon
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-8 h-8"
+            >
+              <path d="M20 6 9 17l-5-5"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl sm:text-2xl font-extrabold text-[#0D2C4D] mb-2">
+            {labels.resultsHeading}
+          </h3>
+          <p class="text-sm text-gray-600" data-trivia-results-summary>—</p>
+        </div>
+
+        <div
+          class="bg-gradient-to-br from-[#5F8750] to-[#3F5E33] text-white rounded-2xl p-5 sm:p-6 text-center mb-6 shadow-lg"
+        >
+          <p class="text-xs uppercase tracking-wider text-white/80 mb-1">
+            {labels.pointsEarnedSuffix}
+          </p>
+          <p
+            data-trivia-results-points
+            class="text-4xl sm:text-5xl font-extrabold tabular-nums"
+          >
+            0
+          </p>
+          <p class="text-xs text-white/80 mt-1">pts Copa</p>
+        </div>
+
+        <div
+          class="bg-gray-50 rounded-2xl border border-gray-100 px-4 py-3 mb-6"
+        >
+          <p
+            class="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-500 mb-2"
+          >
+            {labels.breakdownTitle}
+          </p>
+          <ul class="space-y-1.5 text-sm" data-trivia-results-breakdown></ul>
+        </div>
+
+        <div class="space-y-3" data-trivia-results-review></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer
+      class="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100 bg-gray-50 flex-shrink-0"
+      data-trivia-game-footer
+    >
+      <button
+        type="button"
+        data-trivia-game-prev
+        class="px-4 sm:px-5 py-2 rounded-full text-sm font-medium text-gray-600 hover:text-[#5F8750] hover:bg-[#5F8750]/10 transition disabled:opacity-40 disabled:cursor-not-allowed"
+        disabled
+      >
+        ← {labels.prevButton}
+      </button>
+      <button
+        type="button"
+        data-trivia-game-next
+        class="px-5 sm:px-6 py-2.5 rounded-full text-sm font-semibold bg-[#5F8750] text-white border-2 border-[#5F8750] hover:bg-[#3F5E33] hover:border-[#3F5E33] transition disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed"
+        disabled
+      >
+        {labels.nextButton} →
+      </button>
+      <button
+        type="button"
+        data-trivia-game-submit
+        class="hidden px-5 sm:px-6 py-2.5 rounded-full text-sm font-semibold bg-[#5F8750] text-white border-2 border-[#5F8750] hover:bg-[#3F5E33] hover:border-[#3F5E33] transition disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed"
+        disabled
+      >
+        {labels.submitButton}
+      </button>
+      <button
+        type="button"
+        data-trivia-game-finish
+        class="hidden px-5 sm:px-6 py-2.5 rounded-full text-sm font-semibold bg-[#0D2C4D] text-white hover:bg-[#0D2C4D]/90 transition"
+      >
+        {labels.finishButton}
+      </button>
+    </footer>
+  </div>
+</dialog>
+
+<style>
+  dialog:not([open]) {
+    display: none;
+  }
+
+  /* Móvil: fullscreen pegado a los bordes. */
+  dialog#copa-trivia-game-modal {
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+  }
+
+  /* Desktop: ancho fijo, alto auto, centrado por margin auto. */
+  @media (min-width: 640px) {
+    dialog#copa-trivia-game-modal {
+      width: min(calc(100% - 2rem), 520px);
+      height: auto;
+      max-height: 90dvh;
+      margin: auto;
+    }
+  }
+</style>

@@ -1,0 +1,117 @@
+---
+import type { CopaAppPointsContent } from "../../content/copa-oautos-2026-app";
+
+interface Props {
+  content: CopaAppPointsContent;
+}
+
+const { content } = Astro.props;
+const { data, pointsSuffix } = content;
+
+const breakdown = [
+  { label: content.quinielaLabel, value: data.quiniela, accent: "blue" },
+  { label: content.triviaLabel, value: data.trivia, accent: "green" },
+  { label: content.appLabel, value: data.app, accent: "amber" },
+] as const;
+
+const accentMap = {
+  blue: "bg-[#117CD9]/10 text-[#0D5FB3]",
+  green: "bg-[#5F8750]/15 text-[#3F5E33]",
+  amber: "bg-amber-100 text-amber-700",
+} as const;
+---
+
+<section
+  aria-labelledby="copa-points-title"
+  class="bg-[#F4F7FB]"
+>
+  <div class="max-w-[1200px] mx-auto px-4 sm:px-6 -mt-8 sm:-mt-10 relative z-20">
+    <div
+      class="bg-white rounded-3xl shadow-xl ring-1 ring-black/5 p-5 sm:p-7"
+    >
+      <div
+        class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div>
+          <span
+            class="block text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#117CD9] mb-1"
+          >
+            {content.eyebrow}
+          </span>
+          <h2
+            id="copa-points-title"
+            class="text-xl sm:text-2xl font-extrabold text-[#0D2C4D]"
+          >
+            {content.title}
+          </h2>
+          <p class="mt-1 text-sm text-gray-600 max-w-md">
+            {content.subtitle}
+          </p>
+        </div>
+
+        <div
+          class="flex items-center gap-4 bg-gradient-to-br from-[#0D2C4D] to-[#117CD9] text-white rounded-2xl px-5 py-4 shadow-lg"
+        >
+          <span
+            class="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm"
+            aria-hidden="true"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-6 h-6"
+            >
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+              <path d="M4 22h16" />
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+            </svg>
+          </span>
+          <div>
+            <p
+              class="text-[11px] uppercase tracking-wider text-white/70 font-semibold"
+            >
+              {content.totalLabel}
+            </p>
+            <p class="text-3xl sm:text-4xl font-extrabold leading-none">
+              {data.total}
+              <span class="text-base font-semibold text-white/80 ml-1"
+                >{pointsSuffix}</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+        {
+          breakdown.map((item) => (
+            <div class="rounded-2xl border border-gray-100 bg-gray-50 px-3 py-3 sm:px-4 sm:py-4 text-center sm:text-left">
+              <span
+                class:list={[
+                  "inline-block text-[10px] sm:text-xs font-semibold uppercase tracking-wider rounded-full px-2 py-0.5 mb-1.5",
+                  accentMap[item.accent],
+                ]}
+              >
+                {item.label}
+              </span>
+              <p class="text-xl sm:text-2xl font-extrabold text-[#0D2C4D] leading-none">
+                {item.value}
+                <span class="text-xs font-semibold text-gray-500 ml-0.5">
+                  {pointsSuffix}
+                </span>
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

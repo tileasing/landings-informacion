@@ -1,0 +1,193 @@
+---
+import type { CopaQuinielaContent } from "../../../content/copa-oautos-2026-app";
+
+interface Props {
+  content: CopaQuinielaContent["pointsTable"];
+}
+
+const { content } = Astro.props;
+
+const scopeStyles = {
+  match: "bg-[#117CD9]/10 text-[#0D5FB3]",
+  tournament: "bg-amber-100 text-amber-700",
+  engagement: "bg-[#5F8750]/15 text-[#3F5E33]",
+} as const;
+const scopeLabel = {
+  match: "Por partido",
+  tournament: "Del torneo",
+  engagement: "Constancia",
+} as const;
+---
+
+<dialog
+  id="copa-points-modal"
+  aria-labelledby="copa-points-modal-title"
+  class="m-0 max-w-lg w-[calc(100%-1.5rem)] sm:w-full p-0 bg-transparent rounded-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm fixed inset-0 sm:m-auto"
+>
+  <div
+    class="bg-white rounded-2xl shadow-2xl ring-1 ring-black/5 overflow-hidden max-h-[90dvh] flex flex-col"
+  >
+    <header
+      class="flex items-start justify-between gap-3 px-4 sm:px-6 py-4 border-b border-gray-100 bg-gray-50"
+    >
+      <div class="flex items-center gap-3 min-w-0">
+        <span
+          class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#117CD9]/10 text-[#117CD9]"
+          aria-hidden="true"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-5 h-5"
+          >
+            <path d="M4 19h16" />
+            <path d="M4 15h16" />
+            <path d="M4 11h16" />
+            <path d="M4 7h16" />
+          </svg>
+        </span>
+        <div class="min-w-0">
+          <span
+            class="block text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[#117CD9]"
+          >
+            {content.eyebrow}
+          </span>
+          <h2
+            id="copa-points-modal-title"
+            class="text-base sm:text-lg font-extrabold text-[#0D2C4D] truncate"
+          >
+            {content.title}
+          </h2>
+        </div>
+      </div>
+      <button
+        type="button"
+        data-close-points-modal
+        aria-label="Cerrar tabla de puntos"
+        class="flex-shrink-0 flex h-9 w-9 items-center justify-center rounded-full bg-white ring-1 ring-gray-200 text-gray-500 hover:bg-gray-100 hover:text-[#0D2C4D] transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="w-4 h-4"
+          aria-hidden="true"
+        >
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </header>
+
+    <div class="px-4 sm:px-6 py-5 overflow-y-auto">
+      <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+        {content.description}
+      </p>
+
+      <ul class="space-y-2">
+        {
+          content.rules.map((rule) => {
+            const scope = rule.scope ?? "match";
+            return (
+              <li class="flex items-start gap-3 rounded-xl border border-gray-100 bg-gray-50 px-3 py-3">
+                <span
+                  class:list={[
+                    "flex-shrink-0 flex flex-col items-center justify-center rounded-lg font-extrabold text-sm sm:text-base h-12 min-w-[3.5rem] px-2",
+                    rule.points > 0
+                      ? "bg-[#117CD9] text-white"
+                      : "bg-gray-200 text-gray-500",
+                  ]}
+                  aria-hidden="true"
+                >
+                  <span class="text-base sm:text-lg leading-none">
+                    +{rule.points}
+                  </span>
+                  <span class="text-[9px] uppercase tracking-wider opacity-80 mt-0.5">
+                    pts
+                  </span>
+                </span>
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <p class="text-sm font-bold text-[#0D2C4D] leading-tight">
+                      {rule.label}
+                    </p>
+                    <span
+                      class:list={[
+                        "text-[10px] font-semibold uppercase tracking-wider rounded-full px-1.5 py-0.5",
+                        scopeStyles[scope],
+                      ]}
+                    >
+                      {scopeLabel[scope]}
+                    </span>
+                  </div>
+                  <p class="text-xs sm:text-sm text-gray-600 mt-0.5">
+                    {rule.description}
+                  </p>
+                </div>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <p class="mt-4 text-xs text-gray-500 leading-relaxed">{content.note}</p>
+    </div>
+
+    <footer
+      class="px-4 sm:px-6 py-3 border-t border-gray-100 bg-gray-50 flex justify-end"
+    >
+      <button
+        type="button"
+        data-close-points-modal
+        class="inline-flex items-center justify-center px-5 py-2 rounded-full text-sm font-semibold bg-[#117CD9] text-white hover:bg-[#0D5FB3] transition"
+      >
+        Entendido
+      </button>
+    </footer>
+  </div>
+</dialog>
+
+<script is:inline>
+  (() => {
+    const modal = document.getElementById("copa-points-modal");
+    if (!modal) return;
+
+    const triggers = document.querySelectorAll("[data-open-points-modal]");
+    const closers = modal.querySelectorAll("[data-close-points-modal]");
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        if (typeof modal.showModal === "function") {
+          modal.showModal();
+        } else {
+          modal.setAttribute("open", "");
+        }
+      });
+    });
+
+    closers.forEach((closer) => {
+      closer.addEventListener("click", () => modal.close());
+    });
+
+    // Cerrar al hacer click en el backdrop.
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) modal.close();
+    });
+  })();
+</script>
+
+<style>
+  /* Algunos navegadores (Safari < 15.4) no soportan <dialog>; este fallback evita que rompa visualmente. */
+  dialog:not([open]) {
+    display: none;
+  }
+</style>

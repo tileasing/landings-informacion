@@ -1,0 +1,178 @@
+---
+import type { CopaTriviaContent } from "../../../content/copa-oautos-2026-app";
+
+interface Props {
+  content: CopaTriviaContent["pointsTable"];
+}
+
+const { content } = Astro.props;
+---
+
+<dialog
+  id="copa-trivia-points-modal"
+  aria-labelledby="copa-trivia-points-modal-title"
+  class="m-0 max-w-lg w-[calc(100%-1.5rem)] sm:w-full p-0 bg-transparent rounded-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm fixed inset-0 sm:m-auto"
+>
+  <div
+    class="bg-white rounded-2xl shadow-2xl ring-1 ring-black/5 overflow-hidden max-h-[90dvh] flex flex-col"
+  >
+    <header
+      class="flex items-start justify-between gap-3 px-4 sm:px-6 py-4 border-b border-gray-100 bg-gray-50"
+    >
+      <div class="flex items-center gap-3 min-w-0">
+        <span
+          class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#5F8750]/15 text-[#3F5E33]"
+          aria-hidden="true"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-5 h-5"
+          >
+            <path d="M4 19h16" />
+            <path d="M4 15h16" />
+            <path d="M4 11h16" />
+            <path d="M4 7h16" />
+          </svg>
+        </span>
+        <div class="min-w-0">
+          <span
+            class="block text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[#5F8750]"
+          >
+            {content.eyebrow}
+          </span>
+          <h2
+            id="copa-trivia-points-modal-title"
+            class="text-base sm:text-lg font-extrabold text-[#0D2C4D] truncate"
+          >
+            {content.title}
+          </h2>
+        </div>
+      </div>
+      <button
+        type="button"
+        data-close-trivia-points-modal
+        aria-label="Cerrar tabla de puntos"
+        class="flex-shrink-0 flex h-9 w-9 items-center justify-center rounded-full bg-white ring-1 ring-gray-200 text-gray-500 hover:bg-gray-100 hover:text-[#0D2C4D] transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="w-4 h-4"
+          aria-hidden="true"
+        >
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </header>
+
+    <div class="px-4 sm:px-6 py-5 overflow-y-auto">
+      <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+        {content.description}
+      </p>
+
+      <ul class="space-y-2">
+        {
+          content.rules.map((rule) => {
+            const isMultiplier = rule.display === "multiplier";
+            const isCap = rule.display === "cap";
+            const badgeClass = isCap
+              ? "bg-amber-500 text-white"
+              : isMultiplier
+                ? "bg-[#5F8750] text-white"
+                : "bg-[#117CD9] text-white";
+            const badgeText = isMultiplier
+              ? `×${rule.points}`
+              : isCap
+                ? `${rule.points}`
+                : `+${rule.points}`;
+            return (
+              <li class="flex items-start gap-3 rounded-xl border border-gray-100 bg-gray-50 px-3 py-3">
+                <span
+                  class:list={[
+                    "flex-shrink-0 flex flex-col items-center justify-center rounded-lg font-extrabold h-12 min-w-[3.5rem] px-2",
+                    badgeClass,
+                  ]}
+                  aria-hidden="true"
+                >
+                  <span class="text-base sm:text-lg leading-none">
+                    {badgeText}
+                  </span>
+                  <span class="text-[9px] uppercase tracking-wider opacity-80 mt-0.5">
+                    {isMultiplier ? "puntos" : isCap ? "máximo" : "pts"}
+                  </span>
+                </span>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-bold text-[#0D2C4D] leading-tight">
+                    {rule.label}
+                  </p>
+                  <p class="text-xs sm:text-sm text-gray-600 mt-0.5">
+                    {rule.description}
+                  </p>
+                </div>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <p class="mt-4 text-xs text-gray-500 leading-relaxed">{content.note}</p>
+    </div>
+
+    <footer
+      class="px-4 sm:px-6 py-3 border-t border-gray-100 bg-gray-50 flex justify-end"
+    >
+      <button
+        type="button"
+        data-close-trivia-points-modal
+        class="inline-flex items-center justify-center px-5 py-2 rounded-full text-sm font-semibold bg-[#5F8750] text-white hover:bg-[#3F5E33] transition"
+      >
+        Entendido
+      </button>
+    </footer>
+  </div>
+</dialog>
+
+<script is:inline>
+  (() => {
+    const modal = document.getElementById("copa-trivia-points-modal");
+    if (!modal) return;
+    const triggers = document.querySelectorAll(
+      "[data-open-trivia-points-modal]",
+    );
+    const closers = modal.querySelectorAll("[data-close-trivia-points-modal]");
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        if (typeof modal.showModal === "function") {
+          modal.showModal();
+        } else {
+          modal.setAttribute("open", "");
+        }
+      });
+    });
+    closers.forEach((closer) => {
+      closer.addEventListener("click", () => modal.close());
+    });
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) modal.close();
+    });
+  })();
+</script>
+
+<style>
+  dialog:not([open]) {
+    display: none;
+  }
+</style>

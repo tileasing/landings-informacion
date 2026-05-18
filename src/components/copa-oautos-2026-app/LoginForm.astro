@@ -1,0 +1,195 @@
+---
+import Button from "../shared/Button.astro";
+import logoOautos from "../../assets/logoOautos-copa.png";
+import type { CopaAppLoginContent } from "../../content/copa-oautos-2026-app";
+
+interface Props {
+  content: CopaAppLoginContent;
+}
+
+const { content } = Astro.props;
+---
+
+<section
+  class="relative min-h-dvh w-full flex items-center justify-center overflow-hidden px-5 py-12"
+>
+  <!-- Fondo con gradiente de marca -->
+  <div
+    class="absolute inset-0 bg-gradient-to-br from-[#0D2C4D] via-[#117CD9] to-[#0D2C4D]"
+    aria-hidden="true"
+  >
+  </div>
+  <div class="absolute inset-0 bg-black/40" aria-hidden="true"></div>
+
+  <!-- Card del login -->
+  <div
+    class="relative z-10 w-full max-w-md bg-white text-gray-900 rounded-3xl shadow-2xl px-7 sm:px-10 py-10"
+  >
+    <div class="text-center mb-8">
+      <div
+        class="inline-flex items-center justify-center bg-[#0D2C4D] rounded-2xl px-5 py-3 mb-6"
+      >
+        <img
+          src={logoOautos.src}
+          alt="Oautos"
+          class="h-9 w-auto"
+        />
+      </div>
+
+      <span
+        class="block text-xs font-semibold uppercase tracking-[0.2em] text-[#117CD9] mb-2"
+      >
+        {content.eyebrow}
+      </span>
+
+      <h1 class="text-2xl sm:text-3xl font-extrabold leading-tight mb-3">
+        {content.title}
+      </h1>
+
+      <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+        {content.subtitle}
+      </p>
+    </div>
+
+    <form
+      id="copa-login-form"
+      class="space-y-5"
+      novalidate
+      autocomplete="on"
+    >
+      <div>
+        <label
+          for="copa-login-email"
+          class="block text-sm font-semibold text-gray-800 mb-1.5"
+        >
+          {content.emailLabel}
+        </label>
+        <input
+          id="copa-login-email"
+          name="email"
+          type="email"
+          inputmode="email"
+          autocomplete="email"
+          required
+          placeholder={content.emailPlaceholder}
+          class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#117CD9] focus:ring-2 focus:ring-[#117CD9]/30 transition"
+        />
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <label
+            for="copa-login-password"
+            class="block text-sm font-semibold text-gray-800"
+          >
+            {content.passwordLabel}
+          </label>
+          <a
+            href="#"
+            class="text-xs font-medium text-[#117CD9] hover:underline"
+          >
+            {content.forgotPassword}
+          </a>
+        </div>
+        <div class="relative">
+          <input
+            id="copa-login-password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+            minlength={6}
+            placeholder={content.passwordPlaceholder}
+            class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 pr-12 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#117CD9] focus:ring-2 focus:ring-[#117CD9]/30 transition"
+          />
+          <button
+            type="button"
+            id="copa-login-toggle"
+            aria-label="Mostrar u ocultar contraseña"
+            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-[#117CD9] transition"
+          >
+            <svg
+              id="copa-login-eye"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-5 h-5"
+            >
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <p
+        id="copa-login-error"
+        role="alert"
+        class="hidden text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2"
+      >
+      </p>
+
+      <button
+        type="submit"
+        class="block w-full px-10 py-3 rounded-full text-base font-semibold border-2 border-[#117CD9] bg-[#117CD9] text-white hover:bg-[#0D5FB3] hover:border-[#0D5FB3] transition-all duration-300"
+      >
+        {content.submit}
+      </button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+      {content.helper}{" "}
+      <a
+        href="/copa-oautos-2026"
+        class="font-semibold text-[#117CD9] hover:underline"
+      >
+        Conoce la Copa
+      </a>
+    </p>
+
+    <p class="mt-8 text-center text-xs text-gray-400">
+      {content.footnote}
+    </p>
+  </div>
+</section>
+
+<script is:inline define:vars={{ successRedirect: content.successRedirect }}>
+  (() => {
+    const form = document.getElementById("copa-login-form");
+    const toggle = document.getElementById("copa-login-toggle");
+    const passwordInput = document.getElementById("copa-login-password");
+    const errorEl = document.getElementById("copa-login-error");
+
+    if (toggle && passwordInput) {
+      toggle.addEventListener("click", () => {
+        const isPassword = passwordInput.getAttribute("type") === "password";
+        passwordInput.setAttribute("type", isPassword ? "text" : "password");
+      });
+    }
+
+    if (form && errorEl) {
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        errorEl.classList.add("hidden");
+        errorEl.textContent = "";
+
+        const formData = new FormData(form);
+        const email = String(formData.get("email") || "").trim();
+        const password = String(formData.get("password") || "");
+
+        if (!email || !password) {
+          errorEl.textContent = "Por favor completa todos los campos.";
+          errorEl.classList.remove("hidden");
+          return;
+        }
+
+        // TODO: reemplazar por la llamada real al endpoint de autenticación.
+        window.location.href = successRedirect;
+      });
+    }
+  })();
+</script>

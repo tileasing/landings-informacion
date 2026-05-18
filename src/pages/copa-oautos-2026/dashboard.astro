@@ -1,0 +1,20 @@
+---
+import CopaAppLayout from "../../layouts/CopaAppLayout.astro";
+import AppNavbar from "../../components/copa-oautos-2026-app/AppNavbar.astro";
+import DashboardHero from "../../components/copa-oautos-2026-app/DashboardHero.astro";
+import PointsMetric from "../../components/copa-oautos-2026-app/PointsMetric.astro";
+import ParticipationCards from "../../components/copa-oautos-2026-app/ParticipationCards.astro";
+import { content } from "../../content/copa-oautos-2026-app";
+---
+
+<CopaAppLayout
+  title="Copa Oautos 2026 · Panel del participante"
+  description="Panel principal de la plataforma Copa Oautos 2026."
+>
+  <AppNavbar content={content.navbar} />
+  <main class="bg-[#F4F7FB] min-h-[calc(100dvh-4rem)] pb-12">
+    <DashboardHero content={content.dashboard} user={content.navbar.user} />
+    <PointsMetric content={content.points} />
+    <ParticipationCards content={content.dashboard} />
+  </main>
+</CopaAppLayout>

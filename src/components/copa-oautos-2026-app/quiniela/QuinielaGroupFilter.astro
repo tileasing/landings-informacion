@@ -1,0 +1,76 @@
+---
+interface Props {
+  groups: string[]; // ej. ['A', 'B', 'C', ...]
+}
+
+const { groups } = Astro.props;
+---
+
+<div
+  class="bg-white rounded-2xl ring-1 ring-gray-200 shadow-sm px-3 sm:px-4 py-3"
+  data-group-filter-bar
+>
+  <div class="flex items-center gap-2 mb-2">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="w-4 h-4 text-[#117CD9]"
+      aria-hidden="true"
+    >
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+    </svg>
+    <span class="text-xs sm:text-sm font-semibold text-gray-700">
+      Filtrar por grupo
+    </span>
+    <button
+      type="button"
+      data-group-filter-reset
+      class="ml-auto hidden text-xs font-semibold text-[#117CD9] hover:underline"
+    >
+      Quitar filtro
+    </button>
+  </div>
+  <div
+    class="flex gap-1.5 overflow-x-auto no-scrollbar"
+    role="tablist"
+    aria-label="Grupos disponibles"
+  >
+    <button
+      type="button"
+      role="tab"
+      data-group-filter="all"
+      aria-selected="true"
+      class="copa-group-chip flex-shrink-0 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-full border-2 transition bg-[#117CD9] border-[#117CD9] text-white"
+    >
+      Todos
+    </button>
+    {
+      groups.map((g) => (
+        <button
+          type="button"
+          role="tab"
+          data-group-filter={g}
+          aria-selected="false"
+          class="copa-group-chip flex-shrink-0 w-9 sm:w-10 py-1.5 text-xs sm:text-sm font-semibold rounded-full border-2 transition bg-white border-gray-200 text-gray-600 hover:border-[#117CD9] hover:text-[#117CD9]"
+        >
+          {g}
+        </button>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
