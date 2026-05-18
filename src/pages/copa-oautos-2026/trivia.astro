@@ -177,7 +177,50 @@ const triviasForScript = orderedTrivias.map((t) => ({
     };
 
     // === Render del estado de cada tarjeta ===
-    const setStatus = (card, status) => {
+    const PLAY_BTN_ACTIVE = [
+      "bg-[#5F8750]",
+      "text-white",
+      "hover:bg-[#3F5E33]",
+      "shadow",
+    ];
+    const PLAY_BTN_PENDING = [
+      "bg-gray-100",
+      "text-gray-400",
+      "cursor-not-allowed",
+      "ring-1",
+      "ring-gray-200",
+    ];
+
+    const stylePlayButton = (card, variant) => {
+      const playBtn = card.querySelector("[data-trivia-play]");
+      if (!playBtn) return;
+      [...PLAY_BTN_ACTIVE, ...PLAY_BTN_PENDING].forEach((c) =>
+        playBtn.classList.remove(c),
+      );
+      const textEl = playBtn.querySelector("[data-trivia-play-text]");
+      const iconPlay = playBtn.querySelector("[data-trivia-play-icon-play]");
+      const iconPending = playBtn.querySelector(
+        "[data-trivia-play-icon-pending]",
+      );
+
+      if (variant === "active") {
+        PLAY_BTN_ACTIVE.forEach((c) => playBtn.classList.add(c));
+        if (textEl) textEl.textContent = playBtn.dataset.labelPlay;
+        iconPlay?.classList.remove("hidden");
+        iconPending?.classList.add("hidden");
+        playBtn.disabled = false;
+        playBtn.removeAttribute("title");
+      } else {
+        PLAY_BTN_PENDING.forEach((c) => playBtn.classList.add(c));
+        if (textEl) textEl.textContent = playBtn.dataset.labelPending;
+        iconPlay?.classList.add("hidden");
+        iconPending?.classList.remove("hidden");
+        playBtn.disabled = true;
+        playBtn.setAttribute("title", labels.pendingHint);
+      }
+    };
+
+    const setStatus = (card, status, hasContent) => {
       const badge = card.querySelector("[data-trivia-status]");
       if (!badge) return;
       badge.classList.remove(
@@ -206,28 +249,28 @@ const triviasForScript = orderedTrivias.map((t) => ({
           label: badge.dataset.labelLocked,
           badgeClasses: ["bg-gray-200", "text-gray-700"],
           accentClass: "bg-gray-200",
-          showPlay: false,
+          playVariant: "pending", // Próximamente en gris.
           showResult: false,
         },
         available: {
           label: badge.dataset.labelAvailable,
           badgeClasses: ["bg-emerald-100", "text-emerald-700"],
           accentClass: "bg-[#5F8750]",
-          showPlay: true,
+          playVariant: hasContent ? "active" : "pending",
           showResult: false,
         },
         closed: {
           label: badge.dataset.labelClosed,
           badgeClasses: ["bg-red-100", "text-red-700"],
           accentClass: "bg-red-300",
-          showPlay: false,
+          playVariant: null,
           showResult: false,
         },
         completed: {
           label: badge.dataset.labelCompleted,
           badgeClasses: ["bg-emerald-100", "text-emerald-700"],
           accentClass: "bg-emerald-500",
-          showPlay: false,
+          playVariant: null,
           showResult: true,
         },
       };
@@ -235,7 +278,15 @@ const triviasForScript = orderedTrivias.map((t) => ({
       badge.textContent = cfg.label;
       cfg.badgeClasses.forEach((c) => badge.classList.add(c));
       if (accent) accent.classList.add(cfg.accentClass);
-      if (playBtn) playBtn.classList.toggle("hidden", !cfg.showPlay);
+
+      if (playBtn) {
+        if (cfg.playVariant) {
+          playBtn.classList.remove("hidden");
+          stylePlayButton(card, cfg.playVariant);
+        } else {
+          playBtn.classList.add("hidden");
+        }
+      }
       if (resultBlock) resultBlock.classList.toggle("hidden", !cfg.showResult);
     };
 
@@ -249,7 +300,6 @@ const triviasForScript = orderedTrivias.map((t) => ({
 
       const meta = card.querySelector("[data-trivia-meta]");
       const metaText = card.querySelector(".copa-trivia-meta-text");
-      const playBtn = card.querySelector("[data-trivia-play]");
       const resultPointsEl = card.querySelector("[data-trivia-result-points]");
 
       const stored = results[triviaId];
@@ -277,26 +327,7 @@ const triviasForScript = orderedTrivias.map((t) => ({
       }
 
       if (metaText) metaText.textContent = metaContent;
-      setStatus(card, status);
-
-      // Bloquear play si no hay preguntas todavía.
-      if (playBtn && status === "available" && !hasContent) {
-        playBtn.disabled = true;
-        playBtn.classList.add(
-          "opacity-60",
-          "cursor-not-allowed",
-          "hover:bg-[#5F8750]",
-        );
-        playBtn.setAttribute("title", labels.pendingHint);
-      } else if (playBtn) {
-        playBtn.disabled = false;
-        playBtn.classList.remove(
-          "opacity-60",
-          "cursor-not-allowed",
-          "hover:bg-[#5F8750]",
-        );
-        playBtn.removeAttribute("title");
-      }
+      setStatus(card, status, hasContent);
     };
 
     const triviaCards = Array.from(document.querySelectorAll("[data-trivia-card]"));

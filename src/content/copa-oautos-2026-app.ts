@@ -55,6 +55,8 @@ export interface CopaAppDashboardCard {
   cta: string;
   href: string;
   accent: 'blue' | 'green';
+  bannerImage: string; // ruta relativa a src/assets/ (placeholder mientras llega arte definitivo)
+  bannerAlt?: string;
 }
 
 export interface CopaAppDashboardContent {
@@ -375,7 +377,7 @@ export const content: CopaAppContent = {
     liveClockLabel: 'Estás conectado',
     cardsTitle: '¿Cómo quieres participar hoy?',
     cardsSubtitle:
-      'Tienes dos formas principales de jugar durante el mundial. Puedes hacer las dos cuantas veces se habiliten.',
+      'Aquí encuentras dos formas de jugar durante el mundial.',
     cards: [
       {
         id: 'quiniela',
@@ -383,14 +385,17 @@ export const content: CopaAppContent = {
         eyebrow: 'Predicciones',
         title: 'Quiniela',
         description:
-          'Pronostica los resultados de los partidos del mundial y acumula puntos por cada acierto.',
+          'Pronostica los marcadores y acumula puntos por cada acierto.',
         highlights: [
-          'Disponible antes de cada partido',
-          'Puntos extra por marcador exacto',
+          'Todos los partidos desbloqueados por fase.',
+          'Bonus por MVP y goleador del torneo.',
+          'Marcador exacto vale +150 · ganador o empate correctos +50.',
         ],
         cta: 'Ir a la quiniela',
         href: '/copa-oautos-2026/quiniela',
         accent: 'blue',
+        bannerImage: 'bannerQuiniela.jpg',
+        bannerAlt: 'Estadio durante un partido del mundial',
       },
       {
         id: 'trivia',
@@ -398,14 +403,17 @@ export const content: CopaAppContent = {
         eyebrow: 'Conocimiento',
         title: 'Trivia',
         description:
-          'Responde preguntas sobre fútbol y la Copa Oautos para sumar puntos al instante.',
+          'Responde 5 preguntas por trivia y suma puntos al instante.',
         highlights: [
-          'Nuevas preguntas cada semana',
-          'Bonificación por racha de aciertos',
+          '12 trivias en fechas clave del mundial · una sola oportunidad por trivia.',
+          'Hasta 500 puntos por trivia perfecta · doble de puntos si aciertas las Oautos.',
+          'Bonificación extra por completar todas las trivias del calendario.',
         ],
         cta: 'Jugar trivia',
         href: '/copa-oautos-2026/trivia',
         accent: 'green',
+        bannerImage: 'bannerTrivia.jpg',
+        bannerAlt: 'Trivia Copa Oautos',
       },
     ],
   },
@@ -1310,7 +1318,8 @@ export const content: CopaAppContent = {
         name: 'TRIVIA_01',
         title: 'Trivia Mundialista Inicial',
         typeLabel: 'Mundial + Oautos',
-        availableFrom: '2026-06-03T00:00:00-06:00',
+        // Habilitada desde antes para pruebas / preview anticipado.
+        availableFrom: '2026-05-01T00:00:00-06:00',
         questions: [
           {
             id: 't1-q1',
@@ -1521,7 +1530,7 @@ export const content: CopaAppContent = {
       completedAtPrefix: 'Completada el',
       playButton: 'Jugar trivia',
       reviewButton: 'Ver mis respuestas',
-      pendingContent: 'Preguntas próximamente',
+      pendingContent: 'Próximamente',
       pendingHint:
         'Las preguntas se publican unos días antes de la fecha de habilitación.',
       questionLabel: 'Pregunta',
