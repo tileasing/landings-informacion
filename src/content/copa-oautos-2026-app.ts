@@ -310,6 +310,56 @@ export interface CopaTriviaContent {
   };
 }
 
+// === Historial de puntos ===
+
+export type CopaHistorySource = 'all' | 'quiniela' | 'trivia' | 'ruleta';
+
+export interface CopaHistoryFilter {
+  id: CopaHistorySource;
+  label: string;
+}
+
+export interface CopaHistoryContent {
+  meta: CopaAppMeta;
+  header: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+  };
+  filters: CopaHistoryFilter[];
+  summary: {
+    totalLabel: string;
+    breakdownLabel: string;
+    quinielaLabel: string;
+    triviaLabel: string;
+    ruletaLabel: string;
+    pointsSuffix: string;
+  };
+  list: {
+    title: string;
+    countSuffix: string;
+    countSuffixSingular: string;
+  };
+  empty: {
+    title: string;
+    description: string;
+    primaryCta: { label: string; href: string };
+    secondaryCta: { label: string; href: string };
+  };
+  emptyFiltered: {
+    title: string;
+    description: string;
+  };
+  labels: {
+    backToDashboard: string;
+    sourceQuiniela: string;
+    sourceTrivia: string;
+    sourceRuleta: string;
+    perfectTrivia: string;
+    earnedAtPrefix: string;
+  };
+}
+
 export interface CopaAppContent {
   meta: CopaAppMeta;
   login: CopaAppLoginContent;
@@ -318,6 +368,7 @@ export interface CopaAppContent {
   points: CopaAppPointsContent;
   quiniela: CopaQuinielaContent;
   trivia: CopaTriviaContent;
+  historial: CopaHistoryContent;
 }
 
 export const content: CopaAppContent = {
@@ -1551,6 +1602,63 @@ export const content: CopaAppContent = {
       breakdownOautos: 'Bonificación Oautos (×2)',
       backToDashboard: 'Volver al panel',
       maxPointsLabel: 'Hasta 500 pts',
+    },
+  },
+  historial: {
+    meta: {
+      title: 'Historial de puntos · Copa Oautos 2026',
+      description: 'Revisa todos los puntos que has ganado en la Copa Oautos.',
+    },
+    header: {
+      eyebrow: 'Historial',
+      title: 'Tus puntos en la Copa',
+      subtitle:
+        'Aquí encuentras cada actividad completada y los puntos que sumaste. Filtra por dinámica para ver el detalle por fuente.',
+    },
+    filters: [
+      { id: 'all', label: 'Todos' },
+      { id: 'quiniela', label: 'Quiniela' },
+      { id: 'trivia', label: 'Trivia' },
+      { id: 'ruleta', label: 'Ruleta' },
+    ],
+    summary: {
+      totalLabel: 'Total acumulado',
+      breakdownLabel: 'Por dinámica',
+      quinielaLabel: 'Quiniela',
+      triviaLabel: 'Trivia',
+      ruletaLabel: 'Ruleta',
+      pointsSuffix: 'pts',
+    },
+    list: {
+      title: 'Movimientos',
+      countSuffix: 'movimientos',
+      countSuffixSingular: 'movimiento',
+    },
+    empty: {
+      title: 'Aún no tienes puntos registrados',
+      description:
+        'Cuando completes una trivia, quiniela o gires la ruleta, tus puntos aparecerán aquí.',
+      primaryCta: {
+        label: 'Jugar una trivia',
+        href: '/copa-oautos-2026/trivia',
+      },
+      secondaryCta: {
+        label: 'Ir a la quiniela',
+        href: '/copa-oautos-2026/quiniela',
+      },
+    },
+    emptyFiltered: {
+      title: 'Sin movimientos en esta categoría',
+      description:
+        'Todavía no has ganado puntos en esta dinámica. Cuando lo hagas, los verás aquí.',
+    },
+    labels: {
+      backToDashboard: 'Volver al panel',
+      sourceQuiniela: 'Quiniela',
+      sourceTrivia: 'Trivia',
+      sourceRuleta: 'Ruleta',
+      perfectTrivia: 'Trivia perfecta',
+      earnedAtPrefix: 'Ganados el',
     },
   },
 };

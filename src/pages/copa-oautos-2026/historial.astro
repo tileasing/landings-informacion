@@ -1,0 +1,488 @@
+---
+import CopaAppLayout from "../../layouts/CopaAppLayout.astro";
+import AppNavbar from "../../components/copa-oautos-2026-app/AppNavbar.astro";
+import HistoryHeader from "../../components/copa-oautos-2026-app/historial/HistoryHeader.astro";
+import { content } from "../../content/copa-oautos-2026-app";
+
+const { historial, navbar, trivia, quiniela } = content;
+
+// Mapeo id → { name, title } para que el script pueda mostrar nombres de trivias.
+const triviaCatalog = trivia.trivias.map((t) => ({
+  id: t.id,
+  name: t.name,
+  title: t.title,
+}));
+
+// (placeholder) catálogo de quiniela — lo dejamos preparado para cuando haya partidos
+// finalizados con resultado. Por ahora se calcula automáticamente desde matches.
+const quinielaMatchCatalog = quiniela.matches.map((m) => ({
+  id: m.id,
+  label: `${m.teamA.name} vs ${m.teamB.name}`,
+  group: m.group ?? "",
+  kickoff: m.kickoff,
+}));
+---
+
+<CopaAppLayout
+  title={historial.meta.title}
+  description={historial.meta.description}
+>
+  <AppNavbar content={navbar} />
+  <main class="bg-[#F4F7FB] min-h-[calc(100dvh-4rem)] pb-12">
+    <HistoryHeader
+      header={historial.header}
+      backLabel={historial.labels.backToDashboard}
+      backHref={navbar.homeHref}
+    />
+
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
+      <!-- Filter -->
+      <section>
+        <div
+          class="bg-white rounded-2xl ring-1 ring-gray-200 shadow-sm px-3 sm:px-4 py-3"
+        >
+          <div class="flex items-center gap-2 mb-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-4 h-4 text-[#117CD9]"
+              aria-hidden="true"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            <span class="text-xs sm:text-sm font-semibold text-gray-700">
+              Filtrar por dinámica
+            </span>
+          </div>
+          <div
+            class="flex gap-1.5 overflow-x-auto no-scrollbar"
+            role="tablist"
+            data-history-filter-bar
+          >
+            {
+              historial.filters.map((f, i) => (
+                <button
+                  type="button"
+                  role="tab"
+                  data-history-filter={f.id}
+                  aria-selected={i === 0 ? "true" : "false"}
+                  class:list={[
+                    "copa-history-chip flex-shrink-0 px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full border-2 transition whitespace-nowrap",
+                    i === 0
+                      ? "bg-[#117CD9] border-[#117CD9] text-white"
+                      : "bg-white border-gray-200 text-gray-600 hover:border-[#117CD9] hover:text-[#117CD9]",
+                  ]}
+                >
+                  {f.label}
+                </button>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Entries list -->
+      <section class="mt-6">
+        <div class="flex items-baseline justify-between mb-3 px-1">
+          <h3
+            class="text-sm sm:text-base font-extrabold text-[#0D2C4D] uppercase tracking-wider"
+          >
+            {historial.list.title}
+          </h3>
+          <span
+            class="text-xs sm:text-sm text-gray-500 font-medium"
+            data-history-count
+            data-singular={historial.list.countSuffixSingular}
+            data-plural={historial.list.countSuffix}
+          >
+            0 {historial.list.countSuffix}
+          </span>
+        </div>
+
+        <div
+          class="space-y-3"
+          data-history-list
+          aria-live="polite"
+        >
+        </div>
+
+        <!-- Empty state: sin movimientos -->
+        <div
+          class="hidden bg-white rounded-3xl ring-1 ring-gray-200 shadow-sm px-6 py-12 text-center"
+          data-history-empty
+        >
+          <span
+            class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#117CD9]/10 text-[#117CD9] mb-4"
+            aria-hidden="true"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-8 h-8"
+            >
+              <path d="M3 12a9 9 0 1 0 3-6.7" />
+              <path d="M3 4v5h5" />
+              <path d="M12 7v5l3 2" />
+            </svg>
+          </span>
+          <h4 class="text-lg sm:text-xl font-extrabold text-[#0D2C4D] mb-2">
+            {historial.empty.title}
+          </h4>
+          <p
+            class="text-sm text-gray-600 max-w-md mx-auto leading-relaxed mb-6"
+          >
+            {historial.empty.description}
+          </p>
+          <div class="flex flex-col sm:flex-row gap-2 justify-center">
+            <a
+              href={historial.empty.primaryCta.href}
+              class="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-sm font-semibold bg-[#5F8750] text-white hover:bg-[#3F5E33] transition shadow"
+            >
+              {historial.empty.primaryCta.label}
+            </a>
+            <a
+              href={historial.empty.secondaryCta.href}
+              class="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-sm font-semibold bg-[#117CD9] text-white hover:bg-[#0D5FB3] transition shadow"
+            >
+              {historial.empty.secondaryCta.label}
+            </a>
+          </div>
+        </div>
+
+        <!-- Empty state: filtro sin resultados -->
+        <div
+          class="hidden bg-white rounded-2xl ring-1 ring-gray-200 px-5 py-8 text-center"
+          data-history-empty-filtered
+        >
+          <span
+            class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-3"
+            aria-hidden="true"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-6 h-6"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+          </span>
+          <h4 class="text-base sm:text-lg font-bold text-[#0D2C4D] mb-1.5">
+            {historial.emptyFiltered.title}
+          </h4>
+          <p class="text-sm text-gray-600 max-w-md mx-auto leading-relaxed">
+            {historial.emptyFiltered.description}
+          </p>
+        </div>
+      </section>
+    </div>
+  </main>
+</CopaAppLayout>
+
+<script
+  is:inline
+  define:vars={{
+    triviaCatalog,
+    quinielaMatchCatalog,
+    triviaResultsKey: "copa-trivia-results-v1",
+    quinielaResultsKey: "copa-quiniela-match-points-v1",
+    ruletaResultsKey: "copa-ruleta-spins-v1",
+    filterStorageKey: "copa-history-filter-v1",
+    labels: content.historial.labels,
+  }}
+>
+  (() => {
+    // === Helpers de formato ===
+    const dateFmt = new Intl.DateTimeFormat("es-MX", {
+      timeZone: "America/Mexico_City",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    const dateTimeFmt = new Intl.DateTimeFormat("es-MX", {
+      timeZone: "America/Mexico_City",
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const formatDate = (iso) => {
+      try {
+        return dateFmt.format(new Date(iso));
+      } catch (_) {
+        return iso;
+      }
+    };
+    const formatDateTime = (iso) => {
+      try {
+        return dateTimeFmt.format(new Date(iso));
+      } catch (_) {
+        return iso;
+      }
+    };
+
+    // === Storage ===
+    const safeParse = (key) => {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+      } catch (_) {
+        return null;
+      }
+    };
+
+    // === Construcción de entradas ===
+    const buildEntries = () => {
+      const entries = [];
+
+      // Trivia: cada trivia completada genera una entrada.
+      const triviaResults = safeParse(triviaResultsKey) ?? {};
+      Object.entries(triviaResults).forEach(([triviaId, result]) => {
+        const meta = triviaCatalog.find((t) => t.id === triviaId);
+        if (!meta) return;
+        const isPerfect = result.totalCorrect === result.totalQuestions;
+        entries.push({
+          id: `trivia-${triviaId}`,
+          source: "trivia",
+          title: meta.title,
+          subtitle: `${meta.name}${isPerfect ? ` · ${labels.perfectTrivia}` : ""}`,
+          points: result.total,
+          earnedAt: result.completedAt,
+        });
+      });
+
+      // Quiniela: cuando haya partidos finalizados con puntos calculados.
+      // El formato esperado: { matchId: { points: number, awardedAt: iso, ... } }
+      const quinielaResults = safeParse(quinielaResultsKey) ?? {};
+      Object.entries(quinielaResults).forEach(([matchId, result]) => {
+        const meta = quinielaMatchCatalog.find((m) => m.id === matchId);
+        if (!meta || !result || typeof result.points !== "number") return;
+        entries.push({
+          id: `quiniela-${matchId}`,
+          source: "quiniela",
+          title: meta.label,
+          subtitle: meta.group || "Partido",
+          points: result.points,
+          earnedAt: result.awardedAt ?? meta.kickoff,
+        });
+      });
+
+      // Ruleta: cuando exista esa dinámica.
+      // Formato esperado: [{ id, points, spunAt, label? }]
+      const ruletaResults = safeParse(ruletaResultsKey) ?? [];
+      if (Array.isArray(ruletaResults)) {
+        ruletaResults.forEach((spin) => {
+          if (!spin || typeof spin.points !== "number") return;
+          entries.push({
+            id: `ruleta-${spin.id ?? spin.spunAt}`,
+            source: "ruleta",
+            title: spin.label ?? "Giro de ruleta",
+            subtitle: "Dinámica en la app",
+            points: spin.points,
+            earnedAt: spin.spunAt ?? new Date().toISOString(),
+          });
+        });
+      }
+
+      // Más reciente primero.
+      entries.sort(
+        (a, b) =>
+          new Date(b.earnedAt).getTime() - new Date(a.earnedAt).getTime(),
+      );
+      return entries;
+    };
+
+    // === Render ===
+    const SOURCE_STYLES = {
+      quiniela: {
+        accent: "bg-[#117CD9]/10 text-[#0D5FB3]",
+        sideBar: "bg-[#117CD9]",
+        label: labels.sourceQuiniela,
+        iconHtml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="12" cy="12" r="10"/><path d="M12 8.5 8.5 11l1.3 4h4.4l1.3-4z"/><path d="M12 8.5 15.5 11"/></svg>`,
+      },
+      trivia: {
+        accent: "bg-[#5F8750]/15 text-[#3F5E33]",
+        sideBar: "bg-[#5F8750]",
+        label: labels.sourceTrivia,
+        iconHtml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M9.1 9a3 3 0 1 1 5.5 1.6c-.4.7-1.1 1.1-1.8 1.5-.6.4-1 1-1 1.7v.7"/><line x1="12" y1="17.5" x2="12" y2="17.51"/><circle cx="12" cy="12" r="10"/></svg>`,
+      },
+      ruleta: {
+        accent: "bg-amber-100 text-amber-700",
+        sideBar: "bg-amber-500",
+        label: labels.sourceRuleta,
+        iconHtml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="12" cy="12" r="10"/><path d="M12 2v10l5 3"/></svg>`,
+      },
+    };
+
+    const listEl = document.querySelector("[data-history-list]");
+    const emptyEl = document.querySelector("[data-history-empty]");
+    const emptyFilteredEl = document.querySelector(
+      "[data-history-empty-filtered]",
+    );
+    const countEl = document.querySelector("[data-history-count]");
+    const chips = Array.from(
+      document.querySelectorAll("[data-history-filter]"),
+    );
+
+    const renderList = (entries, filter) => {
+      if (!listEl || !emptyEl || !emptyFilteredEl) return;
+
+      const totalAll = entries.length;
+      const filtered =
+        filter === "all"
+          ? entries
+          : entries.filter((e) => e.source === filter);
+
+      listEl.innerHTML = "";
+
+      // Caso 1: el usuario no tiene NADA.
+      if (totalAll === 0) {
+        emptyEl.classList.remove("hidden");
+        emptyFilteredEl.classList.add("hidden");
+        if (countEl) {
+          countEl.textContent = `0 ${countEl.dataset.plural}`;
+        }
+        return;
+      }
+
+      emptyEl.classList.add("hidden");
+
+      // Caso 2: hay movimientos pero el filtro no muestra nada.
+      if (filtered.length === 0) {
+        emptyFilteredEl.classList.remove("hidden");
+        if (countEl) {
+          countEl.textContent = `0 ${countEl.dataset.plural}`;
+        }
+        return;
+      }
+
+      emptyFilteredEl.classList.add("hidden");
+
+      if (countEl) {
+        countEl.textContent =
+          filtered.length === 1
+            ? `1 ${countEl.dataset.singular}`
+            : `${filtered.length} ${countEl.dataset.plural}`;
+      }
+
+      filtered.forEach((entry) => {
+        const style = SOURCE_STYLES[entry.source];
+        const card = document.createElement("article");
+        card.className =
+          "bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden flex items-stretch";
+        card.innerHTML = `
+          <div class="flex-shrink-0 w-1.5 sm:w-2 ${style.sideBar}" aria-hidden="true"></div>
+          <div class="flex-1 min-w-0 p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+            <span class="flex-shrink-0 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl ${style.accent}" aria-hidden="true">
+              ${style.iconHtml}
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
+                <span class="inline-block text-[10px] sm:text-xs font-semibold uppercase tracking-wider rounded-full px-2 py-0.5 ${style.accent}">${style.label}</span>
+                <span class="text-[11px] sm:text-xs text-gray-500">${formatDateTime(entry.earnedAt)}</span>
+              </div>
+              <p class="text-sm sm:text-base font-bold text-[#0D2C4D] leading-tight truncate">${entry.title}</p>
+              <p class="text-xs text-gray-500 truncate">${entry.subtitle}</p>
+            </div>
+            <div class="flex-shrink-0 text-right">
+              <p class="text-base sm:text-lg font-extrabold text-emerald-600 tabular-nums leading-none">+${entry.points}</p>
+              <p class="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider mt-0.5">pts</p>
+            </div>
+          </div>
+        `;
+        listEl.appendChild(card);
+      });
+    };
+
+    const setActiveFilter = (filterId) => {
+      chips.forEach((chip) => {
+        const isActive = chip.dataset.historyFilter === filterId;
+        chip.setAttribute("aria-selected", isActive ? "true" : "false");
+        chip.classList.remove(
+          "bg-[#117CD9]",
+          "border-[#117CD9]",
+          "text-white",
+          "bg-white",
+          "border-gray-200",
+          "text-gray-600",
+          "hover:border-[#117CD9]",
+          "hover:text-[#117CD9]",
+        );
+        if (isActive) {
+          chip.classList.add("bg-[#117CD9]", "border-[#117CD9]", "text-white");
+        } else {
+          chip.classList.add(
+            "bg-white",
+            "border-gray-200",
+            "text-gray-600",
+            "hover:border-[#117CD9]",
+            "hover:text-[#117CD9]",
+          );
+        }
+      });
+    };
+
+    let currentFilter = "all";
+    try {
+      const saved = localStorage.getItem(filterStorageKey);
+      if (saved && chips.some((c) => c.dataset.historyFilter === saved)) {
+        currentFilter = saved;
+      }
+    } catch (_) {}
+
+    const refresh = () => {
+      const entries = buildEntries();
+      renderList(entries, currentFilter);
+      setActiveFilter(currentFilter);
+    };
+
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        currentFilter = chip.dataset.historyFilter;
+        try {
+          if (currentFilter === "all") {
+            localStorage.removeItem(filterStorageKey);
+          } else {
+            localStorage.setItem(filterStorageKey, currentFilter);
+          }
+        } catch (_) {}
+        refresh();
+      });
+    });
+
+    refresh();
+
+    // Si el usuario cambia algo en otra pestaña (ej. completa una trivia),
+    // refrescar al volver a la pestaña.
+    window.addEventListener("storage", refresh);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refresh();
+    });
+  })();
+</script>
+
+<style>
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
