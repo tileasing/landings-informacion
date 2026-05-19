@@ -9,109 +9,198 @@ const { content } = Astro.props;
 const { data, pointsSuffix } = content;
 
 const breakdown = [
-  { label: content.quinielaLabel, value: data.quiniela, accent: "blue" },
-  { label: content.triviaLabel, value: data.trivia, accent: "green" },
-  { label: content.appLabel, value: data.app, accent: "amber" },
+  {
+    label: content.quinielaLabel,
+    value: data.quiniela,
+    accent: "blue",
+    icon: "ball",
+  },
+  {
+    label: content.triviaLabel,
+    value: data.trivia,
+    accent: "green",
+    icon: "trivia",
+  },
+  {
+    label: content.appLabel,
+    value: data.app,
+    accent: "amber",
+    icon: "wheel",
+  },
 ] as const;
 
 const accentMap = {
-  blue: "bg-[#117CD9]/10 text-[#0D5FB3]",
-  green: "bg-[#5F8750]/15 text-[#3F5E33]",
-  amber: "bg-amber-100 text-amber-700",
+  blue: {
+    badge: "bg-[#117CD9]/10 text-[#0D5FB3]",
+    icon: "bg-[#117CD9]/10 text-[#117CD9]",
+    side: "bg-[#117CD9]",
+  },
+  green: {
+    badge: "bg-[#5F8750]/15 text-[#3F5E33]",
+    icon: "bg-[#5F8750]/15 text-[#3F5E33]",
+    side: "bg-[#5F8750]",
+  },
+  amber: {
+    badge: "bg-amber-100 text-amber-700",
+    icon: "bg-amber-100 text-amber-700",
+    side: "bg-amber-500",
+  },
 } as const;
 ---
 
-<section
+<div
   aria-labelledby="copa-points-title"
-  class="bg-[#F4F7FB]"
+  class="bg-white rounded-3xl shadow-xl ring-1 ring-black/5 p-5 sm:p-6 h-full flex flex-col"
 >
-  <div class="max-w-[1200px] mx-auto px-4 sm:px-6 -mt-8 sm:-mt-10 relative z-20">
-    <div
-      class="bg-white rounded-3xl shadow-xl ring-1 ring-black/5 p-5 sm:p-7"
+  <div class="mb-5">
+    <span
+      class="block text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#117CD9] mb-1"
     >
-      <div
-        class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <div>
-          <span
-            class="block text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#117CD9] mb-1"
-          >
-            {content.eyebrow}
-          </span>
-          <h2
-            id="copa-points-title"
-            class="text-xl sm:text-2xl font-extrabold text-[#0D2C4D]"
-          >
-            {content.title}
-          </h2>
-          <p class="mt-1 text-sm text-gray-600 max-w-md">
-            {content.subtitle}
-          </p>
-        </div>
+      {content.eyebrow}
+    </span>
+    <h2
+      id="copa-points-title"
+      class="text-lg sm:text-xl font-extrabold text-[#0D2C4D]"
+    >
+      {content.title}
+    </h2>
+    <p class="mt-1 text-xs sm:text-sm text-gray-600">
+      {content.subtitle}
+    </p>
+  </div>
 
-        <div
-          class="flex items-center gap-4 bg-gradient-to-br from-[#0D2C4D] to-[#117CD9] text-white rounded-2xl px-5 py-4 shadow-lg"
+  <div
+    class="flex-1 grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+  >
+    <!-- Total acumulado: cuadro grande -->
+    <div
+      class="relative overflow-hidden flex flex-col justify-between gap-4 bg-gradient-to-br from-[#0D2C4D] to-[#117CD9] text-white rounded-2xl px-5 py-5 shadow-lg"
+    >
+      <span
+        class="pointer-events-none absolute -top-12 -right-12 w-40 h-40 rounded-full bg-white/10 blur-3xl"
+        aria-hidden="true"
+      ></span>
+      <div class="relative flex items-center gap-3">
+        <span
+          class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm"
+          aria-hidden="true"
         >
-          <span
-            class="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm"
-            aria-hidden="true"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-5 h-5"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="w-6 h-6"
-            >
-              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-              <path d="M4 22h16" />
-              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-            </svg>
-          </span>
-          <div>
-            <p
-              class="text-[11px] uppercase tracking-wider text-white/70 font-semibold"
-            >
-              {content.totalLabel}
-            </p>
-            <p class="text-3xl sm:text-4xl font-extrabold leading-none">
-              {data.total}
-              <span class="text-base font-semibold text-white/80 ml-1"
-                >{pointsSuffix}</span
-              >
-            </p>
-          </div>
-        </div>
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        </span>
+        <p
+          class="text-[11px] uppercase tracking-wider text-white/75 font-semibold leading-tight"
+        >
+          {content.totalLabel}
+        </p>
       </div>
-
-      <div class="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
-        {
-          breakdown.map((item) => (
-            <div class="rounded-2xl border border-gray-100 bg-gray-50 px-3 py-3 sm:px-4 sm:py-4 text-center sm:text-left">
-              <span
-                class:list={[
-                  "inline-block text-[10px] sm:text-xs font-semibold uppercase tracking-wider rounded-full px-2 py-0.5 mb-1.5",
-                  accentMap[item.accent],
-                ]}
-              >
-                {item.label}
-              </span>
-              <p class="text-xl sm:text-2xl font-extrabold text-[#0D2C4D] leading-none">
-                {item.value}
-                <span class="text-xs font-semibold text-gray-500 ml-0.5">
-                  {pointsSuffix}
-                </span>
-              </p>
-            </div>
-          ))
-        }
+      <div class="relative">
+        <p class="text-4xl sm:text-5xl font-extrabold leading-none tabular-nums">
+          {data.total.toLocaleString("es-MX")}
+        </p>
+        <p class="mt-1 text-sm font-semibold text-white/80">
+          {pointsSuffix} Copa
+        </p>
       </div>
     </div>
+
+    <!-- Breakdown: 3 mini cards apiladas en una columna (siempre) -->
+    <div class="grid grid-cols-1 gap-2 sm:gap-3">
+      {
+        breakdown.map((item) => {
+          const a = accentMap[item.accent];
+          return (
+            <div class="flex items-stretch rounded-xl border border-gray-100 bg-gray-50 overflow-hidden">
+              <span
+                class:list={["flex-shrink-0 w-1.5", a.side]}
+                aria-hidden="true"
+              />
+              <div class="flex-1 min-w-0 px-3 py-2.5 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span
+                    class:list={[
+                      "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg",
+                      a.icon,
+                    ]}
+                    aria-hidden="true"
+                  >
+                    {item.icon === "ball" && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-4 h-4"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 8.5 8.5 11l1.3 4h4.4l1.3-4z" />
+                      </svg>
+                    )}
+                    {item.icon === "trivia" && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-4 h-4"
+                      >
+                        <path d="M9.1 9a3 3 0 1 1 5.5 1.6c-.4.7-1.1 1.1-1.8 1.5-.6.4-1 1-1 1.7v.7" />
+                        <line x1="12" y1="17.5" x2="12" y2="17.51" />
+                        <circle cx="12" cy="12" r="10" />
+                      </svg>
+                    )}
+                    {item.icon === "wheel" && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-4 h-4"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2v10l5 3" />
+                      </svg>
+                    )}
+                  </span>
+                  <span class="block text-sm font-bold text-gray-700 truncate">
+                    {item.label}
+                  </span>
+                </div>
+                <p class="text-base sm:text-lg font-extrabold text-[#0D2C4D] leading-none tabular-nums whitespace-nowrap">
+                  {item.value.toLocaleString("es-MX")}
+                  <span class="text-xs font-semibold text-gray-500 ml-0.5">
+                    {pointsSuffix}
+                  </span>
+                </p>
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
   </div>
-</section>
+</div>

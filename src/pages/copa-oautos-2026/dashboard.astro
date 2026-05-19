@@ -3,6 +3,7 @@ import CopaAppLayout from "../../layouts/CopaAppLayout.astro";
 import AppNavbar from "../../components/copa-oautos-2026-app/AppNavbar.astro";
 import DashboardHero from "../../components/copa-oautos-2026-app/DashboardHero.astro";
 import PointsMetric from "../../components/copa-oautos-2026-app/PointsMetric.astro";
+import RankingCard from "../../components/copa-oautos-2026-app/RankingCard.astro";
 import ParticipationCards from "../../components/copa-oautos-2026-app/ParticipationCards.astro";
 import { content } from "../../content/copa-oautos-2026-app";
 ---
@@ -14,7 +15,21 @@ import { content } from "../../content/copa-oautos-2026-app";
   <AppNavbar content={content.navbar} />
   <main class="bg-[#F4F7FB] min-h-[calc(100dvh-4rem)] pb-12">
     <DashboardHero content={content.dashboard} user={content.navbar.user} />
-    <PointsMetric content={content.points} />
+
+    <!-- Métricas + Ranking en grid responsivo -->
+    <section aria-label="Métricas y ranking" class="bg-[#F4F7FB]">
+      <div
+        class="max-w-[1200px] mx-auto px-4 sm:px-6 -mt-8 sm:-mt-10 relative z-20"
+      >
+        <div
+          class="grid gap-4 sm:gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] items-start"
+        >
+          <PointsMetric content={content.points} />
+          <RankingCard content={content.ranking} />
+        </div>
+      </div>
+    </section>
+
     <ParticipationCards content={content.dashboard} />
   </main>
 </CopaAppLayout>

@@ -1,0 +1,193 @@
+---
+import CopaAppLayout from "../../layouts/CopaAppLayout.astro";
+import AppNavbar from "../../components/copa-oautos-2026-app/AppNavbar.astro";
+import ProfileHeader from "../../components/copa-oautos-2026-app/perfil/ProfileHeader.astro";
+import { content } from "../../content/copa-oautos-2026-app";
+
+const { perfil, navbar } = content;
+const { user } = navbar;
+
+const initials =
+  user.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "?";
+
+// Filas de información mostradas en orden.
+const fields = [
+  {
+    label: perfil.info.nameLabel,
+    value: user.name,
+    icon: "user",
+  },
+  {
+    label: perfil.info.emailLabel,
+    value: user.email,
+    icon: "mail",
+  },
+  {
+    label: perfil.info.phoneLabel,
+    value: user.phone ?? "",
+    icon: "phone",
+  },
+] as const;
+---
+
+<CopaAppLayout title={perfil.meta.title} description={perfil.meta.description}>
+  <AppNavbar content={navbar} />
+  <main class="bg-[#F4F7FB] min-h-[calc(100dvh-4rem)] pb-12">
+    <ProfileHeader
+      header={perfil.header}
+      backLabel={perfil.labels.backToDashboard}
+      backHref={navbar.homeHref}
+    />
+
+    <div
+      class="max-w-[760px] mx-auto px-4 sm:px-6 -mt-6 sm:-mt-10 relative z-10 space-y-5 sm:space-y-6"
+    >
+      <!-- Card: Información personal (solo lectura) -->
+      <section
+        aria-labelledby="copa-profile-info-title"
+        class="bg-white rounded-3xl shadow-xl ring-1 ring-black/5 overflow-hidden"
+      >
+        <header
+          class="px-5 sm:px-7 py-5 border-b border-gray-100 flex items-start gap-4"
+        >
+          <span
+            class="flex-shrink-0 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-[#117CD9] text-white text-lg sm:text-xl font-extrabold shadow-md"
+            aria-hidden="true"
+          >
+            {initials}
+          </span>
+          <div class="min-w-0 flex-1">
+            <span
+              class="block text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#117CD9] mb-1"
+            >
+              {perfil.info.eyebrow}
+            </span>
+            <h2
+              id="copa-profile-info-title"
+              class="text-lg sm:text-xl font-extrabold text-[#0D2C4D]"
+            >
+              {perfil.info.title}
+            </h2>
+            <p class="mt-1 text-xs sm:text-sm text-gray-600 leading-relaxed">
+              {perfil.info.subtitle}
+            </p>
+          </div>
+        </header>
+
+        <dl class="divide-y divide-gray-100">
+          {
+            fields.map((field) => {
+              const value = field.value?.trim();
+              const hasValue = !!value;
+              return (
+                <div class="px-5 sm:px-7 py-4 flex items-start gap-3 sm:gap-4">
+                  <span
+                    class="flex-shrink-0 flex h-9 w-9 items-center justify-center rounded-xl bg-[#117CD9]/10 text-[#117CD9]"
+                    aria-hidden="true"
+                  >
+                    {field.icon === "user" && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-4 h-4"
+                      >
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                    )}
+                    {field.icon === "mail" && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-4 h-4"
+                      >
+                        <rect width="20" height="16" x="2" y="4" rx="2" />
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                      </svg>
+                    )}
+                    {field.icon === "phone" && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-4 h-4"
+                      >
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                      </svg>
+                    )}
+                  </span>
+                  <div class="flex-1 min-w-0">
+                    <dt class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-gray-500">
+                      {field.label}
+                    </dt>
+                    <dd
+                      class:list={[
+                        "mt-0.5 text-sm sm:text-base break-words",
+                        hasValue
+                          ? "font-semibold text-[#0D2C4D]"
+                          : "italic text-gray-400",
+                      ]}
+                    >
+                      {hasValue ? value : perfil.info.notProvided}
+                    </dd>
+                  </div>
+                </div>
+              );
+            })
+          }
+        </dl>
+      </section>
+
+      <!-- Nota: edición desde la app -->
+      <aside
+        class="rounded-2xl border-2 border-dashed border-[#5F8750]/40 bg-[#5F8750]/5 p-4 sm:p-5 flex items-start gap-3"
+      >
+        <span
+          class="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-xl bg-[#5F8750]/15 text-[#3F5E33]"
+          aria-hidden="true"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-5 h-5"
+          >
+            <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+            <path d="M12 18h.01" />
+          </svg>
+        </span>
+        <div class="min-w-0">
+          <h3 class="text-sm sm:text-base font-extrabold text-[#0D2C4D] mb-1">
+            {perfil.info.editInAppTitle}
+          </h3>
+          <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+            {perfil.info.editInAppDescription}
+          </p>
+        </div>
+      </aside>
+    </div>
+  </main>
+</CopaAppLayout>

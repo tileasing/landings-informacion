@@ -33,6 +33,7 @@ export interface CopaAppMenuItem {
 export interface CopaAppUserPreview {
   name: string;
   email: string;
+  phone?: string;
 }
 
 export interface CopaAppNavbarContent {
@@ -87,6 +88,25 @@ export interface CopaAppPointsContent {
   appLabel: string;
   pointsSuffix: string;
   data: CopaAppPointsBreakdown;
+}
+
+export interface CopaAppRankingEntry {
+  position: number;
+  name: string;
+  points: number;
+  isCurrentUser?: boolean;
+}
+
+export interface CopaAppRankingContent {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  yourPositionLabel: string;
+  notInTopMessage: string;
+  inTopMessage: string;
+  pointsSuffix: string;
+  topEntries: CopaAppRankingEntry[];
+  currentUser: CopaAppRankingEntry;
 }
 
 // === Quiniela ===
@@ -360,15 +380,73 @@ export interface CopaHistoryContent {
   };
 }
 
+// === Perfil ===
+
+export interface CopaAppProfileContent {
+  meta: CopaAppMeta;
+  header: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+  };
+  info: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    nameLabel: string;
+    emailLabel: string;
+    phoneLabel: string;
+    notProvided: string;
+    editInAppTitle: string;
+    editInAppDescription: string;
+  };
+  labels: {
+    backToDashboard: string;
+  };
+}
+
+// === Recuperación de contraseña ===
+
+export interface CopaAppRecoveryContent {
+  meta: CopaAppMeta;
+  request: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    submitButton: string;
+    backToLogin: string;
+    footnote: string;
+    errorEmptyEmail: string;
+    errorInvalidEmail: string;
+  };
+  sent: {
+    meta: CopaAppMeta;
+    eyebrow: string;
+    title: string;
+    subtitleWithEmail: string; // {email} placeholder
+    subtitleGeneric: string;
+    helperTitle: string;
+    helperText: string;
+    backToLoginButton: string;
+    redirectMessage: string; // {seconds} placeholder
+    redirectSeconds: number;
+  };
+}
+
 export interface CopaAppContent {
   meta: CopaAppMeta;
   login: CopaAppLoginContent;
   navbar: CopaAppNavbarContent;
   dashboard: CopaAppDashboardContent;
   points: CopaAppPointsContent;
+  ranking: CopaAppRankingContent;
   quiniela: CopaQuinielaContent;
   trivia: CopaTriviaContent;
   historial: CopaHistoryContent;
+  perfil: CopaAppProfileContent;
+  recuperarPassword: CopaAppRecoveryContent;
 }
 
 export const content: CopaAppContent = {
@@ -399,6 +477,7 @@ export const content: CopaAppContent = {
     user: {
       name: 'Participante',
       email: 'participante@oautos.com',
+      phone: '+52 55 1234 5678',
     },
     menuItems: [
       {
@@ -483,6 +562,33 @@ export const content: CopaAppContent = {
       quiniela: 0,
       trivia: 0,
       app: 0,
+    },
+  },
+  ranking: {
+    eyebrow: 'Posición',
+    title: 'Ranking de la Copa',
+    subtitle: 'Top 5 participantes con más puntos acumulados.',
+    yourPositionLabel: 'Tu posición',
+    notInTopMessage: 'Sigue jugando para escalar posiciones.',
+    inTopMessage: '¡Estás en el top 10! Mantén el ritmo.',
+    pointsSuffix: 'pts',
+    topEntries: [
+      { position: 1, name: 'Carlos Hernández', points: 4820 },
+      { position: 2, name: 'María González', points: 4650 },
+      { position: 3, name: 'Luis Rodríguez', points: 4410 },
+      { position: 4, name: 'Ana Martínez', points: 4200 },
+      { position: 5, name: 'José López', points: 3980 },
+      { position: 6, name: 'Laura Sánchez', points: 3760 },
+      { position: 7, name: 'Pedro Ramírez', points: 3520 },
+      { position: 8, name: 'Isabel Torres', points: 3280 },
+      { position: 9, name: 'Diego Flores', points: 3050 },
+      { position: 10, name: 'Sofía Cruz', points: 2890 },
+    ],
+    currentUser: {
+      position: 47,
+      name: 'Tú',
+      points: 0,
+      isCurrentUser: true,
     },
   },
   quiniela: {
@@ -1659,6 +1765,73 @@ export const content: CopaAppContent = {
       sourceRuleta: 'Ruleta',
       perfectTrivia: 'Trivia perfecta',
       earnedAtPrefix: 'Ganados el',
+    },
+  },
+  perfil: {
+    meta: {
+      title: 'Mi perfil · Copa Oautos 2026',
+      description: 'Información de tu cuenta en la Copa Oautos.',
+    },
+    header: {
+      eyebrow: 'Mi cuenta',
+      title: 'Mi perfil',
+      subtitle:
+        'Estos son los datos asociados a tu cuenta en la Copa Oautos.',
+    },
+    info: {
+      eyebrow: 'Información personal',
+      title: 'Tus datos',
+      subtitle:
+        'Información traída de tu cuenta en Oautos.',
+      nameLabel: 'Nombre completo',
+      emailLabel: 'Correo electrónico',
+      phoneLabel: 'Teléfono',
+      notProvided: 'Sin registrar',
+      editInAppTitle: '¿Necesitas actualizar tus datos?',
+      editInAppDescription:
+        'La edición se hace desde la app Oautos. Allí puedes modificar tu nombre, correo, teléfono y demás datos de tu cuenta.',
+    },
+    labels: {
+      backToDashboard: 'Volver al panel',
+    },
+  },
+  recuperarPassword: {
+    meta: {
+      title: 'Recuperar contraseña · Copa Oautos 2026',
+      description:
+        'Te enviaremos un enlace a tu correo para recuperar el acceso.',
+    },
+    request: {
+      eyebrow: 'Recuperar acceso',
+      title: '¿Olvidaste tu contraseña?',
+      subtitle:
+        'Ingresa el correo con el que te registraste en Oautos y te enviaremos un enlace para crear una nueva contraseña.',
+      emailLabel: 'Correo electrónico',
+      emailPlaceholder: 'tucorreo@oautos.com',
+      submitButton: 'Enviar enlace de recuperación',
+      backToLogin: 'Volver a iniciar sesión',
+      footnote:
+        'La contraseña se cambia desde la app Oautos. Este enlace abre el flujo de recuperación.',
+      errorEmptyEmail: 'Ingresa tu correo electrónico.',
+      errorInvalidEmail: 'Ingresa un correo electrónico válido.',
+    },
+    sent: {
+      meta: {
+        title: 'Enlace enviado · Copa Oautos 2026',
+        description: 'Te enviamos un enlace para recuperar tu contraseña.',
+      },
+      eyebrow: 'Enlace enviado',
+      title: 'Revisa tu correo',
+      subtitleWithEmail:
+        'Enviamos un enlace de recuperación a {email}. Ábrelo desde tu correo para crear una nueva contraseña.',
+      subtitleGeneric:
+        'Enviamos un enlace de recuperación a tu correo. Ábrelo desde tu bandeja para crear una nueva contraseña.',
+      helperTitle: '¿No te llegó?',
+      helperText:
+        'Revisa tu carpeta de spam o correo no deseado. El enlace puede tardar uno o dos minutos en aparecer.',
+      backToLoginButton: 'Volver a iniciar sesión',
+      redirectMessage: 'Te llevaremos al login en {seconds}s…',
+      redirectSeconds: 15,
     },
   },
 };
