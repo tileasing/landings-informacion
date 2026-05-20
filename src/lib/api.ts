@@ -1,16 +1,12 @@
 /**
  * Configuración central de la API.
  *
- * Para agregar un nuevo servicio:
- *   1. Define su variable en .env (con prefijo PUBLIC_ si se usa en el cliente).
- *   2. Agrega una constante de base aquí.
- *   3. Agrega sus rutas en el objeto de endpoints correspondiente.
+ * Para agregar un nuevo servicio agrega su base y sus rutas aquí.
  */
 
 // ─── Bases ────────────────────────────────────────────────────────────────────
 
-export const API_BASE =
-  import.meta.env.PUBLIC_API_BASE ?? "https://api.oautos.mx";
+export const API_BASE = "https://api.oautos.mx";
 
 // ─── Endpoints por dominio ────────────────────────────────────────────────────
 
