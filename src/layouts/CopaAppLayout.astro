@@ -4,11 +4,13 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  requireAuth?: boolean;
 }
 
 const {
   title = "Copa Oautos 2026",
   description = "Plataforma privada de la Copa Oautos 2026",
+  requireAuth = false,
 } = Astro.props;
 ---
 
@@ -25,6 +27,15 @@ const {
     <title>{title}</title>
   </head>
   <body class="min-h-dvh bg-[#0D2C4D] text-white antialiased">
+    {requireAuth && (
+      <script is:inline>
+        (function () {
+          if (!localStorage.getItem("copa_auth_token")) {
+            window.location.replace("/copa-oautos-2026/login");
+          }
+        })();
+      </script>
+    )}
     <slot />
   </body>
 </html>

@@ -3,6 +3,7 @@ import Button from "../shared/Button.astro";
 import logoOautos from "../../assets/logoOautos-copa.png";
 import loginBg from "../../assets/backgroundImageHero.jpg";
 import type { CopaAppLoginContent } from "../../content/copa-oautos-2026-app";
+import { AUTH_ENDPOINTS } from "../../lib/api";
 
 interface Props {
   content: CopaAppLoginContent;
@@ -153,38 +154,130 @@ const { content } = Astro.props;
   </div>
 </section>
 
-<script is:inline define:vars={{ successRedirect: content.successRedirect }}>
+<script is:inline define:vars={{ successRedirect: content.successRedirect, endpointLoginUser: AUTH_ENDPOINTS.loginUser, endpointMagicToken: AUTH_ENDPOINTS.magicTokenLogin }}>
   (() => {
+
+    const STORAGE_KEY = "copa_auth_token";
+
+    // Si ya hay sesión activa y no viene un magic token, ir directo al dashboard.
+    const params = new URLSearchParams(window.location.search);
+    const magicToken = params.get("token");
+
+    if (!magicToken && localStorage.getItem(STORAGE_KEY)) {
+      window.location.replace(successRedirect);
+      return;
+    }
+
+    function saveTokenAndRedirect(token) {
+      localStorage.setItem(STORAGE_KEY, token);
+      window.location.replace(successRedirect);
+    }
+
+    function showError(msg) {
+      const errorEl = document.getElementById("copa-login-error");
+      if (!errorEl) return;
+      errorEl.textContent = msg;
+      errorEl.classList.remove("hidden");
+    }
+
+    function setLoading(loading) {
+      const btn = document.querySelector("#copa-login-form button[type='submit']");
+      if (!btn) return;
+      btn.disabled = loading;
+      btn.textContent = loading ? "Ingresando…" : btn.getAttribute("data-label") || "Ingresar";
+    }
+
+    // --- Magic token: si llega ?token=xxx en la URL, login automático ---
+    if (magicToken) {
+      const section = document.querySelector("section");
+      if (section) {
+        section.style.cursor = "wait";
+      }
+
+      fetch(endpointMagicToken, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: magicToken }),
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && data.success && data.data && data.data.token) {
+            saveTokenAndRedirect(data.data.token);
+          } else {
+            const msg =
+              (data && data.message) ||
+              "El enlace de acceso no es válido o ya expiró.";
+            showError(msg);
+            if (section) section.style.cursor = "";
+          }
+        })
+        .catch(function () {
+          showError("No se pudo procesar el enlace de acceso. Intenta más tarde.");
+          if (section) section.style.cursor = "";
+        });
+
+      return; // No inicializar el formulario mientras se procesa el magic token.
+    }
+
+    // --- Formulario de login normal ---
     const form = document.getElementById("copa-login-form");
     const toggle = document.getElementById("copa-login-toggle");
     const passwordInput = document.getElementById("copa-login-password");
-    const errorEl = document.getElementById("copa-login-error");
+    const submitBtn = form && form.querySelector("button[type='submit']");
+
+    if (submitBtn) {
+      submitBtn.setAttribute("data-label", submitBtn.textContent.trim());
+    }
 
     if (toggle && passwordInput) {
-      toggle.addEventListener("click", () => {
+      toggle.addEventListener("click", function () {
         const isPassword = passwordInput.getAttribute("type") === "password";
         passwordInput.setAttribute("type", isPassword ? "text" : "password");
       });
     }
 
-    if (form && errorEl) {
-      form.addEventListener("submit", (event) => {
+    if (form) {
+      form.addEventListener("submit", function (event) {
         event.preventDefault();
-        errorEl.classList.add("hidden");
-        errorEl.textContent = "";
+
+        const errorEl = document.getElementById("copa-login-error");
+        if (errorEl) {
+          errorEl.classList.add("hidden");
+          errorEl.textContent = "";
+        }
 
         const formData = new FormData(form);
         const email = String(formData.get("email") || "").trim();
         const password = String(formData.get("password") || "");
 
         if (!email || !password) {
-          errorEl.textContent = "Por favor completa todos los campos.";
-          errorEl.classList.remove("hidden");
+          showError("Por favor completa todos los campos.");
           return;
         }
 
-        // TODO: reemplazar por la llamada real al endpoint de autenticación.
-        window.location.href = successRedirect;
+        setLoading(true);
+
+        fetch(endpointLoginUser, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, password: password, origin: "web" }),
+        })
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (data && data.success && data.data && data.data.token) {
+              saveTokenAndRedirect(data.data.token);
+            } else {
+              const msg =
+                (data && data.message) ||
+                "Correo o contraseña incorrectos. Verifica tus datos.";
+              showError(msg);
+              setLoading(false);
+            }
+          })
+          .catch(function () {
+            showError("No se pudo conectar con el servidor. Intenta más tarde.");
+            setLoading(false);
+          });
       });
     }
   })();

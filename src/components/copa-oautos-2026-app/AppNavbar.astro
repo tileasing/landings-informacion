@@ -88,6 +88,7 @@ const initials =
               <a
                 href={item.href}
                 role="menuitem"
+                data-copa-logout={item.icon === "logout" ? "true" : undefined}
                 class:list={[
                   "flex items-center gap-3 px-4 py-2.5 text-sm transition",
                   item.variant === "danger"
@@ -194,9 +195,17 @@ const initials =
       if (event.key === "Escape") close();
     });
 
-    // Cierre del menú al hacer logout para que se vea consistente.
+    // Cierre del menú al hacer click en cualquier item; logout limpia el token.
     panel.querySelectorAll("a[role=menuitem]").forEach((link) => {
-      link.addEventListener("click", () => close());
+      link.addEventListener("click", (event) => {
+        if (link.getAttribute("data-copa-logout") === "true") {
+          event.preventDefault();
+          localStorage.removeItem("copa_auth_token");
+          window.location.replace(link.getAttribute("href") || "/copa-oautos-2026/login");
+          return;
+        }
+        close();
+      });
     });
   })();
 </script>

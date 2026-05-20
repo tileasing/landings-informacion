@@ -35,7 +35,7 @@ const fields = [
 ] as const;
 ---
 
-<CopaAppLayout title={perfil.meta.title} description={perfil.meta.description}>
+<CopaAppLayout title={perfil.meta.title} description={perfil.meta.description} requireAuth>
   <AppNavbar content={navbar} />
   <main class="bg-[#F4F7FB] min-h-[calc(100dvh-4rem)] pb-12">
     <ProfileHeader
