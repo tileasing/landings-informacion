@@ -29,6 +29,26 @@ const { content } = Astro.props;
   </div>
   <div class="absolute inset-0 bg-black/30" aria-hidden="true"></div>
 
+  <!-- Spinner overlay para magic token -->
+  <div
+    id="copa-token-spinner"
+    class="hidden absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0D2C4D]/75 backdrop-blur-sm"
+    aria-live="polite"
+    aria-label="Verificando acceso"
+  >
+    <svg
+      class="animate-spin h-14 w-14 text-white mb-5"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <p class="text-white text-base font-semibold tracking-wide">Verificando acceso…</p>
+  </div>
+
   <!-- Card del login -->
   <div
     class="relative z-10 w-full max-w-lg bg-white text-gray-900 rounded-3xl shadow-2xl px-7 sm:px-10 py-10"
@@ -44,11 +64,11 @@ const { content } = Astro.props;
         {content.eyebrow}
       </span>
 
-      <h1 class="text-2xl sm:text-3xl font-extrabold leading-tight mb-3">
+      <h1 class="text-2xl sm:text-3xl font-extrabold leading-tight mb-5">
         {content.title}
       </h1>
 
-      <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+      <p class="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line">
         {content.subtitle}
       </p>
     </div>
@@ -81,12 +101,12 @@ const { content } = Astro.props;
           >
             {content.passwordLabel}
           </label>
-          <a
+          <!-- <a
             href="/copa-oautos-2026/recuperar-password"
             class="text-xs font-medium text-[#117CD9] hover:underline"
           >
             {content.forgotPassword}
-          </a>
+          </a> -->
         </div>
         <div class="relative">
           <input
@@ -168,8 +188,9 @@ const { content } = Astro.props;
       return;
     }
 
-    function saveTokenAndRedirect(token) {
+    function saveTokenAndRedirect(token, viaToken) {
       localStorage.setItem(STORAGE_KEY, token);
+      if (viaToken) sessionStorage.setItem("copa_via_token", "1");
       window.location.replace(successRedirect);
     }
 
@@ -189,10 +210,8 @@ const { content } = Astro.props;
 
     // --- Magic token: si llega ?token=xxx en la URL, login automático ---
     if (magicToken) {
-      const section = document.querySelector("section");
-      if (section) {
-        section.style.cursor = "wait";
-      }
+      const spinner = document.getElementById("copa-token-spinner");
+      if (spinner) spinner.classList.remove("hidden");
 
       fetch(endpointMagicToken, {
         method: "POST",
@@ -202,18 +221,18 @@ const { content } = Astro.props;
         .then(function (res) { return res.json(); })
         .then(function (data) {
           if (data && data.success && data.data && data.data.token) {
-            saveTokenAndRedirect(data.data.token);
+            saveTokenAndRedirect(data.data.token, true);
           } else {
             const msg =
               (data && data.message) ||
               "El enlace de acceso no es válido o ya expiró.";
             showError(msg);
-            if (section) section.style.cursor = "";
+            if (spinner) spinner.classList.add("hidden");
           }
         })
         .catch(function () {
           showError("No se pudo procesar el enlace de acceso. Intenta más tarde.");
-          if (section) section.style.cursor = "";
+          if (spinner) spinner.classList.add("hidden");
         });
 
       return; // No inicializar el formulario mientras se procesa el magic token.

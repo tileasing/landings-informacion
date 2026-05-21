@@ -59,7 +59,7 @@ const firstName = user.name.split(/\s+/)[0] || user.name;
       <h1
         class="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight drop-shadow-sm"
       >
-        ¡Hola, <span class="text-white">{firstName}</span>!
+        ¡Hola, <span class="text-white" data-user-firstname>{firstName}</span>!
       </h1>
       <p class="mt-4 text-base sm:text-lg text-white/85 leading-relaxed">
         {content.welcomeIntro}

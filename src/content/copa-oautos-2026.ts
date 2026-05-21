@@ -201,7 +201,7 @@ export const content: CopaOautos2026Content = {
   hero: {
     title: "Cada aportación es un gol a tu meta",
     subtitle:
-      "Solo necesitas registrarte, elegir tu equipo favorito y empezar a participar en las dinámicas Mundialistas.",
+      "Descarga el app y regístrate, elige tu equipo favorito y empieza a participar en las dinámicas Mundialistas de Oautos.",
     cta: {
       variant: "principal",
       text: "Participar ahora",
