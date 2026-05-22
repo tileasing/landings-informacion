@@ -154,11 +154,12 @@ export interface CopaQuinielaPointsRule {
 }
 
 export interface CopaQuinielaTournamentPick {
-  id: "mvp" | "goleador";
+  id: "mvp" | "goleador" | "favorito" | "campeon";
   label: string;
   helper: string;
   placeholder: string;
-  icon: "star" | "boot";
+  icon: "star" | "boot" | "heart" | "trophy";
+  kind?: "text" | "country"; // 'text' por defecto; 'country' renderiza un selector con banderas.
 }
 
 export interface CopaQuinielaTournamentPicks {
@@ -170,13 +171,6 @@ export interface CopaQuinielaTournamentPicks {
   deadlinePassed: string;
   saved: string;
   picks: CopaQuinielaTournamentPick[];
-}
-
-export interface CopaQuinielaFavoriteTeam {
-  eyebrow: string;
-  title: string;
-  description: string;
-  badge: string;
 }
 
 export type CopaQuinielaMainTabId = "partidos" | "apuestas";
@@ -202,7 +196,6 @@ export interface CopaQuinielaContent {
   phases: CopaQuinielaPhase[];
   matches: CopaQuinielaMatch[];
   tournamentPicks: CopaQuinielaTournamentPicks;
-  favoriteTeam: CopaQuinielaFavoriteTeam;
   pointsTable: {
     eyebrow: string;
     title: string;
@@ -1348,7 +1341,7 @@ export const content: CopaAppContent = {
       eyebrow: "Predicciones del torneo",
       title: "Tus apuestas mundialistas",
       subtitle:
-        "Antes de que arranque el mundial, escoge quién será el jugador MVP y el goleador del torneo. Cada acierto vale 300 puntos.",
+        "Antes de que arranque el mundial, escoge a tus favoritos. Cada acierto suma puntos al final del torneo.",
       deadline: "2026-06-11T14:00:00-06:00",
       deadlinePrefix: "Puedes modificar hasta el inicio del mundial:",
       deadlinePassed: "Predicciones cerradas: el mundial ya inició",
@@ -1368,14 +1361,24 @@ export const content: CopaAppContent = {
           placeholder: "Ej. Kylian Mbappé",
           icon: "boot",
         },
+        {
+          id: "favorito",
+          label: "Tu selección favorita",
+          helper:
+            "Suma 25 puntos extra cada vez que tu favorita gane un partido.",
+          placeholder: "Selecciona un país",
+          icon: "heart",
+          kind: "country",
+        },
+        {
+          id: "campeon",
+          label: "Selección campeona del mundial",
+          helper: "Tu predicción de quién levantará la copa.",
+          placeholder: "Selecciona un país",
+          icon: "trophy",
+          kind: "country",
+        },
       ],
-    },
-    favoriteTeam: {
-      eyebrow: "Próximamente",
-      title: "Selección de equipo favorito",
-      description:
-        "Pronto podrás escoger tu equipo favorito del mundial. Cada vez que gane sumarás 25 puntos extra a tu cuenta. Estamos definiendo si la elección se hace al inicio o si podrás cambiarla durante el torneo.",
-      badge: "Pendiente de definición",
     },
     pointsTable: {
       eyebrow: "Tabla de puntos",

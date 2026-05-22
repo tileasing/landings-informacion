@@ -8,7 +8,6 @@ import QuinielaMatchCard from "../../components/copa-oautos-2026-app/quiniela/Qu
 import QuinielaGroupFilter from "../../components/copa-oautos-2026-app/quiniela/QuinielaGroupFilter.astro";
 import QuinielaPointsModal from "../../components/copa-oautos-2026-app/quiniela/QuinielaPointsModal.astro";
 import QuinielaTournamentPicks from "../../components/copa-oautos-2026-app/quiniela/QuinielaTournamentPicks.astro";
-import QuinielaFavoriteTeam from "../../components/copa-oautos-2026-app/quiniela/QuinielaFavoriteTeam.astro";
 import { content } from "../../content/copa-oautos-2026-app";
 import { QUINIELA_ENDPOINTS } from "../../lib/api";
 
@@ -56,6 +55,21 @@ const matchesByPhase = quiniela.phases.map((phase) => {
 
 const firstOpenPhaseId =
   quiniela.phases.find((p) => p.status === "open")?.id ?? quiniela.phases[0]?.id;
+
+// Lista única de países participantes (extraída de los matches), ordenada alfabéticamente
+// en español. Se pasa al selector de país de Apuestas Mundialistas.
+const teamMap = new Map<string, { code: string; name: string }>();
+for (const match of quiniela.matches) {
+  if (!teamMap.has(match.teamA.code)) {
+    teamMap.set(match.teamA.code, match.teamA);
+  }
+  if (!teamMap.has(match.teamB.code)) {
+    teamMap.set(match.teamB.code, match.teamB);
+  }
+}
+const countries = Array.from(teamMap.values()).sort((a, b) =>
+  a.name.localeCompare(b.name, "es"),
+);
 
 // Grupos disponibles en fase de grupos (para el filtro).
 const groupCodes = Array.from(
@@ -209,8 +223,10 @@ const matchPointsConfig = {
         data-main-tab-panel="apuestas"
         class="space-y-6 hidden"
       >
-        <QuinielaTournamentPicks content={quiniela.tournamentPicks} />
-        <QuinielaFavoriteTeam content={quiniela.favoriteTeam} />
+        <QuinielaTournamentPicks
+          content={quiniela.tournamentPicks}
+          countries={countries}
+        />
       </section>
     </div>
   </main>

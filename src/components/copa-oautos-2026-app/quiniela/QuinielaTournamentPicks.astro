@@ -1,11 +1,22 @@
 ---
 import type { CopaQuinielaContent } from "../../../content/copa-oautos-2026-app";
 
-interface Props {
-  content: CopaQuinielaContent["tournamentPicks"];
+interface CountryOption {
+  code: string;
+  name: string;
 }
 
-const { content } = Astro.props;
+interface Props {
+  content: CopaQuinielaContent["tournamentPicks"];
+  countries: CountryOption[];
+}
+
+const { content, countries } = Astro.props;
+
+const flagUrl = (code: string) =>
+  `https://flagcdn.com/w80/${code.toLowerCase()}.png`;
+const flagUrl2x = (code: string) =>
+  `https://flagcdn.com/w160/${code.toLowerCase()}.png`;
 ---
 
 <section
@@ -59,56 +70,227 @@ const { content } = Astro.props;
 
   <div class="px-4 sm:px-6 py-4 sm:py-5 space-y-3">
     {
-      content.picks.map((pick) => (
-        <div class="rounded-xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
-          <label
-            for={`copa-pick-${pick.id}`}
-            class="flex items-center gap-2 text-sm font-bold text-[#0D2C4D] mb-1.5"
-          >
-            <span
-              class="flex h-7 w-7 items-center justify-center rounded-lg bg-white ring-1 ring-gray-200 text-[#117CD9]"
-              aria-hidden="true"
+      content.picks.map((pick) => {
+        const isCountry = pick.kind === "country";
+        return (
+          <div class="rounded-xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
+            <label
+              for={`copa-pick-${pick.id}`}
+              class="flex items-center gap-2 text-sm font-bold text-[#0D2C4D] mb-1.5"
             >
-              {pick.icon === "star" && (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  class="w-4 h-4"
+              <span
+                class="flex h-7 w-7 items-center justify-center rounded-lg bg-white ring-1 ring-gray-200 text-[#117CD9]"
+                aria-hidden="true"
+              >
+                {pick.icon === "star" && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="w-4 h-4"
+                  >
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                )}
+                {pick.icon === "boot" && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-4 h-4"
+                  >
+                    <path d="M2 16h20l-2 5H4l-2-5Z" />
+                    <path d="M4 16V8a3 3 0 0 1 3-3h2v3h2V5h3v3h2V5l3 2v9" />
+                  </svg>
+                )}
+                {pick.icon === "heart" && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="w-4 h-4"
+                  >
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                )}
+                {pick.icon === "trophy" && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-4 h-4"
+                  >
+                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                    <path d="M4 22h16" />
+                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+                  </svg>
+                )}
+              </span>
+              {pick.label}
+            </label>
+
+            {isCountry ? (
+              <div
+                class="relative copa-country-select"
+                data-country-select={pick.id}
+              >
+                {/* Hidden input que mantiene compatibilidad con el script existente */}
+                <input
+                  id={`copa-pick-${pick.id}`}
+                  type="hidden"
+                  data-pick-id={pick.id}
+                  data-pick-kind="country"
+                />
+
+                {/* Trigger: muestra la selección actual */}
+                <button
+                  type="button"
+                  data-country-trigger
+                  aria-haspopup="listbox"
+                  aria-expanded="false"
+                  class="copa-pick-input w-full flex items-center gap-2 rounded-lg border-2 border-gray-200 bg-white px-3 py-2.5 text-left text-sm sm:text-base text-[#0D2C4D] focus:outline-none focus:border-[#117CD9] focus:ring-2 focus:ring-[#117CD9]/30 transition disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                 >
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-              )}
-              {pick.icon === "boot" && (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="w-4 h-4"
+                  <img
+                    data-country-flag
+                    src=""
+                    alt=""
+                    width="28"
+                    height="20"
+                    class="hidden w-7 h-5 object-cover rounded shadow-sm ring-1 ring-black/5 flex-shrink-0"
+                  />
+                  <span
+                    data-country-label
+                    class="flex-1 truncate text-gray-400"
+                  >
+                    {pick.placeholder}
+                  </span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-4 h-4 text-gray-400 transition-transform duration-200 flex-shrink-0"
+                    data-country-chevron
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+
+                {/* Panel: lista de países con búsqueda */}
+                <div
+                  data-country-panel
+                  role="listbox"
+                  class="hidden absolute top-full left-0 right-0 z-30 mt-1 rounded-xl bg-white ring-1 ring-gray-200 shadow-xl overflow-hidden"
                 >
-                  <path d="M2 16h20l-2 5H4l-2-5Z" />
-                  <path d="M4 16V8a3 3 0 0 1 3-3h2v3h2V5h3v3h2V5l3 2v9" />
-                </svg>
-              )}
-            </span>
-            {pick.label}
-          </label>
-          <input
-            id={`copa-pick-${pick.id}`}
-            type="text"
-            data-pick-id={pick.id}
-            placeholder={pick.placeholder}
-            autocomplete="off"
-            maxlength="80"
-            class="copa-pick-input w-full rounded-lg border-2 border-gray-200 bg-white px-3 py-2.5 text-sm sm:text-base text-[#0D2C4D] focus:outline-none focus:border-[#117CD9] focus:ring-2 focus:ring-[#117CD9]/30 transition disabled:bg-gray-100 disabled:text-gray-500"
-          />
-          <p class="mt-1.5 text-[11px] text-gray-500">{pick.helper}</p>
-        </div>
-      ))
+                  <div class="px-3 pt-3 pb-2 border-b border-gray-100">
+                    <div class="relative">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+                        aria-hidden="true"
+                      >
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.3-4.3" />
+                      </svg>
+                      <input
+                        type="search"
+                        data-country-search
+                        placeholder="Buscar país…"
+                        autocomplete="off"
+                        class="w-full rounded-lg border border-gray-200 bg-gray-50 pl-9 pr-3 py-2 text-sm text-[#0D2C4D] placeholder:text-gray-400 focus:outline-none focus:border-[#117CD9] focus:ring-1 focus:ring-[#117CD9]/30"
+                      />
+                    </div>
+                  </div>
+                  <ul
+                    data-country-options
+                    class="max-h-64 overflow-y-auto py-1"
+                  >
+                    {countries.map((country) => (
+                      <li>
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected="false"
+                          data-country-option={country.code}
+                          data-country-name={country.name}
+                          data-country-search-text={country.name.toLowerCase()}
+                          class="copa-country-option flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-[#0D2C4D] hover:bg-[#117CD9]/10 transition"
+                        >
+                          <img
+                            src={flagUrl(country.code)}
+                            srcset={`${flagUrl(country.code)} 1x, ${flagUrl2x(country.code)} 2x`}
+                            alt=""
+                            width="28"
+                            height="20"
+                            loading="lazy"
+                            class="w-7 h-5 object-cover rounded shadow-sm ring-1 ring-black/5 flex-shrink-0"
+                          />
+                          <span class="flex-1 truncate font-medium">
+                            {country.name}
+                          </span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="copa-country-check hidden w-4 h-4 text-[#117CD9] flex-shrink-0"
+                            aria-hidden="true"
+                          >
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
+                        </button>
+                      </li>
+                    ))}
+                    <li
+                      data-country-empty
+                      class="hidden px-3 py-4 text-center text-xs text-gray-500"
+                    >
+                      Sin coincidencias
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <input
+                id={`copa-pick-${pick.id}`}
+                type="text"
+                data-pick-id={pick.id}
+                data-pick-kind="text"
+                placeholder={pick.placeholder}
+                autocomplete="off"
+                maxlength="80"
+                class="copa-pick-input w-full rounded-lg border-2 border-gray-200 bg-white px-3 py-2.5 text-sm sm:text-base text-[#0D2C4D] focus:outline-none focus:border-[#117CD9] focus:ring-2 focus:ring-[#117CD9]/30 transition disabled:bg-gray-100 disabled:text-gray-500"
+              />
+            )}
+
+            <p class="mt-1.5 text-[11px] text-gray-500">{pick.helper}</p>
+          </div>
+        );
+      })
     }
   </div>
 
@@ -138,3 +320,122 @@ const { content } = Astro.props;
     </span>
   </footer>
 </section>
+
+<script is:inline>
+  (() => {
+    // === Selectores de país (custom dropdowns con búsqueda) ===
+    const FLAG_W80 = (code) =>
+      `https://flagcdn.com/w80/${code.toLowerCase()}.png`;
+    const FLAG_W160 = (code) =>
+      `https://flagcdn.com/w160/${code.toLowerCase()}.png`;
+
+    const selects = document.querySelectorAll("[data-country-select]");
+    selects.forEach((root) => {
+      const hiddenInput = root.querySelector('input[type="hidden"]');
+      const trigger = root.querySelector("[data-country-trigger]");
+      const panel = root.querySelector("[data-country-panel]");
+      const chevron = root.querySelector("[data-country-chevron]");
+      const flagImg = root.querySelector("[data-country-flag]");
+      const labelEl = root.querySelector("[data-country-label]");
+      const search = root.querySelector("[data-country-search]");
+      const options = Array.from(
+        root.querySelectorAll("[data-country-option]"),
+      );
+      const empty = root.querySelector("[data-country-empty]");
+      const initialPlaceholder = labelEl?.textContent ?? "";
+
+      const openPanel = () => {
+        panel?.classList.remove("hidden");
+        trigger?.setAttribute("aria-expanded", "true");
+        chevron?.classList.add("rotate-180");
+        // focus en búsqueda al abrir (suave para no robar focus en móvil al inicio)
+        setTimeout(() => search?.focus({ preventScroll: true }), 30);
+      };
+      const closePanel = () => {
+        panel?.classList.add("hidden");
+        trigger?.setAttribute("aria-expanded", "false");
+        chevron?.classList.remove("rotate-180");
+        if (search) search.value = "";
+        applyFilter("");
+      };
+
+      const setValue = (code, name) => {
+        if (!hiddenInput) return;
+        hiddenInput.value = code;
+        if (flagImg && code) {
+          flagImg.src = FLAG_W80(code);
+          flagImg.srcset = `${FLAG_W80(code)} 1x, ${FLAG_W160(code)} 2x`;
+          flagImg.alt = `Bandera de ${name}`;
+          flagImg.classList.remove("hidden");
+        } else if (flagImg) {
+          flagImg.classList.add("hidden");
+        }
+        if (labelEl) {
+          labelEl.textContent = name || initialPlaceholder;
+          labelEl.classList.toggle("text-gray-400", !code);
+          labelEl.classList.toggle("text-[#0D2C4D]", !!code);
+          labelEl.classList.toggle("font-semibold", !!code);
+        }
+        // Actualizar el check en las opciones
+        options.forEach((opt) => {
+          const isSelected = opt.dataset.countryOption === code;
+          opt.setAttribute("aria-selected", isSelected ? "true" : "false");
+          const check = opt.querySelector(".copa-country-check");
+          if (check) check.classList.toggle("hidden", !isSelected);
+        });
+        // Disparar evento input para que el script global de autosave reaccione.
+        hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+      };
+
+      const applyFilter = (raw) => {
+        const q = raw.trim().toLowerCase();
+        let visibleCount = 0;
+        options.forEach((opt) => {
+          const text = opt.dataset.countrySearchText ?? "";
+          const matches = !q || text.includes(q);
+          opt.parentElement.classList.toggle("hidden", !matches);
+          if (matches) visibleCount += 1;
+        });
+        empty?.classList.toggle("hidden", visibleCount > 0);
+      };
+
+      // Restaurar valor inicial si el hidden input ya tiene algo (por hidratación previa).
+      if (hiddenInput?.value) {
+        const match = options.find(
+          (o) => o.dataset.countryOption === hiddenInput.value,
+        );
+        if (match) setValue(match.dataset.countryOption, match.dataset.countryName);
+      }
+
+      trigger?.addEventListener("click", () => {
+        if (trigger.disabled) return;
+        if (panel?.classList.contains("hidden")) openPanel();
+        else closePanel();
+      });
+
+      options.forEach((opt) => {
+        opt.addEventListener("click", () => {
+          setValue(opt.dataset.countryOption, opt.dataset.countryName);
+          closePanel();
+          trigger?.focus({ preventScroll: true });
+        });
+      });
+
+      search?.addEventListener("input", (e) =>
+        applyFilter(e.target.value),
+      );
+
+      // Cerrar al clickear fuera
+      document.addEventListener("click", (event) => {
+        if (!root.contains(event.target)) closePanel();
+      });
+      // Cerrar con Esc
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !panel?.classList.contains("hidden")) {
+          closePanel();
+          trigger?.focus({ preventScroll: true });
+        }
+      });
+    });
+  })();
+</script>
