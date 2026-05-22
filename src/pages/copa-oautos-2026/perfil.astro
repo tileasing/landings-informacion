@@ -35,7 +35,7 @@ const fields = [
 ] as const;
 ---
 
-<CopaAppLayout title={perfil.meta.title} description={perfil.meta.description}>
+<CopaAppLayout title={perfil.meta.title} description={perfil.meta.description} requireAuth>
   <AppNavbar content={navbar} />
   <main class="bg-[#F4F7FB] min-h-[calc(100dvh-4rem)] pb-12">
     <ProfileHeader
@@ -58,6 +58,7 @@ const fields = [
           <span
             class="flex-shrink-0 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-[#117CD9] text-white text-lg sm:text-xl font-extrabold shadow-md"
             aria-hidden="true"
+            data-user-initials
           >
             {initials}
           </span>
@@ -146,6 +147,9 @@ const fields = [
                           ? "font-semibold text-[#0D2C4D]"
                           : "italic text-gray-400",
                       ]}
+                      data-user-fullname={field.icon === "user" ? "" : undefined}
+                      data-user-email={field.icon === "mail" ? "" : undefined}
+                      data-user-phone={field.icon === "phone" ? "" : undefined}
                     >
                       {hasValue ? value : perfil.info.notProvided}
                     </dd>

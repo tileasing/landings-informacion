@@ -10,6 +10,7 @@ import QuinielaPointsModal from "../../components/copa-oautos-2026-app/quiniela/
 import QuinielaTournamentPicks from "../../components/copa-oautos-2026-app/quiniela/QuinielaTournamentPicks.astro";
 import QuinielaFavoriteTeam from "../../components/copa-oautos-2026-app/quiniela/QuinielaFavoriteTeam.astro";
 import { content } from "../../content/copa-oautos-2026-app";
+import { QUINIELA_ENDPOINTS } from "../../lib/api";
 
 const { quiniela, navbar } = content;
 
@@ -82,6 +83,7 @@ const matchPointsConfig = {
 <CopaAppLayout
   title={quiniela.meta.title}
   description={quiniela.meta.description}
+  requireAuth
 >
   <AppNavbar content={navbar} />
   <main class="bg-[#F4F7FB] min-h-[calc(100dvh-4rem)]">
@@ -225,6 +227,10 @@ const matchPointsConfig = {
     tournamentPicksKey: "copa-quiniela-tournament-picks-v1",
     mainTabStorageKey: "copa-quiniela-main-tab-v1",
     groupFilterKey: "copa-quiniela-group-filter-v1",
+    endpointMyPredictions: QUINIELA_ENDPOINTS.myPredictions,
+    endpointBulkPredictions: QUINIELA_ENDPOINTS.bulkPredictions,
+    endpointMvp: QUINIELA_ENDPOINTS.mvp,
+    endpointGoleador: QUINIELA_ENDPOINTS.goleador,
   }}
 >
   (() => {
@@ -387,6 +393,10 @@ const matchPointsConfig = {
     };
 
     let predictions = loadAllPredictions();
+
+    // Tracks which matchIds the user has manually edited this session (prevents
+    // the API init load from overwriting in-progress user input).
+    const userModifiedCards = new Set();
 
     // === Formato de fecha/cuenta regresiva ===
     // Hora CDMX como referencia única para la audiencia mexicana.
@@ -557,18 +567,34 @@ const matchPointsConfig = {
       const a = inputs[0]?.value === "" ? null : Number(inputs[0]?.value);
       const b = inputs[1]?.value === "" ? null : Number(inputs[1]?.value);
 
+      // Mark as user-edited so the API load won't overwrite it.
+      userModifiedCards.add(matchId);
+
       predictions[matchId] = { a, b, savedAt: new Date().toISOString() };
-      const ok = saveAllPredictions(predictions);
+      saveAllPredictions(predictions);
+
+      // Persist to API (debounced 800 ms so we don't spam on every keystroke).
+      clearTimeout(card._apiTimeout);
+      card._apiTimeout = setTimeout(() => {
+        if (a === null || b === null) return;
+        const token = localStorage.getItem("copa_auth_token");
+        if (!token) return;
+        fetch(endpointBulkPredictions, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+          body: JSON.stringify({
+            predictions: [{ matchId, goalsA: a, goalsB: b }],
+          }),
+        }).catch(() => {});
+      }, 800);
 
       if (feedback) {
         feedback.classList.remove("hidden", "text-red-600", "text-emerald-600");
-        if (ok) {
-          feedback.textContent = `✓ ${feedback.dataset.savedLabel}`;
-          feedback.classList.add("text-emerald-600");
-        } else {
-          feedback.textContent = "✗";
-          feedback.classList.add("text-red-600");
-        }
+        feedback.textContent = `✓ ${feedback.dataset.savedLabel}`;
+        feedback.classList.add("text-emerald-600");
         clearTimeout(card._feedbackTimeout);
         card._feedbackTimeout = setTimeout(() => {
           feedback.classList.add("hidden");
@@ -679,7 +705,32 @@ const matchPointsConfig = {
           } else {
             delete picks[id];
           }
+          // Mark as user-modified so the API load won't overwrite.
+          input._userModified = true;
           if (savePicks(picks)) flashFeedback();
+
+          // Persist to API (debounced 800 ms).
+          clearTimeout(input._apiTimeout);
+          input._apiTimeout = setTimeout(() => {
+            if (!value) return;
+            const token = localStorage.getItem("copa_auth_token");
+            if (!token) return;
+            const endpoint =
+              id === "mvp"
+                ? endpointMvp
+                : id === "goleador"
+                  ? endpointGoleador
+                  : null;
+            if (!endpoint) return;
+            fetch(endpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token,
+              },
+              body: JSON.stringify({ playerName: value }),
+            }).catch(() => {});
+          }, 800);
         });
       });
     }
@@ -781,5 +832,82 @@ const matchPointsConfig = {
         }
       } catch (_) {}
     }
+
+    // === Carga inicial desde la API ===
+    // Se ejecuta una sola vez al cargar la página. No dispara guardados a la API
+    // (solo hidrata los inputs desde el GET) para evitar bucles de escritura.
+    (() => {
+      const token = localStorage.getItem("copa_auth_token");
+      if (!token) return;
+
+      fetch(endpointMyPredictions, {
+        headers: { "Authorization": "Bearer " + token },
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (!data || !data.success || !data.data || !data.data.save) return;
+          const save = data.data.save;
+
+          // --- Predicciones de partidos ---
+          // La API es la fuente de verdad: reemplazar predictions por completo.
+          // Solo se conservan las entradas editadas manualmente en esta sesión.
+          if (Array.isArray(save.matchPredictions)) {
+            // Construir mapa desde la respuesta del API.
+            const apiMap = {};
+            save.matchPredictions.forEach(function (mp) {
+              apiMap[mp.matchId] = { a: mp.goalsA, b: mp.goalsB };
+            });
+
+            // Nuevo objeto: entradas del API + lo que el usuario editó esta sesión.
+            const next = {};
+            userModifiedCards.forEach(function (matchId) {
+              if (predictions[matchId]) next[matchId] = predictions[matchId];
+            });
+            Object.keys(apiMap).forEach(function (matchId) {
+              if (!userModifiedCards.has(matchId)) {
+                next[matchId] = apiMap[matchId];
+              }
+            });
+
+            predictions = next;
+            saveAllPredictions(predictions);
+
+            // Hidratar inputs: asignar valor de API o limpiar si no viene en el response.
+            cards.forEach(function (card) {
+              if (userModifiedCards.has(card.dataset.matchId)) return;
+              if (card.dataset.finished === "1") return;
+              const matchId = card.dataset.matchId;
+              const inputs = Array.from(card.querySelectorAll(".copa-match-input"));
+              const pred = predictions[matchId];
+              if (inputs[0]) inputs[0].value = pred != null ? (pred.a ?? "") : "";
+              if (inputs[1]) inputs[1].value = pred != null ? (pred.b ?? "") : "";
+            });
+          }
+
+          // --- Tournament picks (MVP / goleador) ---
+          const tp = save.tournamentPicks;
+          if (tp) {
+            document
+              .querySelectorAll(".copa-pick-input")
+              .forEach(function (input) {
+                // No sobreescribir si el usuario ya tecleó en este campo.
+                if (input._userModified) return;
+                const id = input.dataset.pickId;
+                const entry =
+                  id === "mvp"
+                    ? tp.mvp
+                    : id === "goleador"
+                      ? tp.goleador
+                      : null;
+                // El API devuelve { playerName: "..." }
+                const val = entry && typeof entry === "object"
+                  ? entry.playerName
+                  : entry;
+                if (val) input.value = val;
+              });
+          }
+        })
+        .catch(function () {});
+    })();
   })();
 </script>
