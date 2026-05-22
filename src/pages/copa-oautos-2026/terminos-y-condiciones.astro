@@ -1,0 +1,334 @@
+---
+import CopaAppLayout from "../../layouts/CopaAppLayout.astro";
+---
+
+<CopaAppLayout
+  title="Términos y Condiciones — Copa Mundial Oautos"
+  description="Términos y condiciones, dinámicas y reglas aplicables de Copa Mundial Oautos 2026."
+>
+  <main class="min-h-dvh bg-white text-gray-900">
+    <div class="max-w-3xl mx-auto px-5 py-14 sm:py-20">
+      <!-- Header -->
+      <div class="mb-10 text-center">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-[#0D2C4D] leading-tight">
+          Términos y Condiciones
+        </h1>
+        <p class="mt-2 text-base font-semibold text-[#117CD9]">Copa Mundial Oautos</p>
+      </div>
+
+      <div class="text-sm sm:text-base leading-relaxed space-y-8">
+
+        <!-- 1 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">1. ORGANIZADOR</h2>
+          <p>
+            La dinámica "Copa Mundial Oautos" es organizada por Oautos con el objetivo de ofrecer actividades
+            promocionales, trivias, quinielas, ruletas, rankings y dinámicas especiales para los usuarios
+            registrados dentro de la aplicación y plataformas relacionadas.
+          </p>
+        </section>
+
+        <!-- 2 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">2. PARTICIPACIÓN</h2>
+          <p>Podrán participar personas mayores de edad que:</p>
+          <ul class="terms-list list-disc list-inside mt-2 space-y-1">
+            <li>se encuentren registradas dentro de la aplicación Oautos,</li>
+            <li>cumplan con los requisitos de acceso establecidos,</li>
+            <li>y participen dentro de las dinámicas disponibles durante la vigencia de la campaña.</li>
+          </ul>
+          <p class="mt-3">La participación es gratuita.</p>
+        </section>
+
+        <!-- 3 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">3. VIGENCIA</h2>
+          <p>
+            La campaña Copa Mundial Oautos tendrá vigencia durante el periodo de junio y julio del año 2026
+            y podrá extenderse algunos días posteriores para cierre de dinámicas, publicación de resultados
+            y entrega de premios.
+          </p>
+          <p class="mt-2">
+            Oautos podrá modificar fechas, dinámicas o actividades por razones operativas o comerciales.
+          </p>
+        </section>
+
+        <!-- 4 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">4. DINÁMICAS DISPONIBLES</h2>
+          <p>
+            Durante la campaña podrán existir: quinielas, trivias, ruletas, rankings, premios, dinámicas
+            especiales, retos, micro logros, y otras actividades digitales.
+          </p>
+          <p class="mt-2">
+            Cada dinámica podrá tener reglas específicas adicionales dentro de la aplicación.
+          </p>
+        </section>
+
+        <!-- 5 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">5. PUNTOS Y RECOMPENSAS</h2>
+          <p>Los usuarios podrán acumular puntos mediante:</p>
+          <ul class="terms-list list-disc list-inside mt-2 space-y-1">
+            <li>participación en dinámicas</li>
+            <li>trivias</li>
+            <li>quinielas</li>
+            <li>ruletas</li>
+            <li>referidos</li>
+            <li>aportaciones</li>
+            <li>y otras actividades habilitadas</li>
+          </ul>
+          <p class="mt-3">
+            Los puntos obtenidos se mostrarán directamente dentro de la aplicación y podrán visualizarse
+            prácticamente en tiempo real. Los puntos no tienen valor monetario, ni representan dinero en
+            efectivo ni pueden intercambiarse directamente por efectivo.
+          </p>
+
+          <!-- Tabla de puntos -->
+          <h3 class="text-base font-bold text-[#0D2C4D] mt-6 mb-3">TABLA OFICIAL DE PUNTOS COPA</h3>
+          <div class="overflow-x-auto rounded-xl border border-gray-200">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-[#0D2C4D] text-white">
+                  <th class="px-4 py-2 text-left font-semibold">Acción</th>
+                  <th class="px-4 py-2 text-right font-semibold">Puntos Copa</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                {[
+                  ["Registro", "+50"],
+                  ["Crear plan", "+300"],
+                  ["Primera aportación", "+500"],
+                  ["Aportación puntual", "+100"],
+                  ["Referido registrado", "+200"],
+                  ["Referido con plan", "+500"],
+                  ["Completar trivia", "+50"],
+                  ["Pregunta Oautos correcta", "+50"],
+                  ["Participar ruleta", "+50"],
+                  ["Acertar ganador partido", "+20"],
+                  ["Acertar empate", "+30"],
+                  ["Acertar marcador exacto", "+100"],
+                ].map(([accion, puntos], i) => (
+                  <tr class={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <td class="px-4 py-2 text-gray-700">{accion}</td>
+                    <td class="px-4 py-2 text-right font-semibold text-[#117CD9]">{puntos}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bonus equipo favorito -->
+          <h3 class="text-base font-bold text-[#0D2C4D] mt-6 mb-3">BONUS POR EQUIPO FAVORITO</h3>
+          <div class="overflow-x-auto rounded-xl border border-gray-200">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-[#0D2C4D] text-white">
+                  <th class="px-4 py-2 text-left font-semibold">Resultado</th>
+                  <th class="px-4 py-2 text-right font-semibold">Puntos Copa</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                {[
+                  ["Gana partido", "+30"],
+                  ["Avanza a Octavos", "+100"],
+                  ["Avanza a Cuartos", "+150"],
+                  ["Avanza a Semifinal", "+200"],
+                  ["Llega a Final", "+300"],
+                  ["Campeón Mundial", "+500"],
+                ].map(([resultado, puntos], i) => (
+                  <tr class={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <td class="px-4 py-2 text-gray-700">{resultado}</td>
+                    <td class="px-4 py-2 text-right font-semibold text-[#117CD9]">{puntos}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Premios oficiales ranking -->
+          <h3 class="text-base font-bold text-[#0D2C4D] mt-6 mb-2">PREMIOS OFICIALES — Ranking General</h3>
+          <p class="text-sm text-gray-600 mb-3">
+            Al finalizar la copa, los ganadores obtendrán puntos Oautos de acuerdo con el ranking logrado.
+            Si hay empate en el Score final de la Copa, el ganador será el que tenga:
+          </p>
+          <ol class="terms-list list-decimal pl-6 space-y-1 text-sm mb-4">
+            <li>Más aportaciones</li>
+            <li>Más referidos</li>
+            <li>Mayor antigüedad</li>
+            <li>O se hace un sorteo final</li>
+          </ol>
+          <div class="overflow-x-auto rounded-xl border border-gray-200">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-[#0D2C4D] text-white">
+                  <th class="px-4 py-2 text-left font-semibold">Lugar</th>
+                  <th class="px-4 py-2 text-right font-semibold">Premio</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                {[
+                  ["1ero", "3,000 puntos Oautos"],
+                  ["2do", "2,000 puntos Oautos"],
+                  ["3ero", "1,500 puntos Oautos"],
+                  ["4to al 15mo", "1,000 puntos Oautos"],
+                  ["16vo en adelante", "500 puntos Oautos"],
+                ].map(([lugar, premio], i) => (
+                  <tr class={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <td class="px-4 py-2 text-gray-700 font-medium">{lugar}</td>
+                    <td class="px-4 py-2 text-right text-gray-700">{premio}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 6 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">6. PREMIOS</h2>
+          <p>Durante la campaña podrán entregarse distintos premios como:</p>
+          <ul class="terms-list list-disc list-inside mt-2 space-y-1">
+            <li>artículos promocionales, balones, jerseys, termos, cenas, recompensas especiales, puntos Oautos, puntos Copa y otros beneficios definidos por Oautos.</li>
+          </ul>
+          <p class="mt-2">Los premios podrán variar dependiendo de la dinámica y disponibilidad.</p>
+        </section>
+
+        <!-- 7 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">7. ENTREGA DE PREMIOS</h2>
+          <p>
+            Los premios físicos obtenidos durante Copa Mundial Oautos serán entregados al finalizar el
+            Mundial. La entrega se realizará en oficinas de Oautos o en el lugar que Oautos determine
+            para dicha entrega. Con el objetivo de coordinar la entrega correspondiente, Oautos buscará
+            contactar a los ganadores mediante:
+          </p>
+          <ul class="terms-list list-disc list-inside mt-2 space-y-1">
+            <li>correo electrónico</li>
+            <li>llamada telefónica</li>
+            <li>WhatsApp</li>
+            <li>o medios registrados dentro de la plataforma</li>
+          </ul>
+          <p class="mt-3">
+            Es responsabilidad del usuario mantener actualizada su información de contacto. En caso de no
+            poder contactar al ganador dentro de un periodo razonable, Oautos podrá reasignar o cancelar
+            el premio correspondiente.
+          </p>
+        </section>
+
+        <!-- 8 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">8. RANKINGS Y RESULTADOS</h2>
+          <p>
+            Los rankings y posiciones mostrados dentro de la plataforma son calculados con base en:
+          </p>
+          <ul class="terms-list list-disc list-inside mt-2 space-y-1">
+            <li>Aciertos</li>
+            <li>Participación</li>
+            <li>Puntos acumulados</li>
+            <li>Reglas internas de cada dinámica.</li>
+          </ul>
+          <p class="mt-3">
+            Oautos podrá revisar, ajustar o corregir resultados en caso de detectar errores operativos,
+            técnicos o conductas indebidas.
+          </p>
+        </section>
+
+        <!-- 9 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">9. CONDUCTAS NO PERMITIDAS</h2>
+          <p>No está permitido:</p>
+          <ul class="terms-list list-disc list-inside mt-2 space-y-1">
+            <li>manipular dinámicas</li>
+            <li>crear cuentas duplicadas</li>
+            <li>utilizar información falsa</li>
+            <li>alterar resultados</li>
+            <li>abusar de errores del sistema</li>
+            <li>ni realizar conductas fraudulentas</li>
+          </ul>
+          <p class="mt-3">Oautos podrá descalificar usuarios que incumplan estas condiciones.</p>
+        </section>
+
+        <!-- 10 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">10. MODIFICACIONES</h2>
+          <p>
+            Cuando existan razones operativas, técnicas, comerciales o de seguridad, Oautos podrá
+            modificar:
+          </p>
+          <ul class="terms-list list-disc list-inside mt-2 space-y-1">
+            <li>dinámicas</li>
+            <li>fechas</li>
+            <li>premios</li>
+            <li>reglas</li>
+            <li>o funcionalidades</li>
+          </ul>
+        </section>
+
+        <!-- 11 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">11. DISPONIBILIDAD</h2>
+          <p>
+            Algunas dinámicas podrán estar disponibles únicamente durante ciertos horarios, fechas o fases
+            de la Copa. Oautos no garantiza disponibilidad ininterrumpida de la plataforma.
+          </p>
+        </section>
+
+        <!-- 12 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">12. USO DE IMAGEN Y TESTIMONIOS</h2>
+          <p>
+            Para fines promocionales relacionados con Copa Oautos, los participantes aceptan que Oautos
+            pueda utilizar:
+          </p>
+          <ul class="terms-list list-disc list-inside mt-2 space-y-1">
+            <li>nombres</li>
+            <li>usernames</li>
+            <li>fotografías</li>
+            <li>testimonios</li>
+            <li>o contenido relacionado con ganadores</li>
+          </ul>
+        </section>
+
+        <!-- 13 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">13. PRIVACIDAD</h2>
+          <p>
+            La información proporcionada por los usuarios será utilizada conforme a las políticas de
+            privacidad y términos aplicables de Oautos.
+          </p>
+        </section>
+
+        <!-- 14 -->
+        <section>
+          <h2 class="text-lg font-bold text-[#0D2C4D] mb-2">14. ACEPTACIÓN</h2>
+          <p>
+            La participación en Copa Oautos implica la aceptación de los presentes términos y condiciones.
+          </p>
+        </section>
+
+      </div>
+
+      <!-- Back link -->
+      <div class="mt-12 text-center">
+        <a
+          href="/copa-oautos-2026/login"
+          class="inline-flex items-center gap-2 text-sm font-semibold text-[#117CD9] hover:underline"
+        >
+          ← Volver al ingreso
+        </a>
+      </div>
+    </div>
+  </main>
+</CopaAppLayout>
+
+<style>
+  ul.terms-list {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+  }
+  ol.terms-list {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+  }
+</style>
