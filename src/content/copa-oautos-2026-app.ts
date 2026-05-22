@@ -1476,7 +1476,7 @@ export const content: CopaAppContent = {
       {
         id: "trivia-01",
         name: "TRIVIA_01",
-        title: "Trivia Mundialista Inicial",
+        title: "Mundialista Inicial",
         typeLabel: "Mundial + Oautos",
         // Habilitada desde antes para pruebas / preview anticipado.
         availableFrom: "2026-06-03T00:00:00-06:00",
@@ -1549,7 +1549,7 @@ export const content: CopaAppContent = {
       {
         id: "trivia-02",
         name: "TRIVIA_02",
-        title: "Trivia 02",
+        title: "Leyendas y Campeones",
         typeLabel: "Mundial + Oautos",
         availableFrom: "2026-06-09T00:00:00-06:00",
         questions: [],
@@ -1557,7 +1557,7 @@ export const content: CopaAppContent = {
       {
         id: "trivia-mexico-01",
         name: "TRIVIA_MEXICO_01",
-        title: "Trivia México 01",
+        title: "Leyendas de México",
         typeLabel: "México + Oautos",
         availableFrom: "2026-06-11T00:00:00-06:00",
         questions: [],
@@ -1565,7 +1565,7 @@ export const content: CopaAppContent = {
       {
         id: "trivia-03",
         name: "TRIVIA_03",
-        title: "Trivia 03",
+        title: "Eliminatorias",
         typeLabel: "Mundial + Oautos",
         availableFrom: "2026-06-14T00:00:00-06:00",
         questions: [],
@@ -1573,15 +1573,15 @@ export const content: CopaAppContent = {
       {
         id: "trivia-mexico-02",
         name: "TRIVIA_MEXICO_02",
-        title: "Trivia México 02",
-        typeLabel: "México + Oautos",
+        title: "México en los Mundiales",
+        typeLabel: "Mundial + Oautos",
         availableFrom: "2026-06-18T00:00:00-06:00",
         questions: [],
       },
       {
         id: "trivia-04",
         name: "TRIVIA_04",
-        title: "Trivia 04",
+        title: "Sorpresas Mundialistas",
         typeLabel: "Mundial + Oautos",
         availableFrom: "2026-06-22T00:00:00-06:00",
         questions: [],
@@ -1589,15 +1589,15 @@ export const content: CopaAppContent = {
       {
         id: "trivia-mexico-03",
         name: "TRIVIA_MEXICO_03",
-        title: "Trivia México 03",
-        typeLabel: "México + Oautos",
+        title: "Récords de México",
+        typeLabel: "Mundial + Oautos",
         availableFrom: "2026-06-24T00:00:00-06:00",
         questions: [],
       },
       {
         id: "trivia-octavos",
         name: "TRIVIA_Octavos",
-        title: "Trivia de Octavos",
+        title: "Octavos de Final",
         typeLabel: "Mundial + Oautos",
         availableFrom: "2026-07-02T00:00:00-06:00",
         questions: [],
@@ -1605,7 +1605,7 @@ export const content: CopaAppContent = {
       {
         id: "trivia-cuartos",
         name: "TRIVIA_CUARTOS",
-        title: "Trivia de Cuartos",
+        title: "Cuartos de Final",
         typeLabel: "Mundial + Oautos",
         availableFrom: "2026-07-08T00:00:00-06:00",
         questions: [],
@@ -1613,7 +1613,7 @@ export const content: CopaAppContent = {
       {
         id: "trivia-semis",
         name: "TRIVIA_SEMIS",
-        title: "Trivia de Semifinales",
+        title: "Semifinales",
         typeLabel: "Mundial + Oautos",
         availableFrom: "2026-07-14T00:00:00-06:00",
         questions: [],
@@ -1621,7 +1621,7 @@ export const content: CopaAppContent = {
       {
         id: "trivia-final",
         name: "TRIVIA_FINAL",
-        title: "Trivia de la Final",
+        title: "La Final",
         typeLabel: "Mundial + Oautos",
         availableFrom: "2026-07-17T00:00:00-06:00",
         questions: [],
