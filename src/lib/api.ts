@@ -22,6 +22,8 @@ export const QUINIELA_ENDPOINTS = {
   bulkPredictions: `${API_BASE}/api/quiniela/predictions/bulk`,
   mvp: `${API_BASE}/api/quiniela/mvp`,
   goleador: `${API_BASE}/api/quiniela/goleador`,
+  favoriteTeam: `${API_BASE}/api/quiniela/favorite-team`,
+  championTeam: `${API_BASE}/api/quiniela/champion-team`,
 } as const;
 
 export const USER_ENDPOINTS = {

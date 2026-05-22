@@ -247,6 +247,8 @@ const matchPointsConfig = {
     endpointBulkPredictions: QUINIELA_ENDPOINTS.bulkPredictions,
     endpointMvp: QUINIELA_ENDPOINTS.mvp,
     endpointGoleador: QUINIELA_ENDPOINTS.goleador,
+    endpointFavoriteTeam: QUINIELA_ENDPOINTS.favoriteTeam,
+    endpointChampionTeam: QUINIELA_ENDPOINTS.championTeam,
   }}
 >
   (() => {
@@ -642,7 +644,7 @@ const matchPointsConfig = {
       cards.forEach(refreshCard);
     }, 60 * 1000);
 
-    // === Predicciones de torneo (MVP / goleador) ===
+    // === Predicciones de torneo (MVP / goleador / equipo favorito / campeón) ===
     const tournamentSection = document.querySelector("[data-tournament-picks]");
     if (tournamentSection) {
       const deadlineIso = tournamentSection.dataset.deadline;
@@ -652,41 +654,25 @@ const matchPointsConfig = {
       const feedback = tournamentSection.querySelector(
         ".copa-tournament-feedback",
       );
+
+      // Seleccionar todos los inputs con data-pick-id: tanto los de texto (kind=text)
+      // como los hidden de los selectores de país (kind=country).
       const pickInputs = Array.from(
-        tournamentSection.querySelectorAll(".copa-pick-input"),
+        tournamentSection.querySelectorAll("[data-pick-id]"),
       );
 
-      const loadPicks = () => {
-        try {
-          const raw = localStorage.getItem(tournamentPicksKey);
-          return raw ? JSON.parse(raw) : {};
-        } catch (_) {
-          return {};
-        }
-      };
-      const savePicks = (data) => {
-        try {
-          localStorage.setItem(tournamentPicksKey, JSON.stringify(data));
-          return true;
-        } catch (_) {
-          return false;
-        }
-      };
-
-      const picks = loadPicks();
-      pickInputs.forEach((input) => {
-        const id = input.dataset.pickId;
-        if (id && picks[id]) input.value = picks[id];
-      });
+      // También deshabilitar/habilitar el trigger button de los selectores de país.
+      const countryTriggers = Array.from(
+        tournamentSection.querySelectorAll("[data-country-trigger]"),
+      );
 
       const updateDeadline = () => {
         if (!deadlineIso || !deadlineLabel) return;
         const deadline = new Date(deadlineIso);
         const now = new Date();
         const isPassed = now.getTime() >= deadline.getTime();
-        pickInputs.forEach((input) => {
-          input.disabled = isPassed;
-        });
+        pickInputs.forEach((input) => { input.disabled = isPassed; });
+        countryTriggers.forEach((btn) => { btn.disabled = isPassed; });
         if (isPassed) {
           deadlineLabel.textContent =
             tournamentSection.dataset.deadlinePassed ?? "Cerrado";
@@ -714,38 +700,58 @@ const matchPointsConfig = {
       pickInputs.forEach((input) => {
         input.addEventListener("input", () => {
           const id = input.dataset.pickId;
+          const kind = input.dataset.pickKind; // 'text' | 'country'
           if (!id) return;
-          const value = input.value.trim();
-          if (value) {
-            picks[id] = value;
-          } else {
-            delete picks[id];
-          }
+
           // Mark as user-modified so the API load won't overwrite.
           input._userModified = true;
-          if (savePicks(picks)) flashFeedback();
+          flashFeedback();
 
           // Persist to API (debounced 800 ms).
           clearTimeout(input._apiTimeout);
           input._apiTimeout = setTimeout(() => {
-            if (!value) return;
             const token = localStorage.getItem("copa_auth_token");
             if (!token) return;
-            const endpoint =
-              id === "mvp"
-                ? endpointMvp
-                : id === "goleador"
-                  ? endpointGoleador
-                  : null;
-            if (!endpoint) return;
-            fetch(endpoint, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token,
-              },
-              body: JSON.stringify({ playerName: value }),
-            }).catch(() => {});
+
+            if (kind === "country") {
+              // Hidden input: value = country code, dataset.selectedName = display name.
+              const teamName = (input.dataset.selectedName || "").trim();
+              if (!teamName) return;
+              const endpoint =
+                id === "favorito"
+                  ? endpointFavoriteTeam
+                  : id === "campeon"
+                    ? endpointChampionTeam
+                    : null;
+              if (!endpoint) return;
+              fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": "Bearer " + token,
+                },
+                body: JSON.stringify({ teamName }),
+              }).catch(() => {});
+            } else {
+              // Text input: value = player name.
+              const value = input.value.trim();
+              if (!value) return;
+              const endpoint =
+                id === "mvp"
+                  ? endpointMvp
+                  : id === "goleador"
+                    ? endpointGoleador
+                    : null;
+              if (!endpoint) return;
+              fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": "Bearer " + token,
+                },
+                body: JSON.stringify({ playerName: value }),
+              }).catch(() => {});
+            }
           }, 800);
         });
       });
@@ -900,27 +906,37 @@ const matchPointsConfig = {
             });
           }
 
-          // --- Tournament picks (MVP / goleador) ---
+          // --- Tournament picks (MVP / goleador / equipo favorito / campeón) ---
           const tp = save.tournamentPicks;
-          if (tp) {
-            document
-              .querySelectorAll(".copa-pick-input")
-              .forEach(function (input) {
-                // No sobreescribir si el usuario ya tecleó en este campo.
-                if (input._userModified) return;
-                const id = input.dataset.pickId;
-                const entry =
-                  id === "mvp"
-                    ? tp.mvp
-                    : id === "goleador"
-                      ? tp.goleador
-                      : null;
-                // El API devuelve { playerName: "..." }
-                const val = entry && typeof entry === "object"
-                  ? entry.playerName
-                  : entry;
-                if (val) input.value = val;
-              });
+          if (tp && tournamentSection) {
+            // Texto (mvp, goleador)
+            [["mvp", tp.mvp], ["goleador", tp.goleador]].forEach(function (pair) {
+              var pickId = pair[0];
+              var entry = pair[1];
+              var input = tournamentSection.querySelector('[data-pick-id="' + pickId + '"]');
+              if (!input || input._userModified) return;
+              var val = entry && typeof entry === "object" ? entry.playerName : entry;
+              if (val) input.value = val;
+            });
+
+            // País (favorito, campeon) — se hidrata a través del selector de banderas.
+            [["favorito", tp.favoriteTeam], ["campeon", tp.championTeam]].forEach(function (pair) {
+              var pickId = pair[0];
+              var entry = pair[1];
+              if (!entry) return;
+              var teamName = entry.teamName || "";
+              if (!teamName) return;
+              var hiddenInput = tournamentSection.querySelector('[data-pick-id="' + pickId + '"]');
+              if (hiddenInput && hiddenInput._userModified) return;
+              // Encontrar la opción cuyo nombre coincida y activar el setter expuesto por el componente.
+              var selectRoot = tournamentSection.querySelector('[data-country-select="' + pickId + '"]');
+              if (!selectRoot) return;
+              var options = Array.from(selectRoot.querySelectorAll("[data-country-option]"));
+              var match = options.find(function (o) { return o.dataset.countryName === teamName; });
+              if (match && typeof selectRoot._setCountryValue === "function") {
+                selectRoot._setCountryValue(match.dataset.countryOption, match.dataset.countryName);
+              }
+            });
           }
         })
         .catch(function () {});

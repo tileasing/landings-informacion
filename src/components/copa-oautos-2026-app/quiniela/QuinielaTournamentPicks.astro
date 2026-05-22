@@ -362,6 +362,8 @@ const flagUrl2x = (code: string) =>
       const setValue = (code, name) => {
         if (!hiddenInput) return;
         hiddenInput.value = code;
+        // Store the display name so the page script can read it when saving.
+        hiddenInput.dataset.selectedName = name || "";
         if (flagImg && code) {
           flagImg.src = FLAG_W80(code);
           flagImg.srcset = `${FLAG_W80(code)} 1x, ${FLAG_W160(code)} 2x`;
@@ -406,6 +408,9 @@ const flagUrl2x = (code: string) =>
         );
         if (match) setValue(match.dataset.countryOption, match.dataset.countryName);
       }
+
+      // Expose setValue so the page script can hydrate this picker from the API.
+      root._setCountryValue = setValue;
 
       trigger?.addEventListener("click", () => {
         if (trigger.disabled) return;
