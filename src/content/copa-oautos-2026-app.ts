@@ -21,7 +21,7 @@ export interface CopaAppLoginContent {
   successRedirect: string;
 }
 
-export type CopaAppMenuIcon = "user" | "history" | "logout";
+export type CopaAppMenuIcon = "user" | "history" | "terms" | "logout";
 
 export interface CopaAppMenuItem {
   label: string;
@@ -482,6 +482,11 @@ export const content: CopaAppContent = {
         label: "Historial de puntos",
         href: "/copa-oautos-2026/historial",
         icon: "history",
+      },
+      {
+        label: "Términos y condiciones",
+        href: "/copa-oautos-2026/terminos-y-condiciones",
+        icon: "terms",
       },
       {
         label: "Cerrar sesión",
