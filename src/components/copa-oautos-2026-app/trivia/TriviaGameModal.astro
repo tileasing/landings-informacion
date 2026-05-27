@@ -70,12 +70,39 @@ const { labels } = Astro.props;
         >
           {labels.questionLabel} 1
         </span>
-        <span
-          class="text-[11px] sm:text-xs font-semibold text-gray-500"
-          data-trivia-game-percent
-        >
-          0%
-        </span>
+        <div class="flex items-center gap-2.5">
+          <!-- Timer de cuenta regresiva -->
+          <div
+            data-trivia-timer-wrap
+            class="hidden items-center gap-1.5 rounded-full px-3 py-1 bg-[#5F8750]/10 text-[#5F8750] transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-4 h-4 flex-shrink-0"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span
+              data-trivia-timer
+              class="inline-block text-base font-extrabold tabular-nums leading-none"
+            >10</span>
+            <span class="text-xs font-semibold">s</span>
+          </div>
+          <span
+            class="text-[11px] sm:text-xs font-semibold text-gray-500"
+            data-trivia-game-percent
+          >
+            0%
+          </span>
+        </div>
       </div>
       <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
         <div
@@ -92,6 +119,28 @@ const { labels } = Astro.props;
       class="flex-1 overflow-y-auto px-4 sm:px-6 py-5 sm:py-6"
       data-trivia-game-body
     >
+      <!-- Toast de tiempo agotado -->
+      <div data-trivia-timeout-toast class="hidden mb-3">
+        <div class="flex items-center gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 text-[13px] text-amber-700">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-4 h-4 flex-shrink-0"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>¡Tiempo agotado! Se seleccionó la primera opción automáticamente.</span>
+        </div>
+      </div>
+
       <!-- Slides de preguntas se inyectan por JS -->
       <div data-trivia-slides class="space-y-4"></div>
 
@@ -195,6 +244,29 @@ const { labels } = Astro.props;
 <style>
   dialog:not([open]) {
     display: none;
+  }
+
+  @keyframes timer-tick {
+    0%   { transform: scale(1); }
+    28%  { transform: scale(1.65); }
+    55%  { transform: scale(0.82); }
+    78%  { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes timer-tick-ring {
+    0%   { box-shadow: 0 0 0 0 currentColor; opacity: 0.6; }
+    60%  { box-shadow: 0 0 0 5px currentColor; opacity: 0; }
+    100% { box-shadow: 0 0 0 5px currentColor; opacity: 0; }
+  }
+
+  [data-trivia-timer].tick {
+    display: inline-block;
+    animation: timer-tick 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+
+  [data-trivia-timer-wrap].tick-ring {
+    animation: timer-tick-ring 0.45s ease-out;
   }
 
   /* Móvil: fullscreen pegado a los bordes. */

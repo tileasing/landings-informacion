@@ -6,6 +6,7 @@ import TriviaCard from "../../components/copa-oautos-2026-app/trivia/TriviaCard.
 import TriviaPointsModal from "../../components/copa-oautos-2026-app/trivia/TriviaPointsModal.astro";
 import TriviaGameModal from "../../components/copa-oautos-2026-app/trivia/TriviaGameModal.astro";
 import { content } from "../../content/copa-oautos-2026-app";
+import { API_BASE } from "../../lib/api";
 
 const { trivia, navbar } = content;
 
@@ -72,8 +73,7 @@ const triviasForScript = orderedTrivias.map((t) => ({
   is:inline
   define:vars={{
     trivias: triviasForScript,
-    pointsConfig: trivia.pointsConfig,
-    resultsKey: "copa-trivia-results-v1",
+    apiBase: API_BASE,
     labels: trivia.labels,
   }}
 >
@@ -109,73 +109,8 @@ const triviasForScript = orderedTrivias.map((t) => ({
       }
     };
 
-    // === Storage ===
-    const loadResults = () => {
-      try {
-        const raw = localStorage.getItem(resultsKey);
-        return raw ? JSON.parse(raw) : {};
-      } catch (_) {
-        return {};
-      }
-    };
-    const saveResults = (data) => {
-      try {
-        localStorage.setItem(resultsKey, JSON.stringify(data));
-        return true;
-      } catch (_) {
-        return false;
-      }
-    };
-    let results = loadResults();
-
-    // === Cálculo de puntos ===
-    const computePoints = (trivia, answers) => {
-      let totalCorrect = 0;
-      let oautosCount = 0;
-      let oautosCorrect = 0;
-
-      trivia.questions.forEach((q) => {
-        const isCorrect = answers[q.id] === q.correct;
-        if (isCorrect) totalCorrect += 1;
-        if (q.category === "oautos") {
-          oautosCount += 1;
-          if (isCorrect) oautosCorrect += 1;
-        }
-      });
-
-      const breakdown = {
-        completion: pointsConfig.completion,
-        perCorrect: totalCorrect * pointsConfig.perCorrect,
-        allCorrect:
-          totalCorrect === trivia.questions.length
-            ? pointsConfig.allCorrectBonus
-            : 0,
-        oautosDoubled: false,
-      };
-
-      let total =
-        breakdown.completion + breakdown.perCorrect + breakdown.allCorrect;
-
-      if (
-        pointsConfig.oautosDoublesTotal &&
-        oautosCount > 0 &&
-        oautosCorrect === oautosCount
-      ) {
-        total *= 2;
-        breakdown.oautosDoubled = true;
-      }
-
-      total = Math.min(total, pointsConfig.maxPerTrivia);
-
-      return {
-        total,
-        totalCorrect,
-        totalQuestions: trivia.questions.length,
-        oautosCount,
-        oautosCorrect,
-        breakdown,
-      };
-    };
+    // === State de resultados (se rellena desde la API) ===
+    let results = {};
 
     // === Render del estado de cada tarjeta ===
     const PLAY_BTN_ACTIVE = [
@@ -384,12 +319,51 @@ const triviasForScript = orderedTrivias.map((t) => ({
     );
 
     let session = null; // { trivia, answers, currentIndex }
+    let isSubmitting = false;
+
+    // === Timer ===
+    const TIMER_SECONDS = 10;
+    let timerInterval = null;
+    let timerSecondsLeft = TIMER_SECONDS;
+
+    const timerWrap = modal?.querySelector("[data-trivia-timer-wrap]");
+    const timerEl = modal?.querySelector("[data-trivia-timer]");
+    const timeoutToast = modal?.querySelector("[data-trivia-timeout-toast]");
+
+    const setTimerState = (seconds) => {
+      if (!timerEl || !timerWrap) return;
+      timerEl.textContent = String(seconds);
+      timerWrap.classList.remove(
+        "bg-[#5F8750]/10", "text-[#5F8750]",
+        "bg-amber-100", "text-amber-600",
+        "bg-red-100", "text-red-600",
+      );
+      if (seconds <= 3) {
+        timerWrap.classList.add("bg-red-100", "text-red-600");
+      } else if (seconds <= 5) {
+        timerWrap.classList.add("bg-amber-100", "text-amber-600");
+      } else {
+        timerWrap.classList.add("bg-[#5F8750]/10", "text-[#5F8750]");
+      }
+      // Animación de parpadeo al cambiar de segundo
+      timerEl.classList.remove("tick");
+      timerWrap.classList.remove("tick-ring");
+      void timerEl.offsetWidth; // forzar reflow para reiniciar la animación
+      timerEl.classList.add("tick");
+      timerWrap.classList.add("tick-ring");
+    };
+
+    const stopTimer = () => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    };
 
     const renderSlide = () => {
-      if (!session || !slidesContainer) return;
-      const { trivia, answers, currentIndex } = session;
-      const question = trivia.questions[currentIndex];
-      const total = trivia.questions.length;
+      if (!session || !session.currentQuestion || !slidesContainer) return;
+      const question = session.currentQuestion;
+      const selected = session.currentAnswer;
 
       slidesContainer.innerHTML = "";
       const slide = document.createElement("div");
@@ -399,11 +373,11 @@ const triviasForScript = orderedTrivias.map((t) => ({
         <div class="space-y-2.5">
           ${question.options
             .map((opt) => {
-              const selected = answers[question.id] === opt.letter;
+              const isSelected = selected === opt.letter;
               return `
-                <label class="trivia-option group flex items-center gap-3 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition ${selected ? "border-[#5F8750] bg-[#5F8750]/5" : "border-gray-200 hover:border-[#5F8750]/50 hover:bg-[#5F8750]/5"}">
-                  <input type="radio" name="${question.id}" value="${opt.letter}" class="peer sr-only" ${selected ? "checked" : ""} />
-                  <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border-2 font-bold text-sm ${selected ? "bg-[#5F8750] border-[#5F8750] text-white" : "border-gray-300 text-gray-500 group-hover:border-[#5F8750] group-hover:text-[#5F8750]"}">${opt.letter}</span>
+                <label class="trivia-option group flex items-center gap-3 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition ${isSelected ? "border-[#5F8750] bg-[#5F8750]/5" : "border-gray-200 hover:border-[#5F8750]/50 hover:bg-[#5F8750]/5"}">
+                  <input type="radio" name="${question.id}" value="${opt.letter}" class="peer sr-only" ${isSelected ? "checked" : ""} />
+                  <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border-2 font-bold text-sm ${isSelected ? "bg-[#5F8750] border-[#5F8750] text-white" : "border-gray-300 text-gray-500 group-hover:border-[#5F8750] group-hover:text-[#5F8750]"}">${opt.letter}</span>
                   <span class="text-sm sm:text-base text-gray-800">${opt.text}</span>
                 </label>
               `;
@@ -416,7 +390,7 @@ const triviasForScript = orderedTrivias.map((t) => ({
       // Wire up option selection
       slide.querySelectorAll("input[type=radio]").forEach((input) => {
         input.addEventListener("change", () => {
-          answers[question.id] = input.value;
+          session.currentAnswer = input.value;
           renderSlide();
           refreshFooter();
         });
@@ -425,30 +399,72 @@ const triviasForScript = orderedTrivias.map((t) => ({
 
     const refreshFooter = () => {
       if (!session) return;
-      const { trivia, answers, currentIndex } = session;
-      const total = trivia.questions.length;
-      const isLast = currentIndex === total - 1;
-      const currentAnswered = !!answers[trivia.questions[currentIndex].id];
-      const allAnswered = trivia.questions.every((q) => !!answers[q.id]);
+      const { currentStatus, currentAnswer } = session;
+      const current = currentStatus?.current ?? 1;
+      const total = currentStatus?.total ?? 1;
+      const isLast = current === total;
+      const hasAnswer = !!currentAnswer;
 
-      if (prevBtn) prevBtn.disabled = currentIndex === 0;
+      // No se puede retroceder con el flujo de preguntas por API
+      if (prevBtn) prevBtn.classList.add("hidden");
       if (nextBtn) {
         nextBtn.classList.toggle("hidden", isLast);
-        nextBtn.disabled = !currentAnswered;
+        nextBtn.disabled = !hasAnswer;
       }
       if (submitBtn) {
         submitBtn.classList.toggle("hidden", !isLast);
-        submitBtn.disabled = !allAnswered;
+        submitBtn.disabled = !hasAnswer;
       }
 
       if (progressCounter)
-        progressCounter.textContent = `${labels.questionLabel} ${currentIndex + 1} de ${total}`;
-      const pct = Math.round(((currentIndex + 1) / total) * 100);
+        progressCounter.textContent = `${labels.questionLabel} ${current} de ${total}`;
+      const pct = Math.round((current / total) * 100);
       if (progressPercent) progressPercent.textContent = `${pct}%`;
       if (progressBar) progressBar.style.width = `${pct}%`;
     };
 
     // Bloquea el scroll del body manteniendo la posición actual.
+    // handleTimerExpiry y startTimer se definen aquí porque necesitan renderSlide/refreshFooter.
+    const handleTimerExpiry = () => {
+      if (!session) return;
+      stopTimer();
+      // El backend responde automáticamente — solo mostrar toast y avanzar
+      if (timeoutToast) timeoutToast.classList.remove("hidden");
+      setTimeout(async () => {
+        if (!session) return;
+        if (timeoutToast) timeoutToast.classList.add("hidden");
+        await advanceToNext();
+      }, 1800);
+    };
+
+    const startTimer = (secondsAllowed, startedAt) => {
+      stopTimer();
+      // Calcular tiempo restante descontando lo que ya transcurrió desde startedAt
+      let remaining = secondsAllowed ?? 10;
+      if (startedAt) {
+        const elapsed = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000);
+        remaining = Math.max(0, remaining - elapsed);
+      }
+      timerSecondsLeft = remaining;
+      if (timerWrap) {
+        timerWrap.classList.remove("hidden");
+        timerWrap.classList.add("flex");
+      }
+      if (timeoutToast) timeoutToast.classList.add("hidden");
+      setTimerState(timerSecondsLeft);
+      if (timerSecondsLeft <= 0) {
+        handleTimerExpiry();
+        return;
+      }
+      timerInterval = setInterval(() => {
+        timerSecondsLeft -= 1;
+        setTimerState(timerSecondsLeft);
+        if (timerSecondsLeft <= 0) {
+          handleTimerExpiry();
+        }
+      }, 1000);
+    };
+
     let savedScrollY = 0;
     const lockBodyScroll = () => {
       savedScrollY = window.scrollY;
@@ -467,13 +483,172 @@ const triviasForScript = orderedTrivias.map((t) => ({
       window.scrollTo(0, savedScrollY);
     };
 
-    const openGame = (triviaId) => {
+    // === Funciones del flujo API por pregunta ===
+
+    // Carga la pregunta actual desde GET /api/trivia/{id}/play y actualiza el modal.
+    const playQuestion = async (triviaId) => {
+      if (!session) return;
+      const token = localStorage.getItem("copa_auth_token");
+      try {
+        const res = await fetch(`${apiBase}/api/trivia/${triviaId}/play`, {
+          headers: token ? { "Authorization": "Bearer " + token } : {},
+        });
+        if (!res.ok) {
+          // Si el servidor responde con error, la trivia probablemente terminó
+          await fetchResultsAndShow(triviaId);
+          return;
+        }
+        const json = await res.json();
+        if (!json.success || !json.data) {
+          await fetchResultsAndShow(triviaId);
+          return;
+        }
+        const { question, status } = json.data;
+        session.currentQuestion = question;
+        session.currentAnswer = null;
+        session.currentStatus = status;
+
+        renderSlide();
+        refreshFooter();
+        startTimer(status.secondsAllowed, status.startedAt);
+      } catch (err) {
+        if (session) alert("Error al cargar la pregunta. Por favor intenta de nuevo.");
+      }
+    };
+
+    // Avanza a la siguiente pregunta verificando antes si la trivia ya terminó.
+    const advanceToNext = async () => {
+      if (!session) return;
+      const triviaId = session.triviaId;
+      const token = localStorage.getItem("copa_auth_token");
+      try {
+        const statusRes = await fetch(`${apiBase}/api/trivia/${triviaId}/status`, {
+          headers: token ? { "Authorization": "Bearer " + token } : {},
+        });
+        if (statusRes.ok) {
+          const statusJson = await statusRes.json();
+          if (statusJson.success && statusJson.data?.isCompleted) {
+            await fetchResultsAndShow(triviaId);
+            return;
+          }
+        }
+      } catch (_) {}
+      await playQuestion(triviaId);
+    };
+
+    // Obtiene los resultados finales desde GET /api/trivia/{id}/response y los muestra.
+    const fetchResultsAndShow = async (triviaId) => {
+      if (!session) return;
+      const token = localStorage.getItem("copa_auth_token");
+      let submitData = { correctAnswers: 0, totalQuestions: 0, pointsEarned: 0, breakdown: {} };
+      let reviewData = null;
+      try {
+        const res = await fetch(`${apiBase}/api/trivia/${triviaId}/response`, {
+          headers: token ? { "Authorization": "Bearer " + token } : {},
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            reviewData = json.data;
+            submitData = {
+              correctAnswers: json.data.correctAnswers ?? json.data.totalCorrect ?? 0,
+              totalQuestions: json.data.totalQuestions ?? 0,
+              pointsEarned: json.data.pointsEarned ?? json.data.totalPoints ?? 0,
+              breakdown: json.data.breakdown ?? {},
+              completedAt: json.data.completedAt,
+            };
+          }
+        }
+      } catch (_) {}
+
+      // Actualizar tarjeta
+      results[triviaId] = {
+        total: submitData.pointsEarned,
+        completedAt: submitData.completedAt ?? new Date().toISOString(),
+      };
+      const card = document.querySelector(`[data-trivia-card][data-trivia-id="${triviaId}"]`);
+      if (card) refreshCard(card);
+
+      showResults(submitData, reviewData);
+    };
+
+    // Envía la respuesta del usuario via POST /api/trivia/{id}/answer.
+    const submitCurrentAnswer = async () => {
+      if (!session || !session.currentAnswer || isSubmitting) return;
+      stopTimer();
+      isSubmitting = true;
+      const triviaId = session.triviaId;
+      const token = localStorage.getItem("copa_auth_token");
+      const answer = session.currentAnswer;
+
+      if (nextBtn) nextBtn.disabled = true;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Enviando...";
+      }
+
+      try {
+        const res = await fetch(`${apiBase}/api/trivia/${triviaId}/answer`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { "Authorization": "Bearer " + token } : {}),
+          },
+          body: JSON.stringify({ answer }),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.success) {
+          throw new Error((json && json.message) || "Error al enviar la respuesta");
+        }
+        isSubmitting = false;
+        if (json.data.next) {
+          await playQuestion(triviaId);
+        } else {
+          await fetchResultsAndShow(triviaId);
+        }
+      } catch (err) {
+        isSubmitting = false;
+        if (nextBtn) nextBtn.disabled = false;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = labels.submitButton;
+        }
+        alert("Hubo un error al enviar tu respuesta. Por favor intenta de nuevo.");
+      }
+    };
+
+    const openGame = async (triviaId) => {
       const trivia = trivias.find((t) => t.id === triviaId);
       if (!trivia || !modal || !slidesContainer) return;
-      if (trivia.questions.length === 0) return;
       if (results[triviaId]) return; // Ya completada, no se vuelve a jugar.
 
-      session = { trivia, answers: {}, currentIndex: 0 };
+      // Consultar el estado actual de la trivia antes de abrir
+      const token = localStorage.getItem("copa_auth_token");
+      try {
+        const statusRes = await fetch(`${apiBase}/api/trivia/${triviaId}/status`, {
+          headers: token ? { "Authorization": "Bearer " + token } : {},
+        });
+        if (statusRes.ok) {
+          const statusJson = await statusRes.json();
+          if (statusJson.success && statusJson.data) {
+            const { isCompleted, status } = statusJson.data;
+            if (isCompleted || status === "completed") {
+              const card = document.querySelector(
+                `[data-trivia-card][data-trivia-id="${triviaId}"]`,
+              );
+              if (card) refreshCard(card);
+              return;
+            }
+          }
+        }
+      } catch (_) { /* continuar si falla el status */ }
+
+      session = {
+        triviaId,
+        currentQuestion: null,
+        currentAnswer: null,
+        currentStatus: null,
+      };
 
       if (titleEl) titleEl.textContent = trivia.title;
       if (eyebrowEl) eyebrowEl.textContent = `${trivia.name} · ${trivia.typeLabel}`;
@@ -482,13 +657,10 @@ const triviasForScript = orderedTrivias.map((t) => ({
       resultsView?.classList.add("hidden");
       slidesContainer.classList.remove("hidden");
       progressWrap?.classList.remove("hidden");
-      prevBtn?.classList.remove("hidden");
+      prevBtn?.classList.add("hidden"); // No se puede retroceder con el flujo API
       nextBtn?.classList.remove("hidden");
       submitBtn?.classList.add("hidden");
       finishBtn?.classList.add("hidden");
-
-      renderSlide();
-      refreshFooter();
 
       lockBodyScroll();
       if (typeof modal.showModal === "function") {
@@ -496,10 +668,20 @@ const triviasForScript = orderedTrivias.map((t) => ({
       } else {
         modal.setAttribute("open", "");
       }
+
+      // Cargar la primera (o actual) pregunta desde la API
+      await playQuestion(triviaId);
     };
 
     const closeGame = () => {
       if (!modal) return;
+      stopTimer();
+      isSubmitting = false;
+      if (timerWrap) {
+        timerWrap.classList.remove("flex");
+        timerWrap.classList.add("hidden");
+      }
+      if (timeoutToast) timeoutToast.classList.add("hidden");
       modal.close();
       unlockBodyScroll();
       session = null;
@@ -508,9 +690,14 @@ const triviasForScript = orderedTrivias.map((t) => ({
     // Cuando se cierra con tecla Esc el native dialog tambien dispara "close".
     modal?.addEventListener("close", () => unlockBodyScroll());
 
-    const showResults = (result) => {
+    const showResults = (submitData, reviewData) => {
       if (!session || !modal || !resultsView) return;
 
+      stopTimer();
+      if (timerWrap) {
+        timerWrap.classList.remove("flex");
+        timerWrap.classList.add("hidden");
+      }
       slidesContainer?.classList.add("hidden");
       progressWrap?.classList.add("hidden");
       prevBtn?.classList.add("hidden");
@@ -519,26 +706,35 @@ const triviasForScript = orderedTrivias.map((t) => ({
       finishBtn?.classList.remove("hidden");
       resultsView.classList.remove("hidden");
 
-      if (resultsPointsEl) resultsPointsEl.textContent = `+${result.total}`;
+      const totalCorrect = submitData.correctAnswers ?? 0;
+      const totalQuestions = submitData.totalQuestions ?? 0;
+      const pointsEarned = submitData.pointsEarned ?? 0;
+      const breakdown = submitData.breakdown ?? {};
+
+      if (resultsPointsEl) resultsPointsEl.textContent = `+${pointsEarned}`;
       if (resultsSummaryEl) {
-        resultsSummaryEl.textContent = `Acertaste ${result.totalCorrect} de ${result.totalQuestions} preguntas.`;
+        resultsSummaryEl.textContent = `Acertaste ${totalCorrect} de ${totalQuestions} preguntas.`;
       }
 
       // Desglose
       if (resultsBreakdownEl) {
         const rows = [];
-        rows.push(
-          `<li class="flex items-center justify-between gap-3 text-gray-700"><span>${labels.breakdownCompletion}</span><span class="font-bold text-[#0D2C4D]">+${result.breakdown.completion}</span></li>`,
-        );
-        rows.push(
-          `<li class="flex items-center justify-between gap-3 text-gray-700"><span>${labels.breakdownPerCorrect} (${result.totalCorrect} × ${pointsConfig.perCorrect})</span><span class="font-bold text-[#0D2C4D]">+${result.breakdown.perCorrect}</span></li>`,
-        );
-        if (result.breakdown.allCorrect > 0) {
+        if (breakdown.completion) {
           rows.push(
-            `<li class="flex items-center justify-between gap-3 text-gray-700"><span>${labels.breakdownAllCorrect}</span><span class="font-bold text-[#0D2C4D]">+${result.breakdown.allCorrect}</span></li>`,
+            `<li class="flex items-center justify-between gap-3 text-gray-700"><span>${labels.breakdownCompletion}</span><span class="font-bold text-[#0D2C4D]">+${breakdown.completion}</span></li>`,
           );
         }
-        if (result.breakdown.oautosDoubled) {
+        if (breakdown.correctAnswers) {
+          rows.push(
+            `<li class="flex items-center justify-between gap-3 text-gray-700"><span>${labels.breakdownPerCorrect} (${totalCorrect} correctas)</span><span class="font-bold text-[#0D2C4D]">+${breakdown.correctAnswers}</span></li>`,
+          );
+        }
+        if (breakdown.allCorrectBonus > 0) {
+          rows.push(
+            `<li class="flex items-center justify-between gap-3 text-gray-700"><span>${labels.breakdownAllCorrect}</span><span class="font-bold text-[#0D2C4D]">+${breakdown.allCorrectBonus}</span></li>`,
+          );
+        }
+        if (breakdown.oautosMultiplier) {
           rows.push(
             `<li class="flex items-center justify-between gap-3 text-emerald-700 border-t border-emerald-100 pt-1.5 mt-1"><span class="font-semibold">${labels.breakdownOautos}</span><span class="font-bold">×2</span></li>`,
           );
@@ -546,75 +742,61 @@ const triviasForScript = orderedTrivias.map((t) => ({
         resultsBreakdownEl.innerHTML = rows.join("");
       }
 
-      // Review
+      // Review: usar datos detallados de la API si están disponibles
       if (resultsReviewEl) {
-        const { trivia, answers } = session;
-        resultsReviewEl.innerHTML = trivia.questions
-          .map((q, idx) => {
-            const userAnswer = answers[q.id];
-            const isCorrect = userAnswer === q.correct;
-            const userOption = q.options.find((o) => o.letter === userAnswer);
-            const correctOption = q.options.find((o) => o.letter === q.correct);
-            return `
-              <div class="bg-white rounded-xl ring-1 ring-gray-200 p-4">
-                <p class="text-xs text-gray-500 mb-1">Pregunta ${idx + 1}</p>
-                <p class="text-sm font-semibold text-[#0D2C4D] mb-3">${q.text}</p>
-                <div class="space-y-1.5 text-xs sm:text-sm">
-                  <div class="flex items-start gap-2 ${isCorrect ? "text-emerald-700" : "text-red-700"}">
-                    <span class="font-bold flex-shrink-0">${isCorrect ? "✓" : "✗"} ${labels.yourAnswerLabel}:</span>
-                    <span>${userOption ? `${userOption.letter}) ${userOption.text}` : "—"}</span>
+        if (reviewData && reviewData.questions) {
+          resultsReviewEl.innerHTML = reviewData.questions
+            .map((q, idx) => {
+              const userOption = q.options.find((o) => o.letter === q.userAnswer);
+              const correctOption = q.options.find((o) => o.letter === q.correctAnswer);
+              return `
+                <div class="bg-white rounded-xl ring-1 ring-gray-200 p-4">
+                  <p class="text-xs text-gray-500 mb-1">Pregunta ${idx + 1}</p>
+                  <p class="text-sm font-semibold text-[#0D2C4D] mb-3">${q.text}</p>
+                  <div class="space-y-1.5 text-xs sm:text-sm">
+                    <div class="flex items-start gap-2 ${q.isCorrect ? "text-emerald-700" : "text-red-700"}">
+                      <span class="font-bold flex-shrink-0">${q.isCorrect ? "✓" : "✗"} ${labels.yourAnswerLabel}:</span>
+                      <span>${userOption ? `${userOption.letter}) ${userOption.text}` : "—"}</span>
+                    </div>
+                    ${
+                      !q.isCorrect && correctOption
+                        ? `<div class="flex items-start gap-2 text-emerald-700"><span class="font-bold flex-shrink-0">★ ${labels.correctAnswerLabel}:</span><span>${correctOption.letter}) ${correctOption.text}</span></div>`
+                        : ""
+                    }
                   </div>
-                  ${
-                    !isCorrect
-                      ? `<div class="flex items-start gap-2 text-emerald-700"><span class="font-bold flex-shrink-0">★ ${labels.correctAnswerLabel}:</span><span>${correctOption.letter}) ${correctOption.text}</span></div>`
-                      : ""
-                  }
                 </div>
-              </div>
-            `;
-          })
-          .join("");
+              `;
+            })
+            .join("");
+        } else {
+          // Fallback: mostrar respuestas del usuario sin corrección
+          const { trivia } = session;
+          resultsReviewEl.innerHTML = trivia.questions
+            .map((q, idx) => {
+              const userAnswer = session.answers[q.id];
+              const userOption = q.options.find((o) => o.letter === userAnswer);
+              return `
+                <div class="bg-white rounded-xl ring-1 ring-gray-200 p-4">
+                  <p class="text-xs text-gray-500 mb-1">Pregunta ${idx + 1}</p>
+                  <p class="text-sm font-semibold text-[#0D2C4D] mb-3">${q.text}</p>
+                  <div class="space-y-1.5 text-xs sm:text-sm">
+                    <div class="flex items-start gap-2 text-gray-700">
+                      <span class="font-bold flex-shrink-0">→ ${labels.yourAnswerLabel}:</span>
+                      <span>${userOption ? `${userOption.letter}) ${userOption.text}` : "—"}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            })
+            .join("");
+        }
       }
-    };
-
-    const submitAnswers = () => {
-      if (!session) return;
-      const result = computePoints(session.trivia, session.answers);
-      results[session.trivia.id] = {
-        total: result.total,
-        totalCorrect: result.totalCorrect,
-        totalQuestions: result.totalQuestions,
-        answers: { ...session.answers },
-        completedAt: new Date().toISOString(),
-      };
-      saveResults(results);
-      showResults(result);
-
-      // Refrescar la tarjeta correspondiente.
-      const card = document.querySelector(
-        `[data-trivia-card][data-trivia-id="${session.trivia.id}"]`,
-      );
-      if (card) refreshCard(card);
     };
 
     // Wire-up wizard buttons
-    nextBtn?.addEventListener("click", () => {
-      if (!session) return;
-      if (session.currentIndex < session.trivia.questions.length - 1) {
-        session.currentIndex += 1;
-        renderSlide();
-        refreshFooter();
-      }
-    });
-    prevBtn?.addEventListener("click", () => {
-      if (!session) return;
-      if (session.currentIndex > 0) {
-        session.currentIndex -= 1;
-        renderSlide();
-        refreshFooter();
-      }
-    });
-    submitBtn?.addEventListener("click", () => submitAnswers());
+    nextBtn?.addEventListener("click", () => submitCurrentAnswer());
+    // prevBtn no se usa en el flujo API secuencial
+    submitBtn?.addEventListener("click", () => submitCurrentAnswer());
     finishBtn?.addEventListener("click", () => closeGame());
     closeBtn?.addEventListener("click", () => closeGame());
 
@@ -631,5 +813,29 @@ const triviasForScript = orderedTrivias.map((t) => ({
     modal?.addEventListener("click", (event) => {
       if (event.target === modal) closeGame();
     });
+
+    // === Verificar estado inicial de cada trivia desde la API ===
+    const initTriviaStatuses = async () => {
+      const token = localStorage.getItem("copa_auth_token");
+      if (!token) return;
+      try {
+        const res = await fetch(`${apiBase}/api/trivia/my-responses`, {
+          headers: { "Authorization": "Bearer " + token },
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data?.trivias) {
+            json.data.trivias.forEach((t) => {
+              results[t.triviaId] = {
+                total: t.pointsEarned,
+                completedAt: t.completedAt,
+              };
+            });
+          }
+        }
+      } catch (_) { /* ignorar error */ }
+      triviaCards.forEach(refreshCard);
+    };
+    initTriviaStatuses();
   })();
 </script>
