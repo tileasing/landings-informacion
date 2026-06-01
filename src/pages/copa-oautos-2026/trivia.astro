@@ -439,8 +439,16 @@ const triviasForScript = orderedTrivias.map((t) => ({
 
     const startTimer = (secondsAllowed, startedAt) => {
       stopTimer();
+      // Si el backend manda null no se muestra el contador
+      if (secondsAllowed === null || secondsAllowed === undefined) {
+        if (timerWrap) {
+          timerWrap.classList.add("hidden");
+          timerWrap.classList.remove("flex");
+        }
+        return;
+      }
       // Calcular tiempo restante descontando lo que ya transcurrió desde startedAt
-      let remaining = secondsAllowed ?? 10;
+      let remaining = secondsAllowed;
       if (startedAt) {
         const elapsed = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000);
         remaining = Math.max(0, remaining - elapsed);
