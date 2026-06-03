@@ -1493,7 +1493,7 @@ export const content: CopaAppContent = {
         title: "Mundialista Inicial",
         typeLabel: "Mundial + Oautos",
         // Habilitada desde antes para pruebas / preview anticipado.
-        availableFrom: "2026-06-03T00:00:00-06:00",
+        availableFrom: "2026-06-04T00:00:00-06:00",
         questions: [
           {
             id: "t1-q1",
