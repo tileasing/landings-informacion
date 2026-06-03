@@ -44,7 +44,12 @@ const positionBadge = (pos: number, isCurrent: boolean) => {
     </p>
   </header>
 
-  <ol class="space-y-1 flex-1">
+  <ol
+    class="space-y-1 flex-1"
+    id="ranking-list"
+    data-points-suffix={pointsSuffix}
+    data-user-position={currentUser.position}
+  >
     {
       topEntries.map((entry) => {
         const isCurrent = entry.position === currentUser.position;
@@ -94,57 +99,64 @@ const positionBadge = (pos: number, isCurrent: boolean) => {
     }
   </ol>
 
-  {
-    !userInTop && (
-      <div class="mt-4 pt-4 border-t border-gray-100">
-        <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
-          {content.yourPositionLabel}
-        </p>
-        <div class="flex items-center gap-2.5 px-2 py-1.5 rounded-xl bg-[#117CD9]/10 ring-1 ring-[#117CD9]/20">
-          <span
-            class="flex-shrink-0 flex h-7 min-w-[2rem] px-1.5 items-center justify-center rounded-lg font-extrabold text-xs bg-[#117CD9] text-white"
-            aria-hidden="true"
-          >
-            {currentUser.position}
-          </span>
-
-          <span class="flex-1 min-w-0 text-xs sm:text-sm font-bold text-[#0D2C4D] truncate">
-            {currentUser.name}
-          </span>
-          <span class="text-xs sm:text-sm font-bold text-[#0D5FB3] tabular-nums whitespace-nowrap">
-            {currentUser.points.toLocaleString("es-MX")}
-            <span class="text-[10px] text-[#117CD9]/70 font-medium ml-0.5">
-              {pointsSuffix}
+  <div
+    id="ranking-footer"
+    data-your-position-label={content.yourPositionLabel}
+    data-not-in-top-message={content.notInTopMessage}
+    data-in-top-message={content.inTopMessage}
+  >
+    {
+      !userInTop && (
+        <div class="mt-4 pt-4 border-t border-gray-100">
+          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+            {content.yourPositionLabel}
+          </p>
+          <div class="flex items-center gap-2.5 px-2 py-1.5 rounded-xl bg-[#117CD9]/10 ring-1 ring-[#117CD9]/20">
+            <span
+              class="flex-shrink-0 flex h-7 min-w-[2rem] px-1.5 items-center justify-center rounded-lg font-extrabold text-xs bg-[#117CD9] text-white"
+              aria-hidden="true"
+            >
+              {currentUser.position}
             </span>
-          </span>
-        </div>
-        <p class="mt-2 text-[11px] sm:text-xs text-gray-500 leading-relaxed">
-          {content.notInTopMessage}
-        </p>
-      </div>
-    )
-  }
 
-  {
-    userInTop && (
-      <div class="mt-4 pt-4 border-t border-gray-100">
-        <p class="text-[11px] sm:text-xs text-emerald-700 bg-emerald-50 rounded-lg px-3 py-2 font-semibold flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="3"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="w-3.5 h-3.5 flex-shrink-0"
-            aria-hidden="true"
-          >
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
-          {content.inTopMessage}
-        </p>
-      </div>
-    )
-  }
+            <span class="flex-1 min-w-0 text-xs sm:text-sm font-bold text-[#0D2C4D] truncate">
+              {currentUser.name}
+            </span>
+            <span class="text-xs sm:text-sm font-bold text-[#0D5FB3] tabular-nums whitespace-nowrap">
+              {currentUser.points.toLocaleString("es-MX")}
+              <span class="text-[10px] text-[#117CD9]/70 font-medium ml-0.5">
+                {pointsSuffix}
+              </span>
+            </span>
+          </div>
+          <p class="mt-2 text-[11px] sm:text-xs text-gray-500 leading-relaxed">
+            {content.notInTopMessage}
+          </p>
+        </div>
+      )
+    }
+
+    {
+      userInTop && (
+        <div class="mt-4 pt-4 border-t border-gray-100">
+          <p class="text-[11px] sm:text-xs text-emerald-700 bg-emerald-50 rounded-lg px-3 py-2 font-semibold flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-3.5 h-3.5 flex-shrink-0"
+              aria-hidden="true"
+            >
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            {content.inTopMessage}
+          </p>
+        </div>
+      )
+    }
+  </div>
 </div>

@@ -72,10 +72,12 @@ export interface CopaAppDashboardContent {
 }
 
 export interface CopaAppPointsBreakdown {
-  total: number;
+  totalAccumulated: number;
   quiniela: number;
   trivia: number;
-  app: number;
+  fortune_wheel: number;
+  position?: number;
+  totalParticipants?: number;
 }
 
 export interface CopaAppPointsContent {
@@ -83,6 +85,7 @@ export interface CopaAppPointsContent {
   title: string;
   subtitle: string;
   totalLabel: string;
+  rankLabel: string;
   quinielaLabel: string;
   triviaLabel: string;
   appLabel: string;
@@ -550,15 +553,18 @@ export const content: CopaAppContent = {
     subtitle:
       "Suma puntos por cada dinámica. El total define tu posición en el ranking de la Copa Oautos.",
     totalLabel: "Total acumulado",
+    rankLabel: "Lugar",
     quinielaLabel: "Quiniela",
     triviaLabel: "Trivia",
     appLabel: "Ruleta de la app",
     pointsSuffix: "pts",
     data: {
-      total: 0,
+      totalAccumulated: 0,
       quiniela: 0,
       trivia: 0,
-      app: 0,
+      fortune_wheel: 0,
+      position: 0,
+      totalParticipants: 0,
     },
   },
   ranking: {
@@ -1487,7 +1493,7 @@ export const content: CopaAppContent = {
         title: "Mundialista Inicial",
         typeLabel: "Mundial + Oautos",
         // Habilitada desde antes para pruebas / preview anticipado.
-        availableFrom: "2026-06-04T00:00:00-06:00",
+        availableFrom: "2026-06-03T00:00:00-06:00",
         questions: [
           {
             id: "t1-q1",

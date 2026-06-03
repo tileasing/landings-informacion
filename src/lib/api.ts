@@ -30,6 +30,11 @@ export const USER_ENDPOINTS = {
   basic: `${API_BASE}/api/user/basic`,
 } as const;
 
+export const COPA_OAUTOS_ENDPOINTS = {
+  dashboard: `${API_BASE}/api/copa-oautos/dashboard`,
+  ranking: `${API_BASE}/api/copa-oautos/ranking`,
+} as const;
+
 // Agrega más grupos de endpoints aquí cuando los necesites, por ejemplo:
 // export const COPA_ENDPOINTS = {
 //   ranking: `${API_BASE}/api/copa/ranking`,
