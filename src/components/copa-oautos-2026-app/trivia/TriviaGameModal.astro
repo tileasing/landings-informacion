@@ -165,7 +165,10 @@ const { labels } = Astro.props;
               <path d="M20 6 9 17l-5-5"></path>
             </svg>
           </div>
-          <h3 class="text-xl sm:text-2xl font-extrabold text-[#0D2C4D] mb-2">
+          <h3
+            data-trivia-results-heading
+            class="text-xl sm:text-2xl font-extrabold text-[#0D2C4D] mb-2"
+          >
             {labels.resultsHeading}
           </h3>
           <p class="text-sm text-gray-600" data-trivia-results-summary>—</p>
@@ -187,6 +190,7 @@ const { labels } = Astro.props;
         </div>
 
         <div
+          data-trivia-results-breakdown-wrap
           class="bg-gray-50 rounded-2xl border border-gray-100 px-4 py-3 mb-6"
         >
           <p

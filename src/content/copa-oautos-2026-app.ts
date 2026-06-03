@@ -1,6 +1,8 @@
 // Contenido de la plataforma privada Copa Oautos 2026.
 // Sustituir textos finales cuando el cliente confirme la copy definitiva.
 
+import { trivias } from "./trivias";
+
 export interface CopaAppMeta {
   title: string;
   description: string;
@@ -230,7 +232,11 @@ export interface CopaQuinielaContent {
 // === Trivia ===
 
 export type CopaTriviaCategory = "mundial" | "oautos" | "mexico";
-export type CopaTriviaOptionLetter = "A" | "B" | "C" | "D";
+export type CopaTriviaOptionLetter = "A" | "B" | "C" | "D" | "E";
+export type CopaTriviaQuestionKind =
+  | "multiple-choice"
+  | "rating"
+  | "open-text";
 
 export interface CopaTriviaOption {
   letter: CopaTriviaOptionLetter;
@@ -241,8 +247,12 @@ export interface CopaTriviaQuestion {
   id: string;
   category: CopaTriviaCategory;
   text: string;
-  options: CopaTriviaOption[];
-  correct: CopaTriviaOptionLetter;
+  kind?: CopaTriviaQuestionKind; // 'multiple-choice' por defecto
+  options?: CopaTriviaOption[]; // requerido para multiple-choice
+  correct?: CopaTriviaOptionLetter; // omitido para encuestas (sin respuesta correcta)
+  placeholder?: string; // texto guía para open-text
+  maxRating?: number; // tope de la escala (default 5) para rating
+  maxLength?: number; // límite de caracteres (default 500) para open-text
 }
 
 export interface CopaTriviaItem {
@@ -251,6 +261,7 @@ export interface CopaTriviaItem {
   title: string; // nombre visible
   typeLabel: string; // "Mundial + Oautos", "México + Oautos", etc.
   availableFrom: string; // ISO con offset
+  isSurvey?: boolean; // true = encuesta sin respuestas correctas (cuestionario final)
   questions: CopaTriviaQuestion[];
 }
 
@@ -310,6 +321,11 @@ export interface CopaTriviaContent {
     finishButton: string;
     closeButton: string;
     resultsHeading: string;
+    surveyResultsHeading: string;
+    surveyResultsThanks: string;
+    surveyRatingHint: string;
+    surveyRatingSelected: string; // usa {value} y {max}
+    surveyTextareaCounter: string; // usa {current} y {max}
     pointsEarnedSuffix: string;
     correctAnswerLabel: string;
     yourAnswerLabel: string;
@@ -530,7 +546,7 @@ export const content: CopaAppContent = {
         eyebrow: "Conocimiento",
         title: "Trivia",
         description:
-          "Responde 5 preguntas por trivia y suma puntos al instante.",
+          "Responde las preguntas de cada trivia y suma puntos al instante.",
         highlights: [
           "12 trivias en fechas clave del mundial · una sola oportunidad por trivia.",
           "Hasta 500 puntos por trivia perfecta · doble de puntos si aciertas las Oautos.",
@@ -1473,176 +1489,14 @@ export const content: CopaAppContent = {
     rules: {
       title: "¿Cómo funciona?",
       items: [
-        "Cada trivia tiene 5 preguntas y solo puedes jugarla una vez.",
+        "Cada trivia tiene un número fijo de preguntas y solo puedes jugarla una vez.",
         "Las trivias se habilitan en las fechas del calendario y permanecen abiertas hasta que se desbloquee la siguiente.",
         "Una vez que envíes tus respuestas no podrás modificarlas.",
         "Los puntos se otorgan al instante al terminar la trivia.",
         "Si aciertas todas las preguntas Oautos de una trivia, tu puntaje de esa trivia se duplica.",
       ],
     },
-    trivias: [
-      {
-        id: "trivia-01",
-        name: "TRIVIA_01",
-        title: "Mundialista Inicial",
-        typeLabel: "Mundial + Oautos",
-        // Habilitada desde antes para pruebas / preview anticipado.
-        availableFrom: "2026-06-04T00:00:00-06:00",
-        questions: [
-          {
-            id: "t1-q1",
-            category: "mundial",
-            text: "¿Qué selección ha ganado más Mundiales?",
-            options: [
-              { letter: "A", text: "Alemania" },
-              { letter: "B", text: "Brasil" },
-              { letter: "C", text: "Argentina" },
-              { letter: "D", text: "Italia" },
-            ],
-            correct: "B",
-          },
-          {
-            id: "t1-q2",
-            category: "mundial",
-            text: "¿Qué selección ganó el Mundial 2022?",
-            options: [
-              { letter: "A", text: "Francia" },
-              { letter: "B", text: "Argentina" },
-              { letter: "C", text: "España" },
-              { letter: "D", text: "Croacia" },
-            ],
-            correct: "B",
-          },
-          {
-            id: "t1-q3",
-            category: "mundial",
-            text: "¿En dónde se jugará el Mundial 2030?",
-            options: [
-              { letter: "A", text: "Italia, Francia y Bélgica" },
-              { letter: "B", text: "México, USA y Canadá" },
-              { letter: "C", text: "Uruguay, Argentina y Paraguay" },
-              { letter: "D", text: "España, Portugal y Marruecos" },
-            ],
-            correct: "D",
-          },
-          {
-            id: "t1-q4",
-            category: "oautos",
-            text: "¿Cuál es uno de los principales beneficios de Oautos?",
-            options: [
-              { letter: "A", text: "Puedes comenzar paso a paso" },
-              { letter: "B", text: "Todo el proceso es digital" },
-              {
-                letter: "C",
-                text: "Recibes acompañamiento durante el proceso",
-              },
-              { letter: "D", text: "Todas las anteriores" },
-            ],
-            correct: "D",
-          },
-          {
-            id: "t1-q5",
-            category: "oautos",
-            text: "¿Qué necesitas para comenzar en Oautos?",
-            options: [
-              { letter: "A", text: "Registrarte en la app" },
-              { letter: "B", text: "Elegir tu plan" },
-              { letter: "C", text: "Realizar tus aportaciones" },
-              { letter: "D", text: "Todas las anteriores" },
-            ],
-            correct: "D",
-          },
-        ],
-      },
-      {
-        id: "trivia-02",
-        name: "TRIVIA_02",
-        title: "Leyendas y Campeones",
-        typeLabel: "Mundial + Oautos",
-        availableFrom: "2026-06-09T00:00:00-06:00",
-        questions: [],
-      },
-      {
-        id: "trivia-mexico-01",
-        name: "TRIVIA_MEXICO_01",
-        title: "Leyendas de México",
-        typeLabel: "México + Oautos",
-        availableFrom: "2026-06-11T00:00:00-06:00",
-        questions: [],
-      },
-      {
-        id: "trivia-03",
-        name: "TRIVIA_03",
-        title: "Eliminatorias",
-        typeLabel: "Mundial + Oautos",
-        availableFrom: "2026-06-14T00:00:00-06:00",
-        questions: [],
-      },
-      {
-        id: "trivia-mexico-02",
-        name: "TRIVIA_MEXICO_02",
-        title: "México en los Mundiales",
-        typeLabel: "Mundial + Oautos",
-        availableFrom: "2026-06-18T00:00:00-06:00",
-        questions: [],
-      },
-      {
-        id: "trivia-04",
-        name: "TRIVIA_04",
-        title: "Sorpresas Mundialistas",
-        typeLabel: "Mundial + Oautos",
-        availableFrom: "2026-06-22T00:00:00-06:00",
-        questions: [],
-      },
-      {
-        id: "trivia-mexico-03",
-        name: "TRIVIA_MEXICO_03",
-        title: "Récords de México",
-        typeLabel: "Mundial + Oautos",
-        availableFrom: "2026-06-24T00:00:00-06:00",
-        questions: [],
-      },
-      {
-        id: "trivia-octavos",
-        name: "TRIVIA_Octavos",
-        title: "Octavos de Final",
-        typeLabel: "Mundial + Oautos",
-        availableFrom: "2026-07-02T00:00:00-06:00",
-        questions: [],
-      },
-      {
-        id: "trivia-cuartos",
-        name: "TRIVIA_CUARTOS",
-        title: "Cuartos de Final",
-        typeLabel: "Mundial + Oautos",
-        availableFrom: "2026-07-08T00:00:00-06:00",
-        questions: [],
-      },
-      {
-        id: "trivia-semis",
-        name: "TRIVIA_SEMIS",
-        title: "Semifinales",
-        typeLabel: "Mundial + Oautos",
-        availableFrom: "2026-07-14T00:00:00-06:00",
-        questions: [],
-      },
-      {
-        id: "trivia-final",
-        name: "TRIVIA_FINAL",
-        title: "La Final",
-        typeLabel: "Mundial + Oautos",
-        availableFrom: "2026-07-17T00:00:00-06:00",
-        questions: [],
-      },
-      {
-        id: "cuestionario-final",
-        name: "Cuestionario Final",
-        title: "Cuestionario Final",
-        typeLabel: "Experiencia con Oautos",
-        availableFrom: "2026-07-20T00:00:00-06:00",
-        questions: [],
-      },
-    ],
+    trivias,
     pointsTable: {
       eyebrow: "Tabla de puntos",
       title: "Puntos Trivia",
@@ -1651,7 +1505,7 @@ export const content: CopaAppContent = {
       rules: [
         {
           label: "Trivia completada",
-          description: "Por finalizar y enviar las 5 respuestas.",
+          description: "Por finalizar y enviar todas las respuestas.",
           points: 50,
           display: "plus",
         },
@@ -1663,7 +1517,7 @@ export const content: CopaAppContent = {
         },
         {
           label: "Todas las respuestas bien",
-          description: "Bonificación extra si aciertas las 5 preguntas.",
+          description: "Bonificación extra si aciertas todas las preguntas de la trivia.",
           points: 100,
           display: "plus",
         },
@@ -1712,6 +1566,12 @@ export const content: CopaAppContent = {
       finishButton: "Cerrar",
       closeButton: "Cerrar",
       resultsHeading: "Resultados de tu trivia",
+      surveyResultsHeading: "¡Gracias por tu retroalimentación!",
+      surveyResultsThanks:
+        "Tus respuestas nos ayudan a seguir mejorando Copa Oautos.",
+      surveyRatingHint: "Toca una estrella para calificar",
+      surveyRatingSelected: "Tu calificación: {value} de {max}",
+      surveyTextareaCounter: "{current}/{max}",
       pointsEarnedSuffix: "puntos ganados",
       correctAnswerLabel: "Respuesta correcta",
       yourAnswerLabel: "Tu respuesta",

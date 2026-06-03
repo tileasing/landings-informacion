@@ -360,50 +360,174 @@ const triviasForScript = orderedTrivias.map((t) => ({
       }
     };
 
-    const renderSlide = () => {
-      if (!session || !session.currentQuestion || !slidesContainer) return;
-      const question = session.currentQuestion;
-      const selected = session.currentAnswer;
+    const escapeHtml = (str) =>
+      String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 
-      slidesContainer.innerHTML = "";
-      const slide = document.createElement("div");
-      slide.className = "trivia-slide";
-      slide.innerHTML = `
-        <h3 class="text-lg sm:text-xl font-bold text-[#0D2C4D] leading-snug mb-5">${question.text}</h3>
+    const renderMultipleChoice = (question, selected) => {
+      const options = question.options ?? [];
+      return `
         <div class="space-y-2.5">
-          ${question.options
+          ${options
             .map((opt) => {
               const isSelected = selected === opt.letter;
               return `
                 <label class="trivia-option group flex items-center gap-3 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition ${isSelected ? "border-[#5F8750] bg-[#5F8750]/5" : "border-gray-200 hover:border-[#5F8750]/50 hover:bg-[#5F8750]/5"}">
                   <input type="radio" name="${question.id}" value="${opt.letter}" class="peer sr-only" ${isSelected ? "checked" : ""} />
                   <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border-2 font-bold text-sm ${isSelected ? "bg-[#5F8750] border-[#5F8750] text-white" : "border-gray-300 text-gray-500 group-hover:border-[#5F8750] group-hover:text-[#5F8750]"}">${opt.letter}</span>
-                  <span class="text-sm sm:text-base text-gray-800">${opt.text}</span>
+                  <span class="text-sm sm:text-base text-gray-800">${escapeHtml(opt.text)}</span>
                 </label>
               `;
             })
             .join("")}
         </div>
       `;
+    };
+
+    const renderRating = (question, selected) => {
+      const max = question.maxRating || 5;
+      const current = Number(selected);
+      const hint =
+        current >= 1 && current <= max
+          ? (labels.surveyRatingSelected || "Tu calificación: {value} de {max}")
+              .replace("{value}", String(current))
+              .replace("{max}", String(max))
+          : labels.surveyRatingHint || "Toca una estrella para calificar";
+
+      const buttons = [];
+      for (let i = 1; i <= max; i++) {
+        const active = current >= i;
+        buttons.push(`
+          <button
+            type="button"
+            data-rating-value="${i}"
+            aria-label="${i} de ${max}"
+            class="trivia-rating-star flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-xl transition ${active ? "text-amber-400" : "text-gray-300 hover:text-amber-300"}"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-9 h-9 sm:w-10 sm:h-10 drop-shadow-sm">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </button>
+        `);
+      }
+      return `
+        <div class="flex justify-center gap-1 sm:gap-2 py-4">
+          ${buttons.join("")}
+        </div>
+        <p class="mt-2 text-center text-xs sm:text-sm text-gray-500">${escapeHtml(hint)}</p>
+      `;
+    };
+
+    const renderOpenText = (question, selected) => {
+      const placeholder = escapeHtml(question.placeholder || "");
+      const maxLength = question.maxLength || 500;
+      const value = typeof selected === "string" ? selected : "";
+      const counter = (labels.surveyTextareaCounter || "{current}/{max}")
+        .replace("{current}", String(value.length))
+        .replace("{max}", String(maxLength));
+      return `
+        <textarea
+          data-open-text
+          rows="5"
+          maxlength="${maxLength}"
+          placeholder="${placeholder}"
+          class="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-sm sm:text-base text-[#0D2C4D] placeholder:text-gray-400 focus:outline-none focus:border-[#5F8750] focus:ring-2 focus:ring-[#5F8750]/30 transition resize-y"
+        >${escapeHtml(value)}</textarea>
+        <p class="mt-1 text-right text-xs text-gray-500">
+          <span data-open-text-counter>${counter}</span>
+        </p>
+      `;
+    };
+
+    const renderSlide = () => {
+      if (!session || !session.currentQuestion || !slidesContainer) return;
+      const question = session.currentQuestion;
+      const selected = session.currentAnswer;
+      const kind = question.kind || "multiple-choice";
+
+      slidesContainer.innerHTML = "";
+      const slide = document.createElement("div");
+      slide.className = "trivia-slide";
+
+      let inputHtml = "";
+      if (kind === "rating") {
+        inputHtml = renderRating(question, selected);
+      } else if (kind === "open-text") {
+        inputHtml = renderOpenText(question, selected);
+      } else {
+        inputHtml = renderMultipleChoice(question, selected);
+      }
+
+      slide.innerHTML = `
+        <h3 class="text-lg sm:text-xl font-bold text-[#0D2C4D] leading-snug mb-5">${escapeHtml(question.text)}</h3>
+        ${inputHtml}
+      `;
       slidesContainer.appendChild(slide);
 
-      // Wire up option selection
-      slide.querySelectorAll("input[type=radio]").forEach((input) => {
-        input.addEventListener("change", () => {
-          session.currentAnswer = input.value;
-          renderSlide();
-          refreshFooter();
+      // Wire up handlers según el tipo de pregunta.
+      if (kind === "multiple-choice") {
+        slide.querySelectorAll("input[type=radio]").forEach((input) => {
+          input.addEventListener("change", () => {
+            session.currentAnswer = input.value;
+            renderSlide();
+            refreshFooter();
+          });
         });
-      });
+      } else if (kind === "rating") {
+        slide.querySelectorAll("[data-rating-value]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            session.currentAnswer = Number(btn.dataset.ratingValue);
+            renderSlide();
+            refreshFooter();
+          });
+        });
+      } else if (kind === "open-text") {
+        const textarea = slide.querySelector("[data-open-text]");
+        const counterEl = slide.querySelector("[data-open-text-counter]");
+        const maxLength = question.maxLength || 500;
+        if (textarea) {
+          textarea.addEventListener("input", () => {
+            const v = textarea.value;
+            session.currentAnswer = v;
+            if (counterEl) {
+              counterEl.textContent = (
+                labels.surveyTextareaCounter || "{current}/{max}"
+              )
+                .replace("{current}", String(v.length))
+                .replace("{max}", String(maxLength));
+            }
+            refreshFooter();
+          });
+          // Mantener foco al re-renderizar es delicado, así que aquí no
+          // re-renderizamos en cada cambio (eso lo hacemos solo en rating y
+          // multiple-choice). El estado se mantiene en session.currentAnswer.
+        }
+      }
     };
 
     const refreshFooter = () => {
       if (!session) return;
-      const { currentStatus, currentAnswer } = session;
+      const { currentStatus, currentAnswer, currentQuestion } = session;
       const current = currentStatus?.current ?? 1;
       const total = currentStatus?.total ?? 1;
       const isLast = current === total;
-      const hasAnswer = !!currentAnswer;
+
+      // Validación según tipo de pregunta.
+      const kind = currentQuestion?.kind || "multiple-choice";
+      let hasAnswer = false;
+      if (kind === "rating") {
+        const n = Number(currentAnswer);
+        hasAnswer = Number.isFinite(n) && n >= 1;
+      } else if (kind === "open-text") {
+        hasAnswer =
+          typeof currentAnswer === "string" && currentAnswer.trim().length > 0;
+      } else {
+        hasAnswer = !!currentAnswer;
+      }
 
       // No se puede retroceder con el flujo de preguntas por API
       if (prevBtn) prevBtn.classList.add("hidden");
@@ -653,6 +777,7 @@ const triviasForScript = orderedTrivias.map((t) => ({
 
       session = {
         triviaId,
+        isSurvey: !!trivia.isSurvey,
         currentQuestion: null,
         currentAnswer: null,
         currentStatus: null,
@@ -718,14 +843,39 @@ const triviasForScript = orderedTrivias.map((t) => ({
       const totalQuestions = submitData.totalQuestions ?? 0;
       const pointsEarned = submitData.pointsEarned ?? 0;
       const breakdown = submitData.breakdown ?? {};
+      const isSurvey = !!session.isSurvey;
 
       if (resultsPointsEl) resultsPointsEl.textContent = `+${pointsEarned}`;
+
+      // Encabezado y resumen distintos para encuestas vs. trivias.
+      const headingEl = document.querySelector(
+        "[data-trivia-results-heading]",
+      );
+      if (headingEl) {
+        headingEl.textContent = isSurvey
+          ? labels.surveyResultsHeading || "¡Gracias por tu retroalimentación!"
+          : labels.resultsHeading || "Resultados de tu trivia";
+      }
       if (resultsSummaryEl) {
-        resultsSummaryEl.textContent = `Acertaste ${totalCorrect} de ${totalQuestions} preguntas.`;
+        resultsSummaryEl.textContent = isSurvey
+          ? labels.surveyResultsThanks ||
+            "Tus respuestas nos ayudan a seguir mejorando Copa Oautos."
+          : `Acertaste ${totalCorrect} de ${totalQuestions} preguntas.`;
+      }
+
+      // Para encuestas: ocultar desglose y revisión por pregunta (no aplica).
+      const breakdownWrap = document.querySelector(
+        "[data-trivia-results-breakdown-wrap]",
+      );
+      if (breakdownWrap) {
+        breakdownWrap.classList.toggle("hidden", isSurvey);
+      }
+      if (resultsReviewEl) {
+        resultsReviewEl.classList.toggle("hidden", isSurvey);
       }
 
       // Desglose
-      if (resultsBreakdownEl) {
+      if (!isSurvey && resultsBreakdownEl) {
         const rows = [];
         if (breakdown.completion) {
           rows.push(
@@ -750,8 +900,9 @@ const triviasForScript = orderedTrivias.map((t) => ({
         resultsBreakdownEl.innerHTML = rows.join("");
       }
 
-      // Review: usar datos detallados de la API si están disponibles
-      if (resultsReviewEl) {
+      // Review: usar datos detallados de la API si están disponibles.
+      // En encuestas no aplica (no hay aciertos), saltamos el render.
+      if (!isSurvey && resultsReviewEl) {
         if (reviewData && reviewData.questions) {
           resultsReviewEl.innerHTML = reviewData.questions
             .map((q, idx) => {
