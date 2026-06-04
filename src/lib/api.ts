@@ -6,8 +6,8 @@
 
 // ─── Bases ────────────────────────────────────────────────────────────────────
 
-// export const API_BASE = "https://api-prod.oautos.mx";
-export const API_BASE = "https://api.oautos.mx";
+export const API_BASE = "https://api-prod.oautos.mx";
+// export const API_BASE = "https://api.oautos.mx";
 
 // ─── Endpoints por dominio ────────────────────────────────────────────────────
 
