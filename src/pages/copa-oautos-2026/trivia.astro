@@ -317,6 +317,8 @@ const triviasForScript = orderedTrivias.map((t) => ({
     const resultsReviewEl = modal?.querySelector(
       "[data-trivia-results-review]",
     );
+    const introView = modal?.querySelector("[data-trivia-intro]");
+    const startBtn = modal?.querySelector("[data-trivia-game-start]");
 
     let session = null; // { trivia, answers, currentIndex }
     let isSubmitting = false;
@@ -811,10 +813,12 @@ const triviasForScript = orderedTrivias.map((t) => ({
 
       // Reset UI
       resultsView?.classList.add("hidden");
-      slidesContainer.classList.remove("hidden");
-      progressWrap?.classList.remove("hidden");
-      prevBtn?.classList.add("hidden"); // No se puede retroceder con el flujo API
-      nextBtn?.classList.remove("hidden");
+      introView?.classList.remove("hidden");
+      slidesContainer.classList.add("hidden");
+      progressWrap?.classList.add("hidden");
+      footer?.classList.add("hidden");
+      prevBtn?.classList.add("hidden");
+      nextBtn?.classList.add("hidden");
       submitBtn?.classList.add("hidden");
       finishBtn?.classList.add("hidden");
 
@@ -824,10 +828,16 @@ const triviasForScript = orderedTrivias.map((t) => ({
       } else {
         modal.setAttribute("open", "");
       }
-
-      // Cargar la primera (o actual) pregunta desde la API
-      await playQuestion(triviaId);
     };
+
+    startBtn?.addEventListener("click", async () => {
+      if (!session) return;
+      introView?.classList.add("hidden");
+      slidesContainer?.classList.remove("hidden");
+      progressWrap?.classList.remove("hidden");
+      footer?.classList.remove("hidden");
+      await playQuestion(session.triviaId);
+    });
 
     const closeGame = () => {
       if (!modal) return;
@@ -856,6 +866,7 @@ const triviasForScript = orderedTrivias.map((t) => ({
       }
       slidesContainer?.classList.add("hidden");
       progressWrap?.classList.add("hidden");
+      footer?.classList.remove("hidden");
       prevBtn?.classList.add("hidden");
       nextBtn?.classList.add("hidden");
       submitBtn?.classList.add("hidden");

@@ -119,6 +119,45 @@ const { labels } = Astro.props;
       class="flex-1 overflow-y-auto px-4 sm:px-6 py-5 sm:py-6"
       data-trivia-game-body
     >
+      <!-- Pantalla de Introducción -->
+      <div data-trivia-intro class="hidden">
+        <div class="text-center py-4">
+          <div
+            class="inline-flex h-20 w-20 items-center justify-center rounded-full bg-[#5F8750]/10 text-[#5F8750] mb-6"
+            aria-hidden="true"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-10 h-10"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <h3 class="text-xl sm:text-2xl font-extrabold text-[#0D2C4D] mb-4">
+            ¿Listo para jugar?
+          </h3>
+          <p class="text-sm sm:text-base text-gray-600 leading-relaxed max-w-sm mx-auto mb-8">
+            Tienes <strong>10 segundos</strong> para contestar cada pregunta del Mundial. Las preguntas sobre Oautos son libres de tiempo.
+            <br /><br />
+            Y recuerda, en cada trivia puedes ganar hasta <span class="whitespace-nowrap"><strong>500 puntos</strong></span>.
+          </p>
+          <button
+            type="button"
+            data-trivia-game-start
+            class="w-full sm:w-auto px-8 py-3 rounded-full text-base font-bold bg-[#5F8750] text-white hover:bg-[#3F5E33] transition-all shadow-lg hover:shadow-xl active:scale-95"
+          >
+            ¡Empezar Trivia!
+          </button>
+        </div>
+      </div>
+
       <!-- Toast de tiempo agotado -->
       <div data-trivia-timeout-toast class="hidden mb-3">
         <div class="flex items-center gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 text-[13px] text-amber-700">
