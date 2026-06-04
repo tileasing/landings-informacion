@@ -3,6 +3,7 @@ import CopaAppLayout from "../../layouts/CopaAppLayout.astro";
 import AppNavbar from "../../components/copa-oautos-2026-app/AppNavbar.astro";
 import HistoryHeader from "../../components/copa-oautos-2026-app/historial/HistoryHeader.astro";
 import { content } from "../../content/copa-oautos-2026-app";
+import { API_BASE } from "../../lib/api";
 
 const { historial, navbar, trivia, quiniela } = content;
 
@@ -198,11 +199,7 @@ const quinielaMatchCatalog = quiniela.matches.map((m) => ({
 <script
   is:inline
   define:vars={{
-    triviaCatalog,
-    quinielaMatchCatalog,
-    triviaResultsKey: "copa-trivia-results-v1",
-    quinielaResultsKey: "copa-quiniela-match-points-v1",
-    ruletaResultsKey: "copa-ruleta-spins-v1",
+    apiBase: API_BASE,
     filterStorageKey: "copa-history-filter-v1",
     labels: content.historial.labels,
   }}
@@ -238,75 +235,30 @@ const quinielaMatchCatalog = quiniela.matches.map((m) => ({
       }
     };
 
-    // === Storage ===
-    const safeParse = (key) => {
+    // === Fetch API ===
+    const fetchActivities = async (filterId) => {
+      const token = localStorage.getItem("copa_auth_token");
+      const dinamica = filterId === "all" ? "" : filterId;
       try {
-        const raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : null;
-      } catch (_) {
-        return null;
+        const res = await fetch(`${apiBase}/api/copa-oautos/activities?dinamica=${dinamica}`, {
+          headers: token ? { "Authorization": "Bearer " + token } : {},
+        });
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          return json.data.map((item) => ({
+            id: item.id,
+            source: item.source || "trivia",
+            title: item.title || item.reason,
+            reason: item.title ? item.reason : "",
+            points: item.amount,
+            earnedAt: item.date,
+          }));
+        }
+        return [];
+      } catch (err) {
+        console.error("Error fetching activities:", err);
+        return [];
       }
-    };
-
-    // === Construcción de entradas ===
-    const buildEntries = () => {
-      const entries = [];
-
-      // Trivia: cada trivia completada genera una entrada.
-      const triviaResults = safeParse(triviaResultsKey) ?? {};
-      Object.entries(triviaResults).forEach(([triviaId, result]) => {
-        const meta = triviaCatalog.find((t) => t.id === triviaId);
-        if (!meta) return;
-        const isPerfect = result.totalCorrect === result.totalQuestions;
-        entries.push({
-          id: `trivia-${triviaId}`,
-          source: "trivia",
-          title: meta.title,
-          subtitle: `${meta.name}${isPerfect ? ` · ${labels.perfectTrivia}` : ""}`,
-          points: result.total,
-          earnedAt: result.completedAt,
-        });
-      });
-
-      // Quiniela: cuando haya partidos finalizados con puntos calculados.
-      // El formato esperado: { matchId: { points: number, awardedAt: iso, ... } }
-      const quinielaResults = safeParse(quinielaResultsKey) ?? {};
-      Object.entries(quinielaResults).forEach(([matchId, result]) => {
-        const meta = quinielaMatchCatalog.find((m) => m.id === matchId);
-        if (!meta || !result || typeof result.points !== "number") return;
-        entries.push({
-          id: `quiniela-${matchId}`,
-          source: "quiniela",
-          title: meta.label,
-          subtitle: meta.group || "Partido",
-          points: result.points,
-          earnedAt: result.awardedAt ?? meta.kickoff,
-        });
-      });
-
-      // Ruleta: cuando exista esa dinámica.
-      // Formato esperado: [{ id, points, spunAt, label? }]
-      const ruletaResults = safeParse(ruletaResultsKey) ?? [];
-      if (Array.isArray(ruletaResults)) {
-        ruletaResults.forEach((spin) => {
-          if (!spin || typeof spin.points !== "number") return;
-          entries.push({
-            id: `ruleta-${spin.id ?? spin.spunAt}`,
-            source: "ruleta",
-            title: spin.label ?? "Giro de ruleta",
-            subtitle: "Dinámica en la app",
-            points: spin.points,
-            earnedAt: spin.spunAt ?? new Date().toISOString(),
-          });
-        });
-      }
-
-      // Más reciente primero.
-      entries.sort(
-        (a, b) =>
-          new Date(b.earnedAt).getTime() - new Date(a.earnedAt).getTime(),
-      );
-      return entries;
     };
 
     // === Render ===
@@ -399,7 +351,10 @@ const quinielaMatchCatalog = quiniela.matches.map((m) => ({
                 <span class="text-[11px] sm:text-xs text-gray-500">${formatDateTime(entry.earnedAt)}</span>
               </div>
               <p class="text-sm sm:text-base font-bold text-[#0D2C4D] leading-tight truncate">${entry.title}</p>
-              <p class="text-xs text-gray-500 truncate">${entry.subtitle}</p>
+              ${entry.reason ? `<p class="text-xs text-gray-500 truncate mb-1">${entry.reason}</p>` : ""}
+              <p class="text-[11px] sm:text-xs text-gray-400 font-medium">
+                ${labels.earnedAtPrefix || "Ganado el"} ${formatDate(entry.earnedAt)}
+              </p>
             </div>
             <div class="flex-shrink-0 text-right">
               <p class="text-base sm:text-lg font-extrabold text-emerald-600 tabular-nums leading-none">+${entry.points}</p>
@@ -447,14 +402,17 @@ const quinielaMatchCatalog = quiniela.matches.map((m) => ({
       }
     } catch (_) {}
 
-    const refresh = () => {
-      const entries = buildEntries();
-      renderList(entries, currentFilter);
+    const refresh = async () => {
+      // Mostrar un estado de carga opcional si fuera necesario, 
+      // por ahora simplemente limpiamos y esperamos.
+      const entries = await fetchActivities(currentFilter);
+      renderList(entries, "all");
       setActiveFilter(currentFilter);
     };
 
     chips.forEach((chip) => {
-      chip.addEventListener("click", () => {
+      chip.addEventListener("click", async () => {
+        if (currentFilter === chip.dataset.historyFilter) return;
         currentFilter = chip.dataset.historyFilter;
         try {
           if (currentFilter === "all") {
@@ -463,7 +421,7 @@ const quinielaMatchCatalog = quiniela.matches.map((m) => ({
             localStorage.setItem(filterStorageKey, currentFilter);
           }
         } catch (_) {}
-        refresh();
+        await refresh();
       });
     });
 
@@ -471,7 +429,7 @@ const quinielaMatchCatalog = quiniela.matches.map((m) => ({
 
     // Si el usuario cambia algo en otra pestaña (ej. completa una trivia),
     // refrescar al volver a la pestaña.
-    window.addEventListener("storage", refresh);
+    window.addEventListener("storage", () => refresh());
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) refresh();
     });

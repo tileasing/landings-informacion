@@ -552,8 +552,24 @@ const triviasForScript = orderedTrivias.map((t) => ({
     const handleTimerExpiry = () => {
       if (!session) return;
       stopTimer();
+
+      const hasAnswer = !!session.currentAnswer;
+
+      // Si hay una respuesta seleccionada, la enviamos automáticamente
+      if (hasAnswer) {
+        submitCurrentAnswer();
+        return;
+      }
+
       // El backend responde automáticamente — solo mostrar toast y avanzar
-      if (timeoutToast) timeoutToast.classList.remove("hidden");
+      if (timeoutToast) {
+        const span = timeoutToast.querySelector("span");
+        if (span) {
+          span.textContent = "¡Tiempo agotado! No seleccionaste ninguna respuesta.";
+        }
+        timeoutToast.classList.remove("hidden");
+      }
+
       setTimeout(async () => {
         if (!session) return;
         if (timeoutToast) timeoutToast.classList.add("hidden");
@@ -575,7 +591,9 @@ const triviasForScript = orderedTrivias.map((t) => ({
       let remaining = secondsAllowed;
       if (startedAt) {
         const elapsed = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000);
-        remaining = Math.max(0, remaining - elapsed);
+        // Usamos Math.max(0, elapsed) para evitar que si el reloj del usuario está atrasado
+        // se sumen segundos extras al cronómetro.
+        remaining = Math.max(0, remaining - Math.max(0, elapsed));
       }
       timerSecondsLeft = remaining;
       if (timerWrap) {
@@ -687,9 +705,9 @@ const triviasForScript = orderedTrivias.map((t) => ({
           if (json.success && json.data) {
             reviewData = json.data;
             submitData = {
-              correctAnswers: json.data.correctAnswers ?? json.data.totalCorrect ?? 0,
-              totalQuestions: json.data.totalQuestions ?? 0,
-              pointsEarned: json.data.pointsEarned ?? json.data.totalPoints ?? 0,
+              correctAnswers: json.data.summary?.correct ?? json.data.correctAnswers ?? 0,
+              totalQuestions: json.data.summary?.total ?? json.data.totalQuestions ?? 0,
+              pointsEarned: json.data.pointsEarned ?? 0,
               breakdown: json.data.breakdown ?? {},
               completedAt: json.data.completedAt,
             };
