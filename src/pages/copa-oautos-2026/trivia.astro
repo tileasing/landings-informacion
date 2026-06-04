@@ -640,6 +640,10 @@ const triviasForScript = orderedTrivias.map((t) => ({
         session.currentAnswer = null;
         session.currentStatus = status;
 
+        if (submitBtn) {
+          submitBtn.textContent = labels.submitButton;
+        }
+
         renderSlide();
         refreshFooter();
         startTimer(status.secondsAllowed, status.startedAt);
@@ -739,6 +743,7 @@ const triviasForScript = orderedTrivias.map((t) => ({
           await fetchResultsAndShow(triviaId);
         }
       } catch (err) {
+        if (!session) return;
         isSubmitting = false;
         if (nextBtn) nextBtn.disabled = false;
         if (submitBtn) {

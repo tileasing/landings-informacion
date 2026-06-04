@@ -236,10 +236,7 @@ export interface CopaQuinielaContent {
 
 export type CopaTriviaCategory = "mundial" | "oautos" | "mexico";
 export type CopaTriviaOptionLetter = "A" | "B" | "C" | "D" | "E";
-export type CopaTriviaQuestionKind =
-  | "multiple-choice"
-  | "rating"
-  | "open-text";
+export type CopaTriviaQuestionKind = "multiple-choice" | "rating" | "open-text";
 
 export interface CopaTriviaOption {
   letter: CopaTriviaOptionLetter;
@@ -1523,7 +1520,8 @@ export const content: CopaAppContent = {
         },
         {
           label: "Todas las respuestas bien",
-          description: "Bonificación extra si aciertas todas las preguntas de la trivia.",
+          description:
+            "Bonificación extra si aciertas todas las preguntas de la trivia.",
           points: 100,
           display: "plus",
         },
