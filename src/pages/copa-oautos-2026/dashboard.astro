@@ -6,6 +6,7 @@ import PointsMetric from "../../components/copa-oautos-2026-app/PointsMetric.ast
 import RankingCard from "../../components/copa-oautos-2026-app/RankingCard.astro";
 import ParticipationCards from "../../components/copa-oautos-2026-app/ParticipationCards.astro";
 import { content } from "../../content/copa-oautos-2026-app";
+import { COPA_OAUTOS_ENDPOINTS } from "../../lib/api";
 ---
 
 <CopaAppLayout
@@ -34,3 +35,149 @@ import { content } from "../../content/copa-oautos-2026-app";
     <ParticipationCards content={content.dashboard} />
   </main>
 </CopaAppLayout>
+
+<script
+  is:inline
+  define:vars={{
+    dashboardEndpoint: COPA_OAUTOS_ENDPOINTS.dashboard,
+    rankingEndpoint: COPA_OAUTOS_ENDPOINTS.ranking,
+  }}
+>
+  (() => {
+    const STORAGE_KEY = "copa_auth_token";
+    const token = localStorage.getItem(STORAGE_KEY);
+    if (!token) return;
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    // --- Fetch Dashboard (Points) ---
+    fetch(dashboardEndpoint, { headers })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.success && response.data) {
+          const { totalAccumulated, breakdown, position, totalParticipants } =
+            response.data;
+
+          // Actualizar Total
+          const totalEl = document.querySelector("[data-points-total]");
+          if (totalEl) totalEl.textContent = totalAccumulated.toLocaleString("es-MX");
+
+          // Actualizar Posición
+          const posEl = document.querySelector("[data-points-position]");
+          if (posEl) posEl.textContent = position;
+
+          const totalPartEl = document.querySelector("[data-points-total-participants]");
+          if (totalPartEl) totalPartEl.textContent = totalParticipants.toLocaleString("es-MX");
+
+          // Actualizar Breakdown
+          if (breakdown) {
+            Object.entries(breakdown).forEach(([key, value]) => {
+              const el = document.querySelector(`[data-points-breakdown="${key}"]`);
+              if (el) el.textContent = value.toLocaleString("es-MX");
+            });
+          }
+        }
+      })
+      .catch((err) => console.error("Error fetching dashboard data:", err));
+
+    // --- Fetch Ranking ---
+    fetch(rankingEndpoint, { headers })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.success && response.data) {
+          const { top5, userPosition } = response.data;
+          const rankingList = document.getElementById("ranking-list");
+          const rankingFooter = document.getElementById("ranking-footer");
+          if (!rankingList) return;
+
+          const suffix = rankingList.dataset.pointsSuffix || "pts";
+
+          const positionBadgeClass = (pos, isCurrent) => {
+            if (isCurrent) return "bg-[#117CD9] text-white";
+            if (pos === 1) return "bg-amber-400 text-amber-950";
+            if (pos === 2) return "bg-gray-300 text-gray-800";
+            if (pos === 3) return "bg-orange-400 text-orange-950";
+            return "bg-gray-100 text-gray-600";
+          };
+
+          // Renderizar lista
+          rankingList.innerHTML = top5
+            .map((entry) => {
+              const isCurrent = entry.position === userPosition.position;
+              return `
+                <li class="flex items-center gap-2.5 px-2 py-1.5 rounded-xl transition ${
+                  isCurrent
+                    ? "bg-[#117CD9]/10 ring-1 ring-[#117CD9]/20"
+                    : "hover:bg-gray-50"
+                }">
+                  <span class="flex-shrink-0 flex h-7 w-7 items-center justify-center rounded-lg font-extrabold text-xs ${positionBadgeClass(
+                    entry.position,
+                    isCurrent
+                  )}" aria-hidden="true">
+                    ${entry.position}
+                  </span>
+                  <span class="flex-1 min-w-0 text-xs sm:text-sm truncate ${
+                    isCurrent ? "font-bold text-[#0D2C4D]" : "font-medium text-gray-800"
+                  }">
+                    ${entry.name}
+                  </span>
+                  <span class="text-xs sm:text-sm font-bold tabular-nums whitespace-nowrap ${
+                    isCurrent ? "text-[#0D5FB3]" : "text-gray-700"
+                  }">
+                    ${entry.points.toLocaleString("es-MX")}
+                    <span class="text-[10px] text-gray-400 font-medium ml-0.5">${suffix}</span>
+                  </span>
+                </li>
+              `;
+            })
+            .join("");
+
+          // Actualizar Footer (Tu posición)
+          if (rankingFooter) {
+            const userInTop = top5.some((e) => e.position === userPosition.position);
+            const labels = rankingFooter.dataset;
+            
+            if (!userInTop) {
+              rankingFooter.innerHTML = `
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                  <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+                    ${labels.yourPositionLabel}
+                  </p>
+                  <div class="flex items-center gap-2.5 px-2 py-1.5 rounded-xl bg-[#117CD9]/10 ring-1 ring-[#117CD9]/20">
+                    <span class="flex-shrink-0 flex h-7 min-w-[2rem] px-1.5 items-center justify-center rounded-lg font-extrabold text-xs bg-[#117CD9] text-white" aria-hidden="true">
+                      ${userPosition.position}
+                    </span>
+                    <span class="flex-1 min-w-0 text-xs sm:text-sm font-bold text-[#0D2C4D] truncate">
+                      ${userPosition.name}
+                    </span>
+                    <span class="text-xs sm:text-sm font-bold text-[#0D5FB3] tabular-nums whitespace-nowrap">
+                      ${userPosition.points.toLocaleString("es-MX")}
+                      <span class="text-[10px] text-[#117CD9]/70 font-medium ml-0.5">${suffix}</span>
+                    </span>
+                  </div>
+                  <p class="mt-2 text-[11px] sm:text-xs text-gray-500 leading-relaxed">
+                    ${labels.notInTopMessage}
+                  </p>
+                </div>
+              `;
+            } else {
+              rankingFooter.innerHTML = `
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                  <p class="text-[11px] sm:text-xs text-emerald-700 bg-emerald-50 rounded-lg px-3 py-2 font-semibold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                    ${labels.inTopMessage}
+                  </p>
+                </div>
+              `;
+            }
+          }
+        }
+      })
+      .catch((err) => console.error("Error fetching ranking data:", err));
+  })();
+</script>

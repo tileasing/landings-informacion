@@ -23,7 +23,7 @@ const breakdown = [
   },
   {
     label: content.appLabel,
-    value: data.app,
+    value: data.fortune_wheel,
     accent: "amber",
     icon: "wheel",
   },
@@ -110,11 +110,17 @@ const accentMap = {
         </p>
       </div>
       <div class="relative">
-        <p class="text-4xl sm:text-5xl font-extrabold leading-none tabular-nums">
-          {data.total.toLocaleString("es-MX")}
+        <p
+          class="text-4xl sm:text-5xl font-extrabold leading-none tabular-nums"
+          data-points-total
+        >
+          {data.totalAccumulated.toLocaleString("es-MX")}
         </p>
         <p class="mt-1 text-sm font-semibold text-white/80">
           {pointsSuffix} Copa
+        </p>
+        <p class="mt-2 text-[10px] font-medium text-white/60 uppercase tracking-wider">
+          <span data-points-position>{data.position || 0}</span>° {content.rankLabel} de <span data-points-total-participants>{(data.totalParticipants || 0).toLocaleString("es-MX")}</span>
         </p>
       </div>
     </div>
@@ -124,6 +130,9 @@ const accentMap = {
       {
         breakdown.map((item) => {
           const a = accentMap[item.accent];
+          const apiKeyMap = { ball: "quiniela", trivia: "trivia", wheel: "fortune_wheel" };
+          const apiKey = apiKeyMap[item.icon as keyof typeof apiKeyMap];
+
           return (
             <div class="flex items-stretch rounded-xl border border-gray-100 bg-gray-50 overflow-hidden">
               <span
@@ -191,7 +200,9 @@ const accentMap = {
                   </span>
                 </div>
                 <p class="text-base sm:text-lg font-extrabold text-[#0D2C4D] leading-none tabular-nums whitespace-nowrap">
-                  {item.value.toLocaleString("es-MX")}
+                  <span data-points-breakdown={apiKey}>
+                    {item.value.toLocaleString("es-MX")}
+                  </span>
                   <span class="text-xs font-semibold text-gray-500 ml-0.5">
                     {pointsSuffix}
                   </span>
