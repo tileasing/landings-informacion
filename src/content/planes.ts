@@ -61,7 +61,7 @@ export const content: PlanesContent = {
       {
         variant: 'principal',
         text: 'Crear mi plan ahora',
-        href: '',
+        href: 'https://guia.oautos.com.mx/como-funciona',
         blank: true,
       },
       {
@@ -169,7 +169,7 @@ export const content: PlanesContent = {
       {
         variant: 'principal',
         text: 'Crear mi plan hoy',
-        href: '',
+        href: 'https://guia.oautos.com.mx/como-funciona',
         blank: true,
       },
       {
