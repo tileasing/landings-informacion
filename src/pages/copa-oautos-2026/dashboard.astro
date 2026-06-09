@@ -48,6 +48,11 @@ import { COPA_OAUTOS_ENDPOINTS } from "../../lib/api";
     const token = localStorage.getItem(STORAGE_KEY);
     if (!token) return;
 
+    const logout = () => {
+      localStorage.removeItem(STORAGE_KEY);
+      window.location.replace("/copa-oautos-2026/login");
+    };
+
     const headers = {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
@@ -57,6 +62,7 @@ import { COPA_OAUTOS_ENDPOINTS } from "../../lib/api";
     fetch(dashboardEndpoint, { headers })
       .then((res) => res.json())
       .then((response) => {
+        if (response.error?.statusCode === 401) return logout();
         if (response.success && response.data) {
           const { totalAccumulated, breakdown, position, totalParticipants } =
             response.data;
@@ -87,6 +93,7 @@ import { COPA_OAUTOS_ENDPOINTS } from "../../lib/api";
     fetch(rankingEndpoint, { headers })
       .then((res) => res.json())
       .then((response) => {
+        if (response.error?.statusCode === 401) return logout();
         if (response.success && response.data) {
           const { top5, userPosition } = response.data;
           const rankingList = document.getElementById("ranking-list");

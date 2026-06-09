@@ -234,6 +234,11 @@ const initials =
       })
         .then(function (r) { return r.json(); })
         .then(function (data) {
+          if (data && data.success === false && data.error && data.error.statusCode === 401) {
+            localStorage.removeItem("copa_auth_token");
+            window.location.replace("/copa-oautos-2026/login");
+            return;
+          }
           if (!data || !data.success || !data.data) return;
           const u = data.data;
           const parts = [u.name, u.lastName, u.secondLastName].filter(Boolean);
