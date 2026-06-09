@@ -26,14 +26,14 @@ const flagUrl2x = (code: string) =>
   data-deadline-prefix={content.deadlinePrefix}
   data-deadline-passed={content.deadlinePassed}
   data-saved-label={content.saved}
-  class="bg-white rounded-2xl ring-1 ring-gray-200 shadow-sm overflow-hidden"
+  class="bg-white rounded-2xl ring-1 ring-gray-200 shadow-sm"
 >
   <header
-    class="px-4 sm:px-6 py-4 border-b border-gray-100 bg-gradient-to-br from-[#117CD9]/10 to-amber-50"
+    class="px-4 sm:px-6 py-4 border-b border-gray-100 bg-linear-to-br from-[#117CD9]/10 to-amber-50 rounded-t-2xl"
   >
     <div class="flex items-start gap-3">
       <span
-        class="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-400 text-white shadow"
+        class="shrink-0 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-400 text-white shadow"
         aria-hidden="true"
       >
         <svg
@@ -167,7 +167,7 @@ const flagUrl2x = (code: string) =>
                     alt=""
                     width="28"
                     height="20"
-                    class="hidden w-7 h-5 object-cover rounded shadow-sm ring-1 ring-black/5 flex-shrink-0"
+                    class="hidden w-7 h-5 object-cover rounded shadow-sm ring-1 ring-black/5 shrink-0"
                   />
                   <span
                     data-country-label
@@ -183,7 +183,7 @@ const flagUrl2x = (code: string) =>
                     stroke-width="2.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    class="w-4 h-4 text-gray-400 transition-transform duration-200 flex-shrink-0"
+                    class="w-4 h-4 text-gray-400 transition-transform duration-200 shrink-0"
                     data-country-chevron
                     aria-hidden="true"
                   >
@@ -244,7 +244,7 @@ const flagUrl2x = (code: string) =>
                             width="28"
                             height="20"
                             loading="lazy"
-                            class="w-7 h-5 object-cover rounded shadow-sm ring-1 ring-black/5 flex-shrink-0"
+                            class="w-7 h-5 object-cover rounded shadow-sm ring-1 ring-black/5 shrink-0"
                           />
                           <span class="flex-1 truncate font-medium">
                             {country.name}
@@ -257,7 +257,7 @@ const flagUrl2x = (code: string) =>
                             stroke-width="3"
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            class="copa-country-check hidden w-4 h-4 text-[#117CD9] flex-shrink-0"
+                            class="copa-country-check hidden w-4 h-4 text-[#117CD9] shrink-0"
                             aria-hidden="true"
                           >
                             <path d="M20 6 9 17l-5-5" />
@@ -295,7 +295,7 @@ const flagUrl2x = (code: string) =>
   </div>
 
   <footer
-    class="px-4 sm:px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-start gap-2 text-xs sm:text-sm text-gray-600"
+    class="px-4 sm:px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-start gap-2 text-xs sm:text-sm text-gray-600 rounded-b-2xl"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -305,7 +305,7 @@ const flagUrl2x = (code: string) =>
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      class="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-600"
+      class="w-4 h-4 mt-0.5 shrink-0 text-amber-600"
       aria-hidden="true"
     >
       <circle cx="12" cy="12" r="10" />
@@ -345,8 +345,24 @@ const flagUrl2x = (code: string) =>
       const initialPlaceholder = labelEl?.textContent ?? "";
 
       const openPanel = () => {
-        panel?.classList.remove("hidden");
-        trigger?.setAttribute("aria-expanded", "true");
+        if (!panel || !trigger) return;
+
+        // Detectar si hay espacio debajo para evitar que la página se estire y requiera scroll
+        const rect = trigger.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const spaceBelow = viewportHeight - rect.bottom;
+        const panelApproxHeight = 320; // max-h-64 (256px) + search box + margin
+
+        if (spaceBelow < panelApproxHeight && rect.top > panelApproxHeight) {
+          panel.classList.remove("top-full", "mt-1");
+          panel.classList.add("bottom-full", "mb-1");
+        } else {
+          panel.classList.remove("bottom-full", "mb-1");
+          panel.classList.add("top-full", "mt-1");
+        }
+
+        panel.classList.remove("hidden");
+        trigger.setAttribute("aria-expanded", "true");
         chevron?.classList.add("rotate-180");
         // focus en búsqueda al abrir (suave para no robar focus en móvil al inicio)
         setTimeout(() => search?.focus({ preventScroll: true }), 30);

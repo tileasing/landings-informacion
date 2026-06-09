@@ -14,18 +14,21 @@ const breakdown = [
     value: data.quiniela,
     accent: "blue",
     icon: "ball",
+    href: "/copa-oautos-2026/quiniela",
   },
   {
     label: content.triviaLabel,
     value: data.trivia,
     accent: "green",
     icon: "trivia",
+    href: "/copa-oautos-2026/trivia",
   },
   {
     label: content.appLabel,
     value: data.fortune_wheel,
     accent: "amber",
     icon: "wheel",
+    href: undefined,
   },
 ] as const;
 
@@ -73,8 +76,9 @@ const accentMap = {
     class="flex-1 grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
   >
     <!-- Total acumulado: cuadro grande -->
-    <div
-      class="relative overflow-hidden flex flex-col justify-between gap-4 bg-gradient-to-br from-[#0D2C4D] to-[#117CD9] text-white rounded-2xl px-5 py-5 shadow-lg"
+    <a
+      href="/copa-oautos-2026/historial"
+      class="relative overflow-hidden flex flex-col justify-between gap-4 bg-linear-to-br from-[#0D2C4D] to-[#117CD9] text-white rounded-2xl px-5 py-5 shadow-lg hover:brightness-110 transition-all active:scale-[0.99] group"
     >
       <span
         class="pointer-events-none absolute -top-12 -right-12 w-40 h-40 rounded-full bg-white/10 blur-3xl"
@@ -82,7 +86,7 @@ const accentMap = {
       ></span>
       <div class="relative flex items-center gap-3">
         <span
-          class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm group-hover:bg-white/20 transition-colors"
           aria-hidden="true"
         >
           <svg
@@ -123,27 +127,40 @@ const accentMap = {
           <span data-points-position>{data.position || 0}</span>° {content.rankLabel} de <span data-points-total-participants>{(data.totalParticipants || 0).toLocaleString("es-MX")}</span>
         </p>
       </div>
-    </div>
+    </a>
 
     <!-- Breakdown: 3 mini cards apiladas en una columna (siempre) -->
     <div class="grid grid-cols-1 gap-2 sm:gap-3">
       {
         breakdown.map((item) => {
           const a = accentMap[item.accent];
-          const apiKeyMap = { ball: "quiniela", trivia: "trivia", wheel: "fortune_wheel" };
+          const apiKeyMap = {
+            ball: "quiniela",
+            trivia: "trivia",
+            wheel: "fortune_wheel",
+          };
           const apiKey = apiKeyMap[item.icon as keyof typeof apiKeyMap];
+          const Tag = item.href ? "a" : "div";
+          const extraProps = item.href ? { href: item.href } : {};
 
           return (
-            <div class="flex items-stretch rounded-xl border border-gray-100 bg-gray-50 overflow-hidden">
+            <Tag
+              {...extraProps}
+              class:list={[
+                "flex items-stretch rounded-xl border border-gray-100 bg-gray-50 overflow-hidden transition-all duration-200",
+                item.href &&
+                  "hover:bg-gray-100 hover:border-gray-200 hover:shadow-sm active:scale-[0.98]",
+              ]}
+            >
               <span
-                class:list={["flex-shrink-0 w-1.5", a.side]}
+                class:list={["shrink-0 w-1.5", a.side]}
                 aria-hidden="true"
               />
               <div class="flex-1 min-w-0 px-3 py-2.5 flex items-center justify-between gap-3">
                 <div class="flex items-center gap-2 min-w-0">
                   <span
                     class:list={[
-                      "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg",
+                      "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
                       a.icon,
                     ]}
                     aria-hidden="true"
@@ -208,7 +225,7 @@ const accentMap = {
                   </span>
                 </p>
               </div>
-            </div>
+            </Tag>
           );
         })
       }
