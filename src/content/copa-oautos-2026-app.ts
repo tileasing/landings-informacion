@@ -118,6 +118,7 @@ export interface CopaAppRankingContent {
 
 export type CopaQuinielaPhaseId =
   | "grupos"
+  | "16avos"
   | "octavos"
   | "cuartos"
   | "semifinales"
@@ -626,7 +627,7 @@ export const content: CopaAppContent = {
         "Cuando termine el partido verás cuántos puntos ganaste según la tabla de puntuación.",
         "Además puedes predecir el MVP y el goleador del torneo antes de que arranque el mundial — son 300 puntos cada acierto.",
         "Tu equipo favorito te suma 25 puntos extra cada vez que gane (próximamente podrás elegirlo).",
-        "Las fases siguientes (octavos, cuartos, etc.) se desbloquean cuando se conocen los equipos clasificados.",
+        "Las fases siguientes (16avos, octavos, cuartos, etc.) se desbloquean cuando se conocen los equipos clasificados.",
       ],
     },
     mainTabs: [
@@ -641,12 +642,19 @@ export const content: CopaAppContent = {
         status: "open",
       },
       {
+        id: "16avos",
+        label: "Dieciseisavos de final",
+        shortLabel: "16avos",
+        status: "open",
+        lockedMessage:
+          "Esta fase se habilitará cuando termine la fase de grupos y se conozcan los clasificados.",
+      },
+      {
         id: "octavos",
         label: "Octavos de final",
         shortLabel: "Octavos",
         status: "locked",
-        lockedMessage:
-          "Esta fase se habilitará cuando termine la fase de grupos y se conozcan los clasificados.",
+        lockedMessage: "Disponible cuando se conozcan los ganadores de 16avos.",
       },
       {
         id: "cuartos",
@@ -1358,6 +1366,137 @@ export const content: CopaAppContent = {
         kickoff: "2026-06-27T15:00:00-06:00",
         venue: "Estadio Filadelfia (Filadelfia)",
         teamA: { code: "hr", name: "Croacia" },
+        teamB: { code: "gh", name: "Ghana" },
+      },
+
+      // === 16avos de final ===
+      {
+        id: "m73-16a",
+        phaseId: "16avos",
+        kickoff: "2026-06-28T13:00:00-06:00",
+        venue: "Estadio Los Ángeles (Los Ángeles)",
+        teamA: { code: "za", name: "Sudáfrica" },
+        teamB: { code: "ca", name: "Canadá" },
+      },
+      {
+        id: "m74-16a",
+        phaseId: "16avos",
+        kickoff: "2026-06-29T11:00:00-06:00",
+        venue: "Estadio Houston (Houston)",
+        teamA: { code: "br", name: "Brasil" },
+        teamB: { code: "jp", name: "Japón" },
+      },
+      {
+        id: "m75-16a",
+        phaseId: "16avos",
+        kickoff: "2026-06-29T14:30:00-06:00",
+        venue: "Estadio Boston (Boston)",
+        teamA: { code: "de", name: "Alemania" },
+        teamB: { code: "py", name: "Paraguay" },
+      },
+      {
+        id: "m76-16a",
+        phaseId: "16avos",
+        kickoff: "2026-06-29T19:00:00-06:00",
+        venue: "Estadio Monterrey (Monterrey)",
+        teamA: { code: "nl", name: "Países Bajos" },
+        teamB: { code: "ma", name: "Marruecos" },
+      },
+      {
+        id: "m77-16a",
+        phaseId: "16avos",
+        kickoff: "2026-06-30T11:00:00-06:00",
+        venue: "Estadio Dallas (Dallas)",
+        teamA: { code: "ci", name: "Costa de Marfil" },
+        teamB: { code: "no", name: "Noruega" },
+      },
+      {
+        id: "m78-16a",
+        phaseId: "16avos",
+        kickoff: "2026-06-30T15:00:00-06:00",
+        venue: "Estadio Nueva York/Nueva Jersey (Nueva York)",
+        teamA: { code: "fr", name: "Francia" },
+        teamB: { code: "se", name: "Suecia" },
+      },
+      {
+        id: "m79-16a",
+        phaseId: "16avos",
+        kickoff: "2026-06-30T19:00:00-06:00",
+        venue: "Estadio Ciudad de México (Ciudad de México)",
+        teamA: { code: "mx", name: "México" },
+        teamB: { code: "ec", name: "Ecuador" },
+      },
+      {
+        id: "m80-16a",
+        phaseId: "16avos",
+        kickoff: "2026-07-01T10:00:00-06:00",
+        venue: "Estadio Atlanta (Atlanta)",
+        teamA: { code: "gb-eng", name: "Inglaterra" },
+        teamB: { code: "cd", name: "RD Congo" },
+      },
+      {
+        id: "m81-16a",
+        phaseId: "16avos",
+        kickoff: "2026-07-01T14:00:00-06:00",
+        venue: "Estadio de Seattle (Seattle)",
+        teamA: { code: "be", name: "Bélgica" },
+        teamB: { code: "sn", name: "Senegal" },
+      },
+      {
+        id: "m82-16a",
+        phaseId: "16avos",
+        kickoff: "2026-07-01T18:00:00-06:00",
+        venue:
+          "Estadio de la Bahía de San Francisco (Área de la Bahía de San Francisco)",
+        teamA: { code: "us", name: "EE. UU." },
+        teamB: { code: "ba", name: "Bosnia y Herzegovina" },
+      },
+      {
+        id: "m83-16a",
+        phaseId: "16avos",
+        kickoff: "2026-07-02T13:00:00-06:00",
+        venue: "Estadio Los Ángeles (Los Ángeles)",
+        teamA: { code: "es", name: "España" },
+        teamB: { code: "at", name: "Austria" },
+      },
+      {
+        id: "m84-16a",
+        phaseId: "16avos",
+        kickoff: "2026-07-02T15:00:00-06:00",
+        venue: "Estadio de Toronto (Toronto)",
+        teamA: { code: "pt", name: "Portugal" },
+        teamB: { code: "hr", name: "Croacia" },
+      },
+      {
+        id: "m85-16a",
+        phaseId: "16avos",
+        kickoff: "2026-07-02T21:00:00-06:00",
+        venue: "Estadio BC Place Vancouver (Vancouver)",
+        teamA: { code: "ch", name: "Suiza" },
+        teamB: { code: "dz", name: "Argelia" },
+      },
+      {
+        id: "m86-16a",
+        phaseId: "16avos",
+        kickoff: "2026-07-03T12:00:00-06:00",
+        venue: "Estadio Dallas (Dallas)",
+        teamA: { code: "au", name: "Australia" },
+        teamB: { code: "eg", name: "Egipto" },
+      },
+      {
+        id: "m87-16a",
+        phaseId: "16avos",
+        kickoff: "2026-07-03T16:00:00-06:00",
+        venue: "Estadio Miami (Miami)",
+        teamA: { code: "ar", name: "Argentina" },
+        teamB: { code: "cv", name: "Islas de Cabo Verde" },
+      },
+      {
+        id: "m88-16a",
+        phaseId: "16avos",
+        kickoff: "2026-07-03T19:30:00-06:00",
+        venue: "Estadio Kansas City (Kansas City)",
+        teamA: { code: "co", name: "Colombia" },
         teamB: { code: "gh", name: "Ghana" },
       },
     ],
