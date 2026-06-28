@@ -217,7 +217,6 @@ export interface CopaQuinielaContent {
     statusLocked: string;
     statusFinished: string;
     cutoffPrefix: string;
-    cutoff16avosPrefix: string;
     cutoffPassed: string;
     yourPrediction: string;
     actualResult: string;
@@ -648,7 +647,7 @@ export const content: CopaAppContent = {
         label: "Dieciseisavos de final",
         shortLabel: "16avos",
         status: "open",
-        cutoffHours: 1,
+        // cutoffHours: 1,
         lockedMessage:
           "Esta fase se habilitará cuando termine la fase de grupos y se conozcan los clasificados.",
       },
@@ -1376,7 +1375,7 @@ export const content: CopaAppContent = {
       {
         id: "m73-16a",
         phaseId: "16avos",
-        kickoff: "2026-06-28T13:00:00-06:00",
+        kickoff: "2026-06-29T13:00:00-06:00",
         venue: "Estadio Los Ángeles (Los Ángeles)",
         teamA: { code: "za", name: "Sudáfrica" },
         teamB: { code: "ca", name: "Canadá" },
@@ -1602,7 +1601,6 @@ export const content: CopaAppContent = {
       statusLocked: "Bloqueada",
       statusFinished: "Finalizada",
       cutoffPrefix: "Puedes modificar hasta",
-      cutoff16avosPrefix: "Puedes modificar hasta 1 hora antes del partido",
       cutoffPassed: "Predicción cerrada para este partido",
       yourPrediction: "Tu predicción",
       actualResult: "Resultado real",

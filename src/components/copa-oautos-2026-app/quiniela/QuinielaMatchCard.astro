@@ -13,8 +13,6 @@ interface Props {
 
 const { match, labels, cutoffHours } = Astro.props;
 const isFinished = !!match.result;
-const cutoffPrefix =
-  match.phaseId === "16avos" ? labels.cutoff16avosPrefix : labels.cutoffPrefix;
 
 const flagUrl = (code: string) =>
   `https://flagcdn.com/w80/${code.toLowerCase()}.png`;
@@ -207,10 +205,10 @@ const matchGroupCode = (match.group ?? "").replace(/^Grupo\s+/, "");
           <div class="flex-1 min-w-0">
             <p
               class="copa-match-cutoff text-xs sm:text-sm leading-snug"
-              data-cutoff-prefix={cutoffPrefix}
+              data-cutoff-prefix={labels.cutoffPrefix}
               data-cutoff-passed={labels.cutoffPassed}
             >
-              {cutoffPrefix}…
+              {labels.cutoffPrefix}…
             </p>
             <p
               class="copa-match-save-feedback hidden text-xs mt-1 font-semibold"
