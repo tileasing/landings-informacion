@@ -8,10 +8,13 @@ interface Props {
   match: CopaQuinielaMatch;
   labels: CopaQuinielaContent["labels"];
   pointsRules: CopaQuinielaContent["pointsTable"]["rules"];
+  cutoffHours?: number;
 }
 
-const { match, labels } = Astro.props;
+const { match, labels, cutoffHours } = Astro.props;
 const isFinished = !!match.result;
+const cutoffPrefix =
+  match.phaseId === "16avos" ? labels.cutoff16avosPrefix : labels.cutoffPrefix;
 
 const flagUrl = (code: string) =>
   `https://flagcdn.com/w80/${code.toLowerCase()}.png`;
@@ -29,6 +32,7 @@ const matchGroupCode = (match.group ?? "").replace(/^Grupo\s+/, "");
   data-result-a={match.result?.goalsA ?? ""}
   data-result-b={match.result?.goalsB ?? ""}
   data-finished={isFinished ? "1" : "0"}
+  data-cutoff-hours={cutoffHours ?? 24}
 >
   <!-- Encabezado -->
   <header
@@ -203,10 +207,10 @@ const matchGroupCode = (match.group ?? "").replace(/^Grupo\s+/, "");
           <div class="flex-1 min-w-0">
             <p
               class="copa-match-cutoff text-xs sm:text-sm leading-snug"
-              data-cutoff-prefix={labels.cutoffPrefix}
+              data-cutoff-prefix={cutoffPrefix}
               data-cutoff-passed={labels.cutoffPassed}
             >
-              {labels.cutoffPrefix}…
+              {cutoffPrefix}…
             </p>
             <p
               class="copa-match-save-feedback hidden text-xs mt-1 font-semibold"

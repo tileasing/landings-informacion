@@ -131,6 +131,7 @@ export interface CopaQuinielaPhase {
   shortLabel: string;
   status: "open" | "locked";
   lockedMessage?: string;
+  cutoffHours?: number; // horas antes del partido en que se bloquea (default 24)
 }
 
 export interface CopaQuinielaTeam {
@@ -216,6 +217,7 @@ export interface CopaQuinielaContent {
     statusLocked: string;
     statusFinished: string;
     cutoffPrefix: string;
+    cutoff16avosPrefix: string;
     cutoffPassed: string;
     yourPrediction: string;
     actualResult: string;
@@ -646,6 +648,7 @@ export const content: CopaAppContent = {
         label: "Dieciseisavos de final",
         shortLabel: "16avos",
         status: "open",
+        cutoffHours: 1,
         lockedMessage:
           "Esta fase se habilitará cuando termine la fase de grupos y se conozcan los clasificados.",
       },
@@ -1599,6 +1602,7 @@ export const content: CopaAppContent = {
       statusLocked: "Bloqueada",
       statusFinished: "Finalizada",
       cutoffPrefix: "Puedes modificar hasta",
+      cutoff16avosPrefix: "Puedes modificar hasta 1 hora antes del partido",
       cutoffPassed: "Predicción cerrada para este partido",
       yourPrediction: "Tu predicción",
       actualResult: "Resultado real",

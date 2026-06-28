@@ -201,6 +201,7 @@ const matchPointsConfig = {
                                 match={match}
                                 labels={quiniela.labels}
                                 pointsRules={quiniela.pointsTable.rules}
+                                cutoffHours={phase.cutoffHours}
                               />
                             ))}
                           </div>
@@ -456,7 +457,11 @@ const matchPointsConfig = {
 
     // === Render por tarjeta ===
     const cards = Array.from(document.querySelectorAll(".copa-match-card"));
-    const CUTOFF_MS = 24 * 60 * 60 * 1000;
+
+    const cardCutoffMs = (card) => {
+      const hours = Number(card.dataset.cutoffHours) || 24;
+      return hours * 60 * 60 * 1000;
+    };
 
     const setStatusBadge = (card, status) => {
       const badge = card.querySelector(".copa-match-status");
@@ -545,7 +550,7 @@ const matchPointsConfig = {
       }
 
       // Partido aún no finalizado.
-      const cutoffTime = new Date(kickoff.getTime() - CUTOFF_MS);
+      const cutoffTime = new Date(kickoff.getTime() - cardCutoffMs(card));
       const isLocked = now.getTime() >= cutoffTime.getTime();
 
       // Restaurar valores guardados, si existen.
