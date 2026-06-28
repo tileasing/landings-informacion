@@ -459,7 +459,8 @@ const matchPointsConfig = {
     const cards = Array.from(document.querySelectorAll(".copa-match-card"));
 
     const cardCutoffMs = (card) => {
-      const hours = Number(card.dataset.cutoffHours) || 24;
+      const raw = card.dataset.cutoffHours;
+      const hours = raw !== undefined && raw !== "" ? Number(raw) : 24;
       return hours * 60 * 60 * 1000;
     };
 

@@ -147,6 +147,7 @@ export interface CopaQuinielaMatch {
   venue?: string;
   teamA: CopaQuinielaTeam;
   teamB: CopaQuinielaTeam;
+  cutoffHours?: number; // override por partido del cutoff de fase (default usa el de la fase)
   result?: {
     goalsA: number;
     goalsB: number;
@@ -1375,7 +1376,8 @@ export const content: CopaAppContent = {
       {
         id: "m73-16a",
         phaseId: "16avos",
-        kickoff: "2026-06-29T13:00:00-06:00",
+        cutoffHours: 0,
+        kickoff: "2026-06-28T13:00:00-06:00",
         venue: "Estadio Los Ángeles (Los Ángeles)",
         teamA: { code: "za", name: "Sudáfrica" },
         teamB: { code: "ca", name: "Canadá" },

@@ -30,7 +30,7 @@ const matchGroupCode = (match.group ?? "").replace(/^Grupo\s+/, "");
   data-result-a={match.result?.goalsA ?? ""}
   data-result-b={match.result?.goalsB ?? ""}
   data-finished={isFinished ? "1" : "0"}
-  data-cutoff-hours={cutoffHours ?? 24}
+  data-cutoff-hours={match.cutoffHours ?? cutoffHours ?? 24}
 >
   <!-- Encabezado -->
   <header
