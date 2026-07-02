@@ -656,7 +656,7 @@ export const content: CopaAppContent = {
         id: "octavos",
         label: "Octavos de final",
         shortLabel: "Octavos",
-        status: "locked",
+        status: "open",
         lockedMessage: "Disponible cuando se conozcan los ganadores de 16avos.",
       },
       {
@@ -1502,6 +1502,48 @@ export const content: CopaAppContent = {
         venue: "Estadio Kansas City (Kansas City)",
         teamA: { code: "co", name: "Colombia" },
         teamB: { code: "gh", name: "Ghana" },
+      },
+
+      // === Octavos de final ===
+      {
+        id: "m89-8a",
+        phaseId: "octavos",
+        kickoff: "2026-07-04T11:00:00-06:00",
+        venue: "Estadio Houston (Houston)",
+        teamA: { code: "ca", name: "Canadá" },
+        teamB: { code: "ma", name: "Marruecos" },
+      },
+      {
+        id: "m90-8a",
+        phaseId: "octavos",
+        kickoff: "2026-07-04T15:00:00-06:00",
+        venue: "Estadio Filadelfia (Filadelfia)",
+        teamA: { code: "py", name: "Paraguay" },
+        teamB: { code: "fr", name: "Francia" },
+      },
+      {
+        id: "m91-8a",
+        phaseId: "octavos",
+        kickoff: "2026-07-05T14:00:00-06:00",
+        venue: "Estadio Nueva York/Nueva Jersey (Nueva York)",
+        teamA: { code: "br", name: "Brasil" },
+        teamB: { code: "no", name: "Noruega" },
+      },
+      {
+        id: "m92-8a",
+        phaseId: "octavos",
+        kickoff: "2026-07-05T18:00:00-06:00",
+        venue: "Estadio Ciudad de México (Ciudad de México)",
+        teamA: { code: "mx", name: "México" },
+        teamB: { code: "gb-eng", name: "Inglaterra" },
+      },
+      {
+        id: "m93-8a",
+        phaseId: "octavos",
+        kickoff: "2026-07-06T18:00:00-06:00",
+        venue: "Estadio de Seattle (Seattle)",
+        teamA: { code: "us", name: "EE. UU." },
+        teamB: { code: "be", name: "Bélgica" },
       },
     ],
     tournamentPicks: {
