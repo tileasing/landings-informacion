@@ -663,9 +663,7 @@ export const content: CopaAppContent = {
         id: "cuartos",
         label: "Cuartos de final",
         shortLabel: "Cuartos",
-        status: "locked",
-        lockedMessage:
-          "Disponible cuando se conozcan los ganadores de octavos.",
+        status: "open",
       },
       {
         id: "semifinales",
@@ -1568,6 +1566,24 @@ export const content: CopaAppContent = {
         venue: "Estadio BC Place Vancouver (Vancouver)",
         teamA: { code: "ch", name: "Suiza" },
         teamB: { code: "co", name: "Colombia" },
+      },
+
+      // === Cuartos de final ===
+      {
+        id: "m97-qf",
+        phaseId: "cuartos",
+        kickoff: "2026-07-09T14:00:00-06:00",
+        venue: "Estadio Boston (Boston)",
+        teamA: { code: "fr", name: "Francia" },
+        teamB: { code: "ma", name: "Marruecos" },
+      },
+      {
+        id: "m98-qf",
+        phaseId: "cuartos",
+        kickoff: "2026-07-11T15:00:00-06:00",
+        venue: "Estadio Miami (Miami)",
+        teamA: { code: "no", name: "Noruega" },
+        teamB: { code: "gb-eng", name: "Inglaterra" },
       },
     ],
     tournamentPicks: {
