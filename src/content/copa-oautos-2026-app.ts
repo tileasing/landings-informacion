@@ -1578,12 +1578,28 @@ export const content: CopaAppContent = {
         teamB: { code: "ma", name: "Marruecos" },
       },
       {
+        id: "m99-qf",
+        phaseId: "cuartos",
+        kickoff: "2026-07-10T13:00:00-06:00",
+        venue: "Estadio Los Angeles (Los Ángeles)",
+        teamA: { code: "es", name: "España" },
+        teamB: { code: "be", name: "Bélgica" },
+      },
+      {
         id: "m98-qf",
         phaseId: "cuartos",
         kickoff: "2026-07-11T15:00:00-06:00",
         venue: "Estadio Miami (Miami)",
         teamA: { code: "no", name: "Noruega" },
         teamB: { code: "gb-eng", name: "Inglaterra" },
+      },
+      {
+        id: "m100-qf",
+        phaseId: "cuartos",
+        kickoff: "2026-07-11T19:00:00-06:00",
+        venue: "Estadio Kansas City (Kansas City)",
+        teamA: { code: "ar", name: "Argentina" },
+        teamB: { code: "ch", name: "Suiza" },
       },
     ],
     tournamentPicks: {
