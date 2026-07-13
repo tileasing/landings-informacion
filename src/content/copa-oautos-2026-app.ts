@@ -669,9 +669,7 @@ export const content: CopaAppContent = {
         id: "semifinales",
         label: "Semifinales",
         shortLabel: "Semis",
-        status: "locked",
-        lockedMessage:
-          "Disponible cuando se conozcan los ganadores de cuartos.",
+        status: "open",
       },
       {
         id: "tercer-puesto",
@@ -1600,6 +1598,24 @@ export const content: CopaAppContent = {
         venue: "Estadio Kansas City (Kansas City)",
         teamA: { code: "ar", name: "Argentina" },
         teamB: { code: "ch", name: "Suiza" },
+      },
+
+      // === Semifinales ===
+      {
+        id: "m101-sf",
+        phaseId: "semifinales",
+        kickoff: "2026-07-14T13:00:00-06:00",
+        venue: "Estadio Dallas (Dallas)",
+        teamA: { code: "fr", name: "Francia" },
+        teamB: { code: "es", name: "España" },
+      },
+      {
+        id: "m102-sf",
+        phaseId: "semifinales",
+        kickoff: "2026-07-15T13:00:00-06:00",
+        venue: "Estadio Atlanta (Atlanta)",
+        teamA: { code: "gb-eng", name: "Inglaterra" },
+        teamB: { code: "ar", name: "Argentina" },
       },
     ],
     tournamentPicks: {
