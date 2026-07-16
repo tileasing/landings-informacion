@@ -675,16 +675,13 @@ export const content: CopaAppContent = {
         id: "tercer-puesto",
         label: "Tercer puesto",
         shortLabel: "3er puesto",
-        status: "locked",
-        lockedMessage:
-          "Disponible cuando se conozcan los perdedores de semifinales.",
+        status: "open",
       },
       {
         id: "final",
         label: "Final",
         shortLabel: "Final",
-        status: "locked",
-        lockedMessage: "Disponible cuando se conozcan los finalistas.",
+        status: "open",
       },
     ],
     // Calendario oficial FIFA — sólo cargados los grupos para los que ya tenemos
@@ -1615,6 +1612,26 @@ export const content: CopaAppContent = {
         kickoff: "2026-07-15T13:00:00-06:00",
         venue: "Estadio Atlanta (Atlanta)",
         teamA: { code: "gb-eng", name: "Inglaterra" },
+        teamB: { code: "ar", name: "Argentina" },
+      },
+
+      // === Tercer puesto ===
+      {
+        id: "m103-3l",
+        phaseId: "tercer-puesto",
+        kickoff: "2026-07-18T15:00:00-06:00",
+        venue: "Estadio Miami (Miami)",
+        teamA: { code: "fr", name: "Francia" },
+        teamB: { code: "gb-eng", name: "Inglaterra" },
+      },
+
+      // === Final ===
+      {
+        id: "m104-f",
+        phaseId: "final",
+        kickoff: "2026-07-19T13:00:00-06:00",
+        venue: "Estadio Nueva York/Nueva Jersey (Nueva Jersey)",
+        teamA: { code: "es", name: "España" },
         teamB: { code: "ar", name: "Argentina" },
       },
     ],
